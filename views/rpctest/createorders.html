@@ -29,19 +29,15 @@
             <span class="fas5"  style="display: none">
                   <input type="radio" name="configID" value="5">便捷估值9张 &nbsp;&nbsp;
             </span>
+        </p>
 
+        <p style="margin-top: 10px;display: none" id="teshupic" >
+            特殊照片：
+            <span class="teshupic">   </span>
+        </p>
 
     </div>
 
-
-        </p>
-
-        <p style="margin-top: 10px">
-            订单订单类型：
-        <input type="radio" name="tasktype" value="2">6张 &nbsp;&nbsp;
-        <input type="radio" name="tasktype" value="5">9张 &nbsp;&nbsp;
-        <input type="radio" name="tasktype"value="1" >18张 &nbsp;&nbsp;
-        </p>
 
     </div>
 
@@ -60,6 +56,7 @@
             var suerid=$("#Userid").val()
 
             var jsData = {'userid':suerid}
+            //方案获取
             $.post('/RpcTest/GetProgrammeConfiguration', jsData, function (out) {
                 if (out.code == 0) {
 
@@ -67,10 +64,26 @@
                         $(".fas"+out.data[i].ProgrammeId).show();
                     }
 
-                } else {
-                    layer.msg(out.message)
                 }
             }, "json");
+            //特殊粘片获取
+            $.post('/RpcTest/GetPicSpecialSet', jsData, function (out) {
+                if (out.code == 0) {
+
+                    var str="";
+                    for (var i = 0; i < out.data.length; i++) {
+                        str+=out.data[i].Name+"&nbsp;&nbsp;";
+                    }
+                    if (str!="") {
+                        $("#teshupic").show();
+                        $(".teshupic").html(str);
+                    }
+
+                }
+            }, "json");
+
+
+
 
         });
 

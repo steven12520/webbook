@@ -33,11 +33,11 @@ type PicSpecialUserSetModel struct {
 
 type PicSpecialSetModel struct {
 	ItemID int
-	Name int
+	Name string
 	ID int
 	Path string
 	PathAssist string
-	ImageDirection string
+	ImageDirection int
 	PictureUrl string
 	Description string
 	VideoUrl string
@@ -83,7 +83,7 @@ func getPicSpecialUserSet(userid string)[] PicSpecialUserSetModel  {
 
 	for rows.Next() {
 		var b PicSpecialUserSetModel
-		rows.Scan(&b.ID,&b.PicSetID,&b.SourceID,&b.UserID)
+		rows.Scan(&b.ID,&b.SourceID,&b.UserID,&b.CityID,&b.PicSetID,&b.IsRequired,&b.OpUserID,&b.CreateTime)
 		list = append(list,b)
 	}
 	if e != nil {
@@ -111,7 +111,7 @@ func (p *PicSpecialSetModel)GetPicSpecialSet(userid string)[]PicSpecialSetModel 
 
 	for rows.Next() {
 		var b PicSpecialSetModel
-		rows.Scan(&b.ID,&b.ItemID,&b.Name,&b.Path,&b.PathAssist,&b.ImageDirection,&b.PictureUrl,&b.Description,&b.VideoUrl,&b.PhotoTips)
+		rows.Scan(&b.Name,&b.ID,&b.ItemID,&b.Path,&b.PathAssist,&b.ImageDirection,&b.PictureUrl,&b.Description,&b.VideoUrl,&b.PhotoTips)
 		list = append(list,b)
 	}
 	if e != nil {
