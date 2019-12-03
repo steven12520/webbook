@@ -60,6 +60,9 @@ func (p *PublicUsersModel)GetPublicUsers() []PublicUsersModel {
 
 	list := make([]PublicUsersModel, 0)
 
+	if p.ID<=0 {
+		return list
+	}
 	sql := "SELECT * from PublicUsers where id="+strconv.Itoa(p.ID)
 
 	rows, e := Dbsql.Query(sql)
@@ -74,17 +77,4 @@ func (p *PublicUsersModel)GetPublicUsers() []PublicUsersModel {
 		fmt.Println("GetPublicUsers error!")
 	}
 	return list
-}
-
-func (p *PublicUsersModel) DeleteUser()bool  {
-
-	sql := "delete from PublicUsers where id=?"
-	_, e := Dbsql.Exec(sql,p.ID)
-
-	if e == nil {
-		return true
-	} else {
-		fmt.Println("删除失败", e.Error())
-		return false
-	}
 }

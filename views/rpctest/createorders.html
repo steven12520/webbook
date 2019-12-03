@@ -5,9 +5,9 @@
 
     <div style="display: flex">
 
-        <input type="text" style="width: 200px" name="bookName" id="bookName" lay-verify="required" autocomplete="off" placeholder="用户id" class="layui-input" value="">
+        <input type="text" style="width: 200px" name="bookName" id="Userid" lay-verify="required" autocomplete="off" placeholder="用户id" class="layui-input" value="1726">
 
-        <input type="button" class="layui-btn" data-type="tabAdd" style="margin-left: 30px" value="查询">
+        <input id="seach" type="button" class="layui-btn" data-type="tabAdd" style="margin-left: 30px" value="查询">
 
     </div>
 
@@ -17,8 +17,23 @@
 
         <p style="margin-top: 10px">
             线上检测方案：
-        <input type="radio" name="configID" value="2">鉴定估值-易鑫 &nbsp;&nbsp;
-        <input type="radio" name="configID" value="5">鉴定估值-金融 &nbsp;&nbsp;
+            <span class="fas1"  style="display: none">
+                  <input type="radio" name="configID" value="1">鉴定估值_易鑫20张 &nbsp;
+            </span>
+            <span class="fas2"  style="display: none">
+                  <input type="radio" name="configID" value="2">便捷估值6张 &nbsp;&nbsp;
+            </span>
+            <span class="fas4"  style="display: none">
+                  <input type="radio" name="configID" value="4">鉴定估值_金融18张&nbsp;&nbsp;
+            </span>
+            <span class="fas5"  style="display: none">
+                  <input type="radio" name="configID" value="5">便捷估值9张 &nbsp;&nbsp;
+            </span>
+
+
+    </div>
+
+
         </p>
 
         <p style="margin-top: 10px">
@@ -32,3 +47,53 @@
 
 </div>
 </div>
+<script>
+    var $;
+    layui.config({
+        base : "js/"
+    }).use(['table','element','layer','jquery'], function(){
+        $ = layui.jquery
+
+
+        //查询用户信息
+        $("#seach").click(function () {
+            var suerid=$("#Userid").val()
+
+            var jsData = {'userid':suerid}
+            $.post('/RpcTest/GetProgrammeConfiguration', jsData, function (out) {
+                if (out.code == 0) {
+
+                    for (var i = 0; i < out.data.length; i++) {
+                        $(".fas"+out.data[i].ProgrammeId).show();
+                    }
+
+                } else {
+                    layer.msg(out.message)
+                }
+            }, "json");
+
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    });
+
+</script>
