@@ -13,7 +13,7 @@ var WEIGHTVALUE =  []int{8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2}
 
 
 //获取vin
-func GetRandvin()string  {
+func GetRandvin(vins string)string  {
 	var vin=make([]string,0)
 	for i:=0;i<17 ;i++  {
 		if i==8 {
@@ -24,6 +24,12 @@ func GetRandvin()string  {
 			vin=append(vin,l )
 		}
 	}
+
+	s:=strings.Split(vins,"")
+	for c:=0;c<len(s) ;c++  {
+		vin[c]=s[c]
+	}
+
 	c:= getCheck(vin)
 	vin[8]=strconv.Itoa(c)
 	return strings.Join(vin,"")

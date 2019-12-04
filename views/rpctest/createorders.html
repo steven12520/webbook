@@ -11,8 +11,6 @@
 
     </div>
 
-
-
     <div style="font-size: 18px">
 
         <p style="margin-top: 10px">
@@ -31,17 +29,33 @@
             </span>
         </p>
 
+        <p style="margin-top: 10px" id="procductlist"> </p>
+
         <p style="margin-top: 10px;display: none" id="teshupic" >
             特殊照片：
             <span class="teshupic">   </span>
         </p>
-
+        <p style="margin-top: 10px;">
+            VIN前缀：
+            <input type="text" id="vin" style=" width: 100px" value="LJS">
+        </p>
+        <p style="margin-top: 10px;">
+            下单数量：
+            <input type="text" id="ordercount" style=" width: 100px"  value="1" >
+        </p>
+        <p style="margin-top: 10px;">
+            线程数量：
+            <input type="text" id="gocount" style=" width: 100px"  value="1" >
+        </p>
+        <p style="margin-top: 30px;">
+            <input type="button" id="submit" value="提交"  >
+        </p>
     </div>
 
-
-    </div>
 
 </div>
+
+
 </div>
 <script>
     var $;
@@ -78,34 +92,53 @@
                         $("#teshupic").show();
                         $(".teshupic").html(str);
                     }
+                }
+            }, "json");
+            //产品类型获取
+            $.post('/RpcTest/GetUserProductType', jsData, function (out) {
+                if (out.code == 0) {
 
+                    var str="线上检测方案：";
+                    for (var i = 0; i < out.data.length; i++) {
+                        str+=" <span class=\"fas1\">";
+                        str+=" <input type=\"radio\" name=\"procductlist\" value=\""+out.data[i].ProductId+"\">"+out.data[i].ProductName+" &nbsp;";
+                        str+=" </span>";
+                    }
+                    $("#procductlist").html(str);
+                }
+            }, "json");
+        });
+
+        $("#submit").click(function () {
+
+            var suerid=$("#Userid").val()
+            var configID = $("input[name='configID']:checked").val();
+            var procductlist = $("input[name='procductlist']:checked").val();
+            var vin=$("#vin").val();
+            var ordercount=$("#ordercount").val();
+            var gocount=$("#gocount").val();
+
+            var jsData = {'userid':suerid,"configID":configID,"procductlist":procductlist,"vin":vin,"ordercount":ordercount,"gocount":gocount}
+
+
+            if (configID==undefined) {
+                layer.msg("请选择方案")
+                return;
+            }
+            if (procductlist==undefined) {
+                layer.msg("请选择产品类型")
+                return;
+            }
+
+            $.post('/RpcTest/SaveOrder', jsData, function (out) {
+                if (out.status == 0) {
+                    layer.alert("提交成功")
+                }else {
+                    layer.msg("提交失败，"+out.message)
                 }
             }, "json");
 
-
-
-
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     });
 

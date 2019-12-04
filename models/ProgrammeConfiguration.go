@@ -43,6 +43,37 @@ type PicSpecialSetModel struct {
 	VideoUrl string
 	PhotoTips string
 }
+
+type UserProductTypeModel struct {
+	ID          int
+	UserId      int
+	ProductId   int
+	ProductName string
+	Type        int
+	AlterUserId string
+
+	//
+}
+//读取用户线上产品类型
+func (u *UserProductTypeModel) GetUserProductType(userid int) []UserProductTypeModel {
+	list := make([]UserProductTypeModel, 0)
+	sql := "SELECT ID,UserId,ProductId,ProductName,Type,AlterUserId FROM UserProductType WHERE UserId="+strconv.Itoa(userid) +" and Type=0"
+
+	rows, e := Dbsql.Query(sql)
+
+	for rows.Next() {
+		var b UserProductTypeModel
+		rows.Scan(&b.ID,&b.UserId,&b.ProductId,&b.ProductName,&b.Type,&b.AlterUserId)
+		list = append(list,b)
+	}
+	if e != nil {
+		fmt.Println("GetPublicUsers error!")
+	}
+	return list
+
+}
+
+
 //获取配置的 方案
 func (p *ProgrammeConfigurationModel) Get(userid string) []ProgrammeConfigurationModel {
 
@@ -101,7 +132,7 @@ func (p *PicSpecialSetModel)GetPicSpecialSet(userid string)[]PicSpecialSetModel 
 		return list
 	}
 	id:=strconv.Itoa(plist[0].PicSetID)
-	sql := "SELECT r.ItemID,p.Name,p.ID,p.Path,p.PathAssist,p.ImageDirection,p.PictureUrl,p.Description,p.VideoUrl,p.PhotoTips "
+	sql := "SELECT p.ID,r.ItemID,p.Name,p.Path,p.PathAssist,p.ImageDirection,p.PictureUrl,p.Description,p.VideoUrl,p.PhotoTips "
 	sql +=" FROM PicSet ps with(nolock) "
 	sql +=" inner join PicSpecialSet r  with(nolock) on ps.id = r.PicSetID "
 	sql +=" inner join PicSpecial p  with(nolock) on r.ItemID=p.ItemID "
@@ -111,7 +142,7 @@ func (p *PicSpecialSetModel)GetPicSpecialSet(userid string)[]PicSpecialSetModel 
 
 	for rows.Next() {
 		var b PicSpecialSetModel
-		rows.Scan(&b.Name,&b.ID,&b.ItemID,&b.Path,&b.PathAssist,&b.ImageDirection,&b.PictureUrl,&b.Description,&b.VideoUrl,&b.PhotoTips)
+		rows.Scan(&b.ID,&b.ItemID,&b.Name,&b.Path,&b.PathAssist,&b.ImageDirection,&b.PictureUrl,&b.Description,&b.VideoUrl,&b.PhotoTips)
 		list = append(list,b)
 	}
 	if e != nil {
