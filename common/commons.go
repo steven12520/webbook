@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 	"math/rand"
+	"fmt"
 )
 
 //随机获取的数据
@@ -14,6 +15,15 @@ var WEIGHTVALUE =  []int{8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2}
 
 //获取vin
 func GetRandvin(vins string)string  {
+
+	defer func() {
+		re:=recover()
+		if re!=nil {
+			fmt.Println("GetRandvin 获取vin出错",re)
+		}
+	}()
+
+
 	var vin=make([]string,0)
 	for i:=0;i<17 ;i++  {
 		if i==8 {
@@ -29,8 +39,15 @@ func GetRandvin(vins string)string  {
 	for c:=0;c<len(s) ;c++  {
 		vin[c]=s[c]
 	}
-
+	i:=0
+	th:
 	c:= getCheck(vin)
+	if c>9 {
+		vin[17]=strconv.Itoa(i)
+		i++
+		goto th
+
+	}
 	vin[8]=strconv.Itoa(c)
 	return strings.Join(vin,"")
 }

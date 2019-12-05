@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"../common"
 	"../http"
+
+	"github.com/chenhg5/collection"
 )
 type RpcTestController struct {
 	BaseController
@@ -63,16 +65,37 @@ func (self *RpcTestController) SaveOrder()  {
 	procductlist,_:=self.GetInt("procductlist")
 	vin:=self.GetString("vin")
 	ordercount,_:=self.GetInt("ordercount")
-	gocount,_:=self.GetInt("gocount")
+	//gocount,_:=self.GetInt("gocount")
 
-	vin=common.GetRandvin(vin)
+	var usermodel models.PublicUsersModel
+	usermodel.ID=userid
+	usermodellist:=usermodel.GetPublicUsers()
+	sourceid:=0
+	if usermodellist != nil && len(usermodellist) > 0 {
+		sourceid=usermodellist[0].TaskSourceId
+	}
+	var tc models.TaskCarBasicModel
+	vinlist:=make([]string,0)
+	for i:=0;i<ordercount ;i++  {
+			reset:
+			vinnew:=common.GetRandvin(vin)
+			if vinnew=="" {
+				ordercount++
+				continue
+			}
+			if collection.Collect(vinlist).Contains(vinnew) {
+				goto reset
+			}
+		vinlist=append(vinlist,vinnew)
+		counts:= tc.IsVinRepeat(vinnew,sourceid)
+		if counts>0 {
+			goto reset
+		}
+		go func() {
 
-	httpdate.RequesSaveOrder(userid,configID,procductlist,vin,ordercount,gocount)
-
-	//fmt.Println(userid,configID,procductlist,vin,ordercount,gocount)
-
-
-
+			httpdate.SendPostFormFile(userid,configID,procductlist,vinnew)
+		}()
+	}
 
 
 	self.ajaxMsg("成功", MSG_OK)
