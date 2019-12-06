@@ -11,6 +11,7 @@ import (
 	"os"
 	"bytes"
 	"mime/multipart"
+	"github.com/astaxie/beego"
 )
 
 type RequesModel struct {
@@ -165,13 +166,14 @@ func RequesSaveOrder(userid int,configID int,procductlist int,vin string,orderco
 
 
 func SendPostFormFile(userid int,configID int,procductlist int,vin string) {
-	url:="http://localhost:45678/app/TaskSave20160303.ashx?"
-	filename:="E:\\dada.zip"
+	url:=beego.AppConfig.String("app.url")+"/app/TaskSave20160303.ashx"
+
+	filename:=beego.AppConfig.String("zip.pic20")
+
 	body_buf := bytes.NewBufferString("")
 	body_writer := multipart.NewWriter(body_buf)
 	// boundary默认会提供一组随机数，也可以自己设置。
 	body_writer.SetBoundary("Pp7Ye2EeWaFDdAY")
-
 
 	// 1. 要上传的数据
 	body_writer.WriteField("RecordBrand", "Xjxjjxdj")
@@ -192,7 +194,7 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string) {
 	body_writer.WriteField("Service", "2")
 	body_writer.WriteField("telephone", "")
 	body_writer.WriteField("equipmentNo", "B3B51F6D80E09F24FD6652BE50E51D80")
-	body_writer.WriteField("ProgramId", "2_1")
+	body_writer.WriteField("ProgramId", "")
 	body_writer.WriteField("Longitude", "116.312729")
 	body_writer.WriteField("userId", strconv.Itoa(userid))
 	body_writer.WriteField("deviceInfo", "{\"brand\":\"HONOR\",\"model\":\"PRA-AL00X\",\"osVersion\":\"8.0.0\",\"platform\":\"android\",\"resolution\":\"1080*1794\"}")
