@@ -5,6 +5,7 @@ import (
 	"strings"
 	"math/rand"
 	"fmt"
+	"os"
 )
 
 //随机获取的数据
@@ -111,4 +112,29 @@ func RandInt64(min, max int64) int64 {
 		return max
 	}
 	return rand.Int63n(max-min) + min
+}
+//文件转byte
+func File2Bytes(filename string) ([]byte, error) {
+
+	// File
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	// FileInfo:
+	stats, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	// []byte
+	data := make([]byte, stats.Size())
+	count, err := file.Read(data)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("read file %s len: %d \n", filename, count)
+	return data, nil
 }

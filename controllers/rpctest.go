@@ -93,7 +93,11 @@ func (self *RpcTestController) SaveOrder()  {
 		}
 		go func() {
 
-			httpdate.SendPostFormFile(userid,configID,procductlist,vinnew)
+			if configID==2 {
+				httpdate.SendPostFormFile6(userid,configID,procductlist,vinnew)
+			}else {
+				httpdate.SendPostFormFile(userid,configID,procductlist,vinnew)
+			}
 		}()
 	}
 
