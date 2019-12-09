@@ -16,6 +16,9 @@ func (self *RpcTestController) CreateOrders() {
 	self.Data["pageTitle"] = "创建订单"
 	self.display()
 }
+
+
+
 //获取用户信息
 func (self *RpcTestController) GetPublicUsers()  {
 

@@ -1,0 +1,127 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+    <div class="layui-btn-group demoTable" style="margin-top: 10px; ">
+    </div>
+    <div>
+
+        <div style="display: flex">
+            <input type="text" style="width: 200px" name="bookName" id="vin_delete" lay-verify="required" autocomplete="off" placeholder="VIN***" class="layui-input" value="">
+            <input type="button" class="layui-btn deleorder" data-type="tabAdd" style="margin-left: 30px" data-v="1"  value="删除订单">
+        </div>
+
+        <div style="display: flex;margin-top: 20px">
+            <input type="text" style="width: 200px" name="bookName" id="vin_user" lay-verify="required" autocomplete="off" placeholder="根据用户id删除" class="layui-input" value="">
+            <input type="date" style="width: 200px;margin-left: 20px" name="bookName"  id="starttime" lay-verify="required" autocomplete="off" placeholder="下单开始时间" class="layui-input" value="">
+            <input type="date" style="width: 200px;margin-left: 20px" name="bookName" id="endtime" lay-verify="required" autocomplete="off" placeholder="下单结束时间" class="layui-input" value="">
+            <input type="button" class="layui-btn deleorder" data-type="tabAdd" style="margin-left: 30px" data-v="2" value="删除订单">
+        </div>
+
+        <div style="display: flex;margin-top: 20px">
+            <input type="button" class="layui-btn deleorder" data-type="tabAdd" style="margin-left: 30px" data-v="3" value="清楚所有派单数据">
+        </div>
+    </div>
+
+
+</div>
+<script>
+    var $;
+    layui.config({
+        base : "js/"
+    }).use(['table','element','layer','jquery'], function(){
+        $ = layui.jquery
+
+
+        //删除订单
+
+        $(".deleorder").click(function () {
+
+            var types=$(this).attr("data-v");//1根据vin删除,2 根据用户时间删除,3清除派单表所有数据
+            var vin_delete=$("#vin_delete").val();//vin
+            var vin_user=$("#vin_user").val();//userID
+            var starttime=$("#starttime").val();
+            var endtime=$("#endtime").val();
+
+            var jsData = {'types':types,'vin_delete':vin_delete,'vin_user':vin_user,'starttime':starttime,'endtime':endtime}
+            if (types=="1"){
+                if (vin_delete == "" || vin_delete.length<3){
+                    layer.msg("vin不能为空并且长度不能少于3位");
+                    return;
+                }
+            }else if(types=="2"){
+                if (vin_user == ""){
+                    layer.msg("用户id不能为空");
+                    return;
+                }
+                if (starttime == "" || starttime.indexOf("年")>=0){
+                    layer.msg("开始时间格式错误");
+                    return;
+                }
+                if (endtime == "" || endtime.indexOf("年")>=0){
+                    layer.msg("结束时间格式错误");
+                    return;
+                }
+            }
+
+            //方案获取DeleteOrder\Deletes
+            $.post('/DeleteOrder/Deletes', jsData, function (out) {
+                if (out.code == 0) {
+                    layer.alert("成功")
+                }else {
+                    layer.msg("失败");
+                }
+            }, "json");
+
+
+
+
+
+            // var suerid=$("#Userid").val()
+            //
+            // var jsData = {'userid':suerid}
+            // //方案获取
+            // $.post('/RpcTest/GetProgrammeConfiguration', jsData, function (out) {
+            //     if (out.code == 0) {
+            //
+            //         for (var i = 0; i < out.data.length; i++) {
+            //             $(".fas"+out.data[i].ProgrammeId).show();
+            //         }
+            //
+            //     }
+            // }, "json");
+            // //特殊粘片获取
+            // $.post('/RpcTest/GetPicSpecialSet', jsData, function (out) {
+            //     if (out.code == 0) {
+            //
+            //         var str="";
+            //         for (var i = 0; i < out.data.length; i++) {
+            //             str+=out.data[i].Name+"&nbsp;&nbsp;";
+            //         }
+            //         if (str!="") {
+            //             $("#teshupic").show();
+            //             $(".teshupic").html(str);
+            //         }
+            //     }
+            // }, "json");
+            // //产品类型获取
+            // $.post('/RpcTest/GetUserProductType', jsData, function (out) {
+            //     if (out.code == 0) {
+            //
+            //         var str="线上检测方案：";
+            //         for (var i = 0; i < out.data.length; i++) {
+            //             str+=" <span class=\"fas1\">";
+            //             str+=" <input type=\"radio\" name=\"procductlist\" value=\""+out.data[i].ProductId+"\">"+out.data[i].ProductName+" &nbsp;";
+            //             str+=" </span>";
+            //         }
+            //         $("#procductlist").html(str);
+            //     }
+            // }, "json");
+            //
+
+
+
+        });
+
+
+
+    });
+
+</script>

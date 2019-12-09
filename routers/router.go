@@ -18,6 +18,6 @@ func init() {
 	beego.AutoRouter(&controllers.BorrowBookController{})
 	beego.AutoRouter(&controllers.BookClassificationController{})
 	beego.AutoRouter(&controllers.RpcTestController{})
-
+	beego.AutoRouter(&controllers.DeleteOrderController{})
 
 }
