@@ -179,6 +179,10 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string) {
 	url:=beego.AppConfig.String("app.url")+"/app/TaskSave20160303.ashx"
 
 	filename:=beego.AppConfig.String("zip.pic20")
+	NewEdition:=1
+	if configID!=1 || (procductlist==11 && procductlist==13 && procductlist==14 ) {
+		NewEdition=0
+	}
 
 	if configID==2 {
 		filename=beego.AppConfig.String("zip.pic6")
@@ -214,7 +218,7 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string) {
 	body_writer.WriteField("OrderProvinceId", "9")
 	body_writer.WriteField("op", "save")
 	body_writer.WriteField("productType", "9")
-	body_writer.WriteField("NewEdition", "1")
+	body_writer.WriteField("NewEdition", strconv.Itoa(NewEdition))
 	body_writer.WriteField("RecordDate", "2019-12-01")
 	body_writer.WriteField("Service", "2")
 	body_writer.WriteField("telephone", "")

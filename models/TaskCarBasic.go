@@ -3,10 +3,12 @@ package models
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 type TaskCarBasicModel struct {
 	Id                 int
+	IdList 			   string
 	OrderNo            string
 	SourceID           int
 	CityID             int
@@ -15,7 +17,7 @@ type TaskCarBasicModel struct {
 	LikeMan            string
 	LikeTel            string
 	LikeAddr           string
-	vin                string
+	Vin                string
 	CarLicense         string
 	RecordBrand        string
 	EngineNum          string
@@ -100,6 +102,86 @@ func (t *TaskCarBasicModel) IsVinRepeat(Vin string, SourceID int)int  {
 	}
 	return counts
 }
+
+func (t *TaskCarBasicModel) GetList()[]TaskCarBasicModel  {
+	sql := "SELECT Id, CreateUserId, Status, vin, OrderNo FROM TaskCarBasic where 1=1 "
+
+	strwhere:=""
+	if t.Vin != "" && len(t.Vin)>=3 {
+		strwhere+= " and vin like '"+strings.Replace(t.Vin,"-","",0) +"%' "
+	}
+	if t.StartTime != "" {
+		strwhere+= " and CreateTime >'"+t.StartTime+" 00:00:00' "
+	}
+	if t.EndTime != "" {
+		strwhere+= " and CreateTime <='"+t.EndTime+" 23:59:59' "
+	}
+	if t.CreateUserId>0 {
+		strwhere+= " and CreateUserId ="+ strconv.Itoa(t.CreateUserId)
+	}
+	if strwhere=="" {
+		return nil
+	}
+	sql+=strwhere
+
+	rows, e := Dbsql.Query(sql)
+	if e != nil {
+		fmt.Println("TaskCarBasicModel List error", e.Error())
+	}
+	list := make([]TaskCarBasicModel, 0)
+	for rows.Next() {
+		var br TaskCarBasicModel
+		rows.Scan(&br.Id, &br.CreateUserId, &br.Status, &br.Vin, &br.OrderNo)
+		list = append(list, br)
+	}
+	return list
+
+}
+
+//删除订单
+func (t *TaskCarBasicModel)DeleteOrder()int  {
+
+	sql := "delete from TaskCarBasic WHERE id in(?) "
+
+	_, e := Dbsql.Exec(sql,t.IdList)
+
+	if e == nil {
+		return 1
+	} else {
+		fmt.Println("DeleteOrder 删除失败", e.Error())
+		return 0
+	}
+}
+//删除派单表数据
+func (t *TaskCarBasicModel)DeleteAssignedTask()int  {
+
+	sql := "delete from AssignedTask WHERE TaskID in(?);delete from AppraiserOrderQueue WHERE TaskID in(?);delete from PreAuditOrderQueue WHERE TaskID in(?); "
+
+	_, e := Dbsql.Exec(sql,t.IdList,t.IdList,t.IdList)
+
+	if e == nil {
+		return 1
+	} else {
+		fmt.Println("DeleteAssignedTask 删除失败", e.Error())
+		return 0
+	}
+}
+//删除登录状态
+func (t *TaskCarBasicModel)DeleteLoginStatusRecords()int  {
+
+	sql := "delete from LoginStatusRecords ; DELETE from PreAuditAppraiserQueue ;"
+
+	_, e := Dbsql.Exec(sql)
+
+	if e == nil {
+		return 1
+	} else {
+		fmt.Println("DeleteLoginStatusRecords 删除失败", e.Error())
+		return 0
+	}
+}
+
+
 
 
 

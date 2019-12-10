@@ -16,7 +16,7 @@
         </div>
 
         <div style="display: flex;margin-top: 20px">
-            <input type="button" class="layui-btn deleorder" data-type="tabAdd" style="margin-left: 30px" data-v="3" value="清楚所有派单数据">
+            <input type="button" class="layui-btn deleorder" data-type="tabAdd" style="margin-left: 30px" data-v="3" value="清楚所有登录状态">
         </div>
     </div>
 
@@ -63,7 +63,7 @@
 
             //方案获取DeleteOrder\Deletes
             $.post('/DeleteOrder/Deletes', jsData, function (out) {
-                if (out.code == 0) {
+                if (out.status == 0) {
                     layer.alert("成功")
                 }else {
                     layer.msg("失败");
