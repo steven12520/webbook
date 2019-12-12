@@ -60,7 +60,7 @@ func SendPostFormFile6(userid int,configID int,procductlist int,vin string)  {
 	url:=beego.AppConfig.String("app.url")+"/app/TaskSaveSimple.ashx"
 
 	filename:=beego.AppConfig.String("zip.pic6")
-	token:="3CEA5FCD-451F-4B97-87B6-A2C6C7C8A5FD"//beego.AppConfig.String("app.userToken")
+	token:=beego.AppConfig.String("app.userTokenet")
 
 	body_buf := bytes.NewBufferString("")
 	body_writer := multipart.NewWriter(body_buf)
@@ -126,7 +126,7 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string) {
 	if configID!=1 || (procductlist==11 && procductlist==13 && procductlist==14 ) {
 		NewEdition=0
 	}
-	token:="3CEA5FCD-451F-4B97-87B6-A2C6C7C8A5FD"//beego.AppConfig.String("app.userToken")
+	token:=beego.AppConfig.String("app.userTokenet")
 	if configID==2 {
 		filename=beego.AppConfig.String("zip.pic6")
 	}else if configID==4 {
@@ -194,9 +194,7 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string) {
 	url:=beego.AppConfig.String("app.url")+"/app/TaskSave9Pic.ashx"
 
 	filename:=beego.AppConfig.String("zip.pic9")
-
-	token:="3CEA5FCD-451F-4B97-87B6-A2C6C7C8A5FD"//beego.AppConfig.String("app.userToken")
-
+	token:=beego.AppConfig.String("app.userTokenet")
 	body_buf := bytes.NewBufferString("")
 	body_writer := multipart.NewWriter(body_buf)
 	// boundary默认会提供一组随机数，也可以自己设置。
