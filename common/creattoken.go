@@ -3,8 +3,8 @@ package common
 import (
 	"crypto/md5"
 	"fmt"
-	"sort"
 	"strings"
+	"sort"
 )
 
 func Password(len int, pwdO string) (pwd string, salt string) {
@@ -14,15 +14,20 @@ func Password(len int, pwdO string) (pwd string, salt string) {
 	pwd = Md5([]byte(defaultPwd))
 	return pwd, salt
 }
-
-func creates(ma map[string]string, token string) {
-
-	list := make([]string, 0)
-
-	for k, v := range ma {
-		list = append(list, k+"="+v)
+func Md5(buf []byte) string {
+	hash := md5.New()
+	hash.Write(buf)
+	return fmt.Sprintf("%x", hash.Sum(nil))
+}
+func GetSign(ma map[string]string, token string)string {
+	keylist:=make([]string,0)
+	for k,v := range ma {
+		keylist = append(keylist,strings.ToLower(k+"="+v))
 	}
+	sort.Sort(sort.StringSlice(keylist))
+	keylist = append(keylist,token)
 
-	sort.Sort(sort.StringSlice(list))
-	fmt.Println(strings.Join(list, ""))
+	str:=strings.ToLower(strings.Join(keylist , ""))
+	fmt.Println(str)
+	return strings.ToUpper(Md5([]byte(str)))
 }

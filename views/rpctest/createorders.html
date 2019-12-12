@@ -5,7 +5,7 @@
 
     <div style="display: flex">
 
-        <input type="text" style="width: 200px" name="bookName" id="Userid" lay-verify="required" autocomplete="off" placeholder="用户id" class="layui-input" value="1726">
+        <input type="text" style="width: 200px" name="bookName" id="Userid" lay-verify="required" autocomplete="off" placeholder="1726,890" class="layui-input" value="1726">
 
         <input id="seach" type="button" class="layui-btn" data-type="tabAdd" style="margin-left: 30px" value="查询">
 
@@ -31,6 +31,16 @@
 
         <p style="margin-top: 10px" id="procductlist"> </p>
 
+
+        <p style="margin-top: 10px" id="isPretrial" style="display: none" >
+            拍摄方案：
+            <span class="fas4">
+                  <input type="radio" name="isPretrial" checked="checked" value="0">全量照片&nbsp;&nbsp;
+            </span>
+            <span class="fas5">
+                  <input type="radio" name="isPretrial" value="1">无照片 &nbsp;&nbsp;
+            </span>
+        </p>
         <p style="margin-top: 10px;display: none" id="teshupic" >
             特殊照片：
             <span class="teshupic">   </span>
@@ -68,7 +78,7 @@
         //查询用户信息
         $("#seach").click(function () {
             var suerid=$("#Userid").val()
-
+            $("#isPretrial").hide();
             var jsData = {'userid':suerid}
             //方案获取
             $.post('/RpcTest/GetProgrammeConfiguration', jsData, function (out) {
@@ -98,11 +108,14 @@
             $.post('/RpcTest/GetUserProductType', jsData, function (out) {
                 if (out.code == 0) {
 
-                    var str="线上检测方案：";
+                    var str="线上产品类型：";
                     for (var i = 0; i < out.data.length; i++) {
                         str+=" <span class=\"fas1\">";
                         str+=" <input type=\"radio\" name=\"procductlist\" value=\""+out.data[i].ProductId+"\">"+out.data[i].ProductName+" &nbsp;";
                         str+=" </span>";
+                        if (out.data[i].ProductId==11 || out.data[i].ProductId==14) {
+                            $("#isPretrial").show();
+                        }
                     }
                     $("#procductlist").html(str);
                 }
@@ -117,14 +130,16 @@
             var vin=$("#vin").val();
             var ordercount=$("#ordercount").val();
             var gocount=$("#gocount").val();
+            var isPretrial = $("input[name='isPretrial']:checked").val();
 
-            var jsData = {'userid':suerid,"configID":configID,"procductlist":procductlist,"vin":vin,"ordercount":ordercount,"gocount":gocount}
+
+            var jsData = {'userid':suerid,"configID":configID,"procductlist":procductlist,"vin":vin,"ordercount":ordercount,"gocount":gocount,"isPretrial":isPretrial}
 
 
             if (configID==undefined) {
                 layer.msg("请选择方案")
                 return;
-            }
+            }procductlist
             if (procductlist==undefined) {
                 layer.msg("请选择产品类型")
                 return;

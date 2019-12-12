@@ -141,9 +141,9 @@ func (t *TaskCarBasicModel) GetList()[]TaskCarBasicModel  {
 //删除订单
 func (t *TaskCarBasicModel)DeleteOrder()int  {
 
-	sql := "delete from TaskCarBasic WHERE id in(?) "
+	sql := "delete from TaskCarBasic WHERE id in("+t.IdList+") "
 
-	_, e := Dbsql.Exec(sql,t.IdList)
+	_, e := Dbsql.Exec(sql)
 
 	if e == nil {
 		return 1
@@ -155,9 +155,9 @@ func (t *TaskCarBasicModel)DeleteOrder()int  {
 //删除派单表数据
 func (t *TaskCarBasicModel)DeleteAssignedTask()int  {
 
-	sql := "delete from AssignedTask WHERE TaskID in(?);delete from AppraiserOrderQueue WHERE TaskID in(?);delete from PreAuditOrderQueue WHERE TaskID in(?); "
+	sql := "delete from AssignedTask WHERE TaskID in("+t.IdList+");delete from AppraiserOrderQueue WHERE TaskID in("+t.IdList+");delete from PreAuditOrderQueue WHERE TaskID in("+t.IdList+"); "
 
-	_, e := Dbsql.Exec(sql,t.IdList,t.IdList,t.IdList)
+	_, e := Dbsql.Exec(sql)
 
 	if e == nil {
 		return 1

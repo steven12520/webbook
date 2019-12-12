@@ -55,10 +55,8 @@ func (self *RpcTestController) GetPicSpecialSet()  {
 func (self *RpcTestController) GetUserProductType()  {
 
 	userid,_:=self.GetInt("userid")
-
 	var p models.UserProductTypeModel
 	list:= p.GetUserProductType(userid)
-
 	self.ajaxList("成功", MSG_OK, 0, list)
 }
 
@@ -68,6 +66,9 @@ func (self *RpcTestController) SaveOrder()  {
 	procductlist,_:=self.GetInt("procductlist")
 	vin:=self.GetString("vin")
 	ordercount,_:=self.GetInt("ordercount")
+
+	isPretrial,_:=self.GetInt("isPretrial")
+
 	//gocount,_:=self.GetInt("gocount")
 
 	var usermodel models.PublicUsersModel
@@ -95,11 +96,16 @@ func (self *RpcTestController) SaveOrder()  {
 			goto reset
 		}
 		go func() {
-
-			if configID==2 {
-				httpdate.SendPostFormFile6(userid,configID,procductlist,vinnew)
-			}else {
-				httpdate.SendPostFormFile(userid,configID,procductlist,vinnew)
+			if procductlist == 11 || procductlist == 13 || procductlist == 14 {//快估
+				httpdate.Fast(userid,procductlist,vinnew,isPretrial)
+			}else {//非快估
+				if configID==5 {
+					httpdate.SendPostFormFile9(userid,configID,procductlist,vinnew)
+				}else if configID==2 {
+					httpdate.SendPostFormFile6(userid,configID,procductlist,vinnew)
+				}else {
+					httpdate.SendPostFormFile(userid,configID,procductlist,vinnew)
+				}
 			}
 		}()
 	}
