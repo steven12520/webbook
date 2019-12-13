@@ -15,16 +15,16 @@
 
         <p style="margin-top: 10px">
             线上检测方案：
-            <span class="fas1"  style="display: none">
+            <span class="fas1 configID"  style="display: none">
                   <input type="radio" name="configID" value="1">鉴定估值_易鑫20张 &nbsp;
             </span>
-            <span class="fas2"  style="display: none">
+            <span class="fas2 configID"  style="display: none">
                   <input type="radio" name="configID" value="2">便捷估值6张 &nbsp;&nbsp;
             </span>
-            <span class="fas4"  style="display: none">
+            <span class="fas4 configID"  style="display: none">
                   <input type="radio" name="configID" value="4">鉴定估值_金融18张&nbsp;&nbsp;
             </span>
-            <span class="fas5"  style="display: none">
+            <span class="fas5 configID"  style="display: none">
                   <input type="radio" name="configID" value="5">便捷估值9张 &nbsp;&nbsp;
             </span>
         </p>
@@ -79,6 +79,7 @@
         $("#seach").click(function () {
             var suerid=$("#Userid").val()
             $("#isPretrial").hide();
+
             var jsData = {'userid':suerid}
             //方案获取
             $.post('/RpcTest/GetProgrammeConfiguration', jsData, function (out) {
