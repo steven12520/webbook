@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"../models"
-	"fmt"
 )
 
 type InterficeController struct {
@@ -42,7 +41,6 @@ func (self *InterficeController) Edit() {
 
 	var b models.Interfice
 	b.Id = id
-	fmt.Println(b)
 	book, _ := b.GetInterficeById()
 
 	row := make(map[string]interface{})
@@ -62,7 +60,6 @@ func (self InterficeController) AjaxSave() {
 	m.Txt = self.GetString("Txt")
 
 	bol := false
-	fmt.Println(m)
 	if m.Id > 0 { //更新
 		bol = m.Update()
 	} else {
