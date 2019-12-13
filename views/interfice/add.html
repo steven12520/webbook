@@ -1,0 +1,71 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
+    <div style="margin: 10px 0px;display: none">
+        <blockquote class="layui-elem-quote">
+            说明:仅仅支持一级分组
+        </blockquote>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="break">《《《返回</button>
+        </div>
+    </div>
+    <form class="layui-form" action="" method="post" >
+        <div class="layui-form-item">
+            <label class="layui-form-label">接口名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="Iname" id="Iname" lay-verify="required" autocomplete="off" placeholder="接口名" class="layui-input" value="">
+            </div>
+            <div class="layui-form-mid layui-word-aux">*</div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-inline">
+                <textarea type="text" name="Txt" style="width: 1000px;height: 500px" id="txt" lay-verify="required" autocomplete="off" placeholder="接口信息" class="layui-input" ></textarea>
+            </div>
+            <div class="layui-form-mid layui-word-aux">*</div>
+        </div>
+
+        <input type="hidden" id="Id" name="Id" value="0">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="sub">立即提交</button>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+<script>
+    var $;
+    layui.config({
+        base : "js/"
+    }).use(['form','element','layer','jquery'],function(){
+        var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+        var $ = layui.jquery;
+
+        form.on('submit(sub)', function(data){
+            var form_data = $("form").serialize();
+            $.post('/interfice/ajaxsave', form_data, function (out) {
+                if (out.status == 0) {
+                    layer.msg("操作成功",{icon: 1},function () {
+                        window.location.href='/Interfice/InterficeList'
+                    })
+                } else {
+                    layer.msg(out.message)
+                }
+            }, "json");
+            return false;
+        });
+        form.on('submit(break)', function(data){
+            window.location.href='/Interfice/InterficeList'
+            return false;
+        });
+
+
+        //但是，如果你的HTML是动态生成的，自动渲染就会失效
+        //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+        form.render();
+    });
+</script>
