@@ -18,11 +18,25 @@
             </div>
             <div class="layui-form-mid layui-word-aux">*</div>
         </div>
-
+        <div class="layui-form-item">
+            涉及范围：
+            <span class="fas1">
+                  <input type="radio" name="Ranges" checked="checked" title="其他" value="0">
+            </span>
+            <span class="fas2">
+                  <input type="radio" name="Ranges"  title="缓存"value="1">
+            </span>
+            <span class="fas3">
+                  <input type="radio" name="Ranges"  title="数据库"value="2"> &nbsp;
+            </span>
+            <span class="fas4">
+                  <input type="radio" name="Ranges"  title="缓存+数据库"value="3">
+            </span>
+        </div>
         <div class="layui-form-item">
             <label class="layui-form-label"></label>
             <div class="layui-input-inline">
-                <textarea type="text" name="Txt" style="width: 1000px;height: 500px" id="txt" lay-verify="required" autocomplete="off" placeholder="接口信息" class="layui-input" ></textarea>
+                <textarea type="text" name="Txt" style="width: 1000px;height: 500px" id="Txt" lay-verify="required" autocomplete="off" placeholder="接口信息" class="layui-input" ></textarea>
             </div>
             <div class="layui-form-mid layui-word-aux">*</div>
         </div>
@@ -47,6 +61,14 @@
 
         form.on('submit(sub)', function(data){
             var form_data = $("form").serialize();
+
+            var Iname=$("#Iname").val();
+            var txt=$("#Txt").html();
+            var ranges = $("input[name='Ranges']:checked").val();
+
+            var jsData = {'Iname':Iname,"Txt":txt,"Ranges":ranges}
+
+
             $.post('/interfice/ajaxsave', form_data, function (out) {
                 if (out.status == 0) {
                     layer.msg("操作成功",{icon: 1},function () {

@@ -6,13 +6,14 @@ type Interfice struct {
 	Id         int
 	Iname      string
 	Txt        string
+	Ranges 		int
 	Createtime string
 }
 
 
 func (br Interfice) GetInterficeList() []Interfice {
 
-	sql := "SELECT *FROM interfice order by id"
+	sql := "SELECT `id`,`iname`,`txt`,`ranges`,`createtime` FROM interfice order by id"
 
 	rows, e := Db.Query(sql)
 	if e != nil {
@@ -22,7 +23,7 @@ func (br Interfice) GetInterficeList() []Interfice {
 	for rows.Next() {
 		var br Interfice
 
-		rows.Scan(&br.Id, &br.Iname, &br.Txt, &br.Createtime)
+		rows.Scan(&br.Id, &br.Iname, &br.Txt,&br.Ranges, &br.Createtime)
 		list = append(list, br)
 	}
 	return list
@@ -30,9 +31,9 @@ func (br Interfice) GetInterficeList() []Interfice {
 
 func (br Interfice) Add() bool {
 
-	sql := "INSERT INTO interfice(Iname,Txt)VALUES(?,?)"
+	sql := "INSERT INTO interfice(Iname,Txt,Ranges)VALUES(?,?,?)"
 
-	_, e := Db.Exec(sql, br.Iname, br.Txt)
+	_, e := Db.Exec(sql, br.Iname, br.Txt,br.Ranges)
 	if e != nil {
 		fmt.Println(" interfice add error", e.Error())
 		return false
@@ -42,9 +43,9 @@ func (br Interfice) Add() bool {
 }
 
 func (br Interfice) Update() bool {
-	sql := "UPDATE interfice SET Iname=?,Txt=? WHERE Id=?"
+	sql := "UPDATE interfice SET Iname=?,Txt=?,Ranges=? WHERE Id=?"
 
-	_, e := Db.Exec(sql, br.Iname, br.Txt, br.Id)
+	_, e := Db.Exec(sql, br.Iname, br.Txt,br.Ranges, br.Id)
 	if e != nil {
 		fmt.Println(" interfice Update error", e.Error())
 		return false

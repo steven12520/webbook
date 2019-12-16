@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"../models"
+	"../common"
+	"strconv"
 )
 
 type InterficeController struct {
@@ -28,6 +30,7 @@ func (self *InterficeController) GetInterficeList() {
 		m["Id"] = v.Id
 		m["Iname"] = v.Iname
 		m["Txt"] = v.Txt
+		m["Ranges"] = common.StrConvertNameBYRanges(v.Ranges)
 		m["Createtime"] = v.Createtime
 
 		maplist = append(maplist, m)
@@ -46,6 +49,7 @@ func (self *InterficeController) Edit() {
 	row := make(map[string]interface{})
 	row["Id"] = book.Id
 	row["Iname"] = book.Iname
+	row["Ranges"] = book.Ranges
 	row["Txt"] = book.Txt
 	self.Data["Book"] = row
 
@@ -58,6 +62,8 @@ func (self InterficeController) AjaxSave() {
 	m.Id, _ = self.GetInt("Id")
 	m.Iname = self.GetString("Iname")
 	m.Txt = self.GetString("Txt")
+	Ranges:=self.GetString("Ranges")
+	m.Ranges,_= strconv.Atoi(Ranges)
 
 	bol := false
 	if m.Id > 0 { //更新
