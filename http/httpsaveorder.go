@@ -204,7 +204,7 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string,id int
 	fmt.Println("调用接口时间",starttime,endtime)
 	if b == nil {
 		Timelength:=endtime.Sub(starttime)  //两个时间相减
-		WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
+		go WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
 	}else {
 		fmt.Println("SendPostFormFile9:解析json失败")
 	}
@@ -277,7 +277,7 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id in
 	fmt.Println("调用接口时间",starttime,endtime)
 	if b == nil {
 		Timelength:=endtime.Sub(starttime)  //两个时间相减
-		WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
+		go WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
 	}else {
 		fmt.Println("SendPostFormFile9:解析json失败")
 	}
@@ -335,7 +335,7 @@ func Fast(userid int,procductlist int,vin string,isPretrial int,id int64) {
 	fmt.Println("调用接口时间",starttime,endtime)
 	if b == nil {
 		Timelength:=endtime.Sub(starttime)  //两个时间相减
-		WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
+		go WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
 	}else {
 		fmt.Println("SendPostFormFile9:解析json失败")
 	}
