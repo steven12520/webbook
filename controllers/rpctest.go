@@ -80,6 +80,18 @@ func (self *RpcTestController) SaveOrder()  {
 	}
 	var tc models.TaskCarBasicModel
 	vinlist:=make([]string,0)
+
+	var order models.OrderinfoModel
+	order.Vin=vin
+	order.Ordercount=ordercount
+	order.Types=common.StrConvertNameByconfigID(configID)+"["+common.StrConvertNameByprocduct(procductlist)+"]"
+	order.CreateName="下单"
+	bool :=order.Save()
+	if !bool || order.Id==0  {
+		self.ajaxMsg("失败", MSG_ERR)
+		return
+	}
+
 	for i:=0;i<ordercount ;i++  {
 			reset:
 			vinnew:=common.GetRandvin(vin)
@@ -97,14 +109,14 @@ func (self *RpcTestController) SaveOrder()  {
 		}
 		go func() {
 			if procductlist == 11 || procductlist == 13 || procductlist == 14 {//快估
-				httpdate.Fast(userid,procductlist,vinnew,isPretrial)
+				httpdate.Fast(userid,procductlist,vinnew,isPretrial,order.Id)
 			}else {//非快估
 				if configID==5 {
-					httpdate.SendPostFormFile9(userid,configID,procductlist,vinnew)
+					httpdate.SendPostFormFile9(userid,configID,procductlist,vinnew,order.Id)
 				}else if configID==2 {
-					httpdate.SendPostFormFile6(userid,configID,procductlist,vinnew)
+					httpdate.SendPostFormFile6(userid,configID,procductlist,vinnew,order.Id)
 				}else {
-					httpdate.SendPostFormFile(userid,configID,procductlist,vinnew)
+					httpdate.SendPostFormFile(userid,configID,procductlist,vinnew,order.Id)
 				}
 			}
 		}()

@@ -12,6 +12,7 @@ import (
 	"../common"
 	"../models"
 	"encoding/json"
+	"time"
 )
 
 
@@ -55,7 +56,7 @@ func GetRequesDate(userid int,configID int,procductlist int,vin string,ordercoun
 }
 
 //6张下单
-func SendPostFormFile6(userid int,configID int,procductlist int,vin string)  {
+func SendPostFormFile6(userid int,configID int,procductlist int,vin string,id int64)  {
 
 	url:=beego.AppConfig.String("app.url")+"/app/TaskSaveSimple.ashx"
 
@@ -107,6 +108,7 @@ func SendPostFormFile6(userid int,configID int,procductlist int,vin string)  {
 
 	// 发送消息
 	client := &http.Client{}
+	starttime:=time.Now()
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -114,11 +116,21 @@ func SendPostFormFile6(userid int,configID int,procductlist int,vin string)  {
 		fmt.Println("读取回应消息异常:", err)
 	}
 	fmt.Println("发送回应数据:"+vin,string(body))
+	endtime:=time.Now()
+	var res models.AppResultModel
+	b:=json.Unmarshal(body,&res)
+	fmt.Println("调用接口时间",starttime,endtime)
+	if b == nil {
+		Timelength:=endtime.Sub(starttime)  //两个时间相减
+		WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
+	}else {
+		fmt.Println("SendPostFormFile9:解析json失败")
+	}
 	return
 }
 
 //18,20张下单
-func SendPostFormFile(userid int,configID int,procductlist int,vin string) {
+func SendPostFormFile(userid int,configID int,procductlist int,vin string,id int64) {
 	url:=beego.AppConfig.String("app.url")+"/app/TaskSave20160303.ashx"
 
 	filename:=beego.AppConfig.String("zip.pic20")
@@ -178,6 +190,7 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string) {
 
 	// 发送消息
 	client := &http.Client{}
+	starttime:=time.Now()
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -185,12 +198,22 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string) {
 		fmt.Println("读取回应消息异常:", err)
 	}
 	fmt.Println("发送回应数据:"+vin,string(body))
+	endtime:=time.Now()
+	var res models.AppResultModel
+	b:=json.Unmarshal(body,&res)
+	fmt.Println("调用接口时间",starttime,endtime)
+	if b == nil {
+		Timelength:=endtime.Sub(starttime)  //两个时间相减
+		WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
+	}else {
+		fmt.Println("SendPostFormFile9:解析json失败")
+	}
 	return
 }
 
 //9张
 
-func SendPostFormFile9(userid int,configID int,procductlist int,vin string) {
+func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id int64) {
 	url:=beego.AppConfig.String("app.url")+"/app/TaskSave9Pic.ashx"
 
 	filename:=beego.AppConfig.String("zip.pic9")
@@ -225,7 +248,7 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string) {
 	// 结束整个消息body
 	body_writer.Close()
 
-	//
+
 	req_reader := io.MultiReader(body_buf)
 	req, err := http.NewRequest("POST", url, req_reader)
 	if err != nil {
@@ -240,6 +263,7 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string) {
 
 	// 发送消息
 	client := &http.Client{}
+	starttime:=time.Now()
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -247,10 +271,21 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string) {
 		fmt.Println("读取回应消息异常:", err)
 	}
 	fmt.Println("发送回应数据:"+vin,string(body))
+	endtime:=time.Now()
+	var res models.AppResultModel
+	b:=json.Unmarshal(body,&res)
+	fmt.Println("调用接口时间",starttime,endtime)
+	if b == nil {
+		Timelength:=endtime.Sub(starttime)  //两个时间相减
+		WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
+	}else {
+		fmt.Println("SendPostFormFile9:解析json失败")
+	}
+
 	return
 }
 
-func Fast(userid int,procductlist int,vin string,isPretrial int) {
+func Fast(userid int,procductlist int,vin string,isPretrial int,id int64) {
 
 	url:=beego.AppConfig.String("app.Fasturl")+"/api/onLineTask7Pic/addEighteenthTask"
 
@@ -286,6 +321,7 @@ func Fast(userid int,procductlist int,vin string,isPretrial int) {
 
 	// 发送消息
 	client := &http.Client{}
+	starttime:=time.Now()
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -293,6 +329,16 @@ func Fast(userid int,procductlist int,vin string,isPretrial int) {
 		fmt.Println("读取回应消息异常:", err)
 	}
 	fmt.Println("发送回应数据:"+vin,string(body))
+	endtime:=time.Now()
+	var res models.AppResultModel
+	b:=json.Unmarshal(body,&res)
+	fmt.Println("调用接口时间",starttime,endtime)
+	if b == nil {
+		Timelength:=endtime.Sub(starttime)  //两个时间相减
+		WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
+	}else {
+		fmt.Println("SendPostFormFile9:解析json失败")
+	}
 	return
 }
 func GetFastValue(userid int,procductlist int,vin string,isPretrial int) map[string]string {
@@ -511,3 +557,19 @@ func GetFastValue18(userid int,configID int,procductlist int,vin string,NewEditi
 
 	return res
 }
+
+func WriteOrderInfodetail(id int64,mo models.AppResultModel,Timelengthstr float64 ,vin string)  {
+
+	var tail models.OrderinfodetailModel
+	tail.Status=1
+	tail.Oid=id
+	if mo.Status != 100 {
+		tail.Status=2
+	}
+	tail.Des=mo.Msg
+	tail.Vin=vin
+	tail.Timelength= Timelengthstr
+
+	tail.Save()
+}
+
