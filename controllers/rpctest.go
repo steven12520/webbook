@@ -70,6 +70,9 @@ func (self *RpcTestController) SaveOrder()  {
 
 	gocount,_:=self.GetInt("gocount")
 
+	if gocount>ordercount {
+		gocount=ordercount
+	}
 	var usermodel models.PublicUsersModel
 	usermodel.ID=userid
 	usermodellist:=usermodel.GetPublicUsers()
@@ -83,11 +86,13 @@ func (self *RpcTestController) SaveOrder()  {
 	order.Types=common.StrConvertNameByconfigID(configID)+"["+common.StrConvertNameByprocduct(procductlist)+"]"
 	order.CreateName="下单"
 	order.Gocount=gocount
+	order.Gotype=1
 	bool :=order.Save()
 	if !bool || order.Id==0  {
 		self.ajaxMsg("失败", MSG_ERR)
 		return
 	}
+	
 	vinchan:=make(chan string,1000)
 	
 	go InsertVin(sourceid,vin,ordercount,vinchan)

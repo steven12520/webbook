@@ -10,6 +10,7 @@ type OrderinfoModel struct {
 	Ordercount int
 	Vin	string
 	Gocount int
+	Gotype int
 	Createtime string
 }
 type OrderinfodetailModel struct {
@@ -23,8 +24,8 @@ type OrderinfodetailModel struct {
 
 func (o *OrderinfoModel)Save()bool  {
 
-	sql := "INSERT INTO orderinfo(CreateName,Ordercount,Vin,Types,Gocount)VALUES(?,?,?,?,?)"
-	result, e := Db.Exec(sql, o.CreateName,o.Ordercount, o.Vin,o.Types,o.Gocount)
+	sql := "INSERT INTO orderinfo(CreateName,Ordercount,Vin,Types,Gocount,Gotype)VALUES(?,?,?,?,?,?)"
+	result, e := Db.Exec(sql, o.CreateName,o.Ordercount, o.Vin,o.Types,o.Gocount,o.Gotype)
 	if e != nil {
 		fmt.Println(" interfice add error", e.Error())
 		return false
