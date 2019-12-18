@@ -13,6 +13,7 @@ import (
 	"../models"
 	"encoding/json"
 	"time"
+	"github.com/astaxie/beego/logs"
 )
 
 
@@ -65,9 +66,6 @@ func SendPostFormFile6(userid int,configID int,procductlist int,vin string,id in
 
 	body_buf := bytes.NewBufferString("")
 	body_writer := multipart.NewWriter(body_buf)
-	// boundary默认会提供一组随机数，也可以自己设置。
-	body_writer.SetBoundary("Pp7Ye2EeWaFDdAY")
-
 	// 1. 要上传的数据
 	resmap:=GetFastValue6(userid,configID,procductlist,vin)
 	sigin:=common.GetSign(resmap,token)
@@ -80,12 +78,12 @@ func SendPostFormFile6(userid int,configID int,procductlist int,vin string,id in
 	// 3. 读取文件
 	_, err := body_writer.CreateFormFile("application", filename)
 	if err != nil {
-		fmt.Printf("创建FormFile2文件信息异常！", err)
+		logs.Error("创建FormFile2文件信息异常！", err)
 		return
 	}
 	fb2, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println("打开文件异常!", err)
+		logs.Error("打开文件异常!", err)
 		return
 	}
 	body_buf.Write(fb2)
@@ -97,7 +95,7 @@ func SendPostFormFile6(userid int,configID int,procductlist int,vin string,id in
 	req_reader := io.MultiReader(body_buf)
 	req, err := http.NewRequest("POST", url, req_reader)
 	if err != nil {
-		fmt.Printf("站点相机上传图片，创建上次请求异常！异常信息:", err)
+		logs.Error("站点相机上传图片，创建上次请求异常！异常信息:", err)
 		return
 	}
 	// 添加Post头
@@ -115,16 +113,16 @@ func SendPostFormFile6(userid int,configID int,procductlist int,vin string,id in
 	if err != nil {
 		fmt.Println("读取回应消息异常:", err)
 	}
-	fmt.Println("发送回应数据:"+vin,string(body))
+	logs.Debug("发送回应数据:"+vin,string(body))
 	endtime:=time.Now()
 	var res models.AppResultModel
 	b:=json.Unmarshal(body,&res)
-	fmt.Println("调用接口时间",starttime,endtime)
+
 	if b == nil {
 		Timelength:=endtime.Sub(starttime)  //两个时间相减
 		WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
 	}else {
-		fmt.Println("SendPostFormFile9:解析json失败")
+		logs.Error("SendPostFormFile9:解析json失败")
 	}
 	return
 }
@@ -139,9 +137,8 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string,id int
 		NewEdition=0
 	}
 	token:=beego.AppConfig.String("app.userTokenet")
-	if configID==2 {
-		filename=beego.AppConfig.String("zip.pic6")
-	}else if configID==4 {
+
+	if configID==4 {
 		filename=beego.AppConfig.String("zip.pic18")
 	}else if configID==5 {
 		filename=beego.AppConfig.String("zip.pic9")
@@ -150,11 +147,11 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string,id int
 	body_buf := bytes.NewBufferString("")
 	body_writer := multipart.NewWriter(body_buf)
 	// boundary默认会提供一组随机数，也可以自己设置。
-	body_writer.SetBoundary("Pp7Ye2EeWaFDdAY")
+
 	// 1. 要上传的数据
 	resmap:=GetFastValue18(userid,configID,procductlist,vin,NewEdition)
 	sigin:=common.GetSign(resmap,token)
-	fmt.Println("sigin",sigin)
+
 	for k,v:=range resmap{
 		body_writer.WriteField(k, v)
 	}
@@ -162,12 +159,12 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string,id int
 	// 3. 读取文件
 	_, err := body_writer.CreateFormFile("application", filename)
 	if err != nil {
-		fmt.Printf("创建FormFile2文件信息异常！", err)
+		logs.Error("创建FormFile2文件信息异常！", err)
 		return
 	}
 	fb2, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println("打开文件异常!", err)
+		logs.Error("打开文件异常!", err)
 		return
 	}
 	body_buf.Write(fb2)
@@ -179,7 +176,7 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string,id int
 	req_reader := io.MultiReader(body_buf)
 	req, err := http.NewRequest("POST", url, req_reader)
 	if err != nil {
-		fmt.Printf("站点相机上传图片，创建上次请求异常！异常信息:", err)
+		logs.Error("error:", err)
 		return
 	}
 	// 添加Post头
@@ -195,18 +192,18 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string,id int
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("读取回应消息异常:", err)
+		logs.Error("读取回应消息异常SendPostFormFile:", err)
 	}
-	fmt.Println("发送回应数据:"+vin,string(body))
+	logs.Debug("接收SendPostFormFile:"+vin,string(body))
 	endtime:=time.Now()
 	var res models.AppResultModel
 	b:=json.Unmarshal(body,&res)
-	fmt.Println("调用接口时间",starttime,endtime)
+
 	if b == nil {
 		Timelength:=endtime.Sub(starttime)  //两个时间相减
 		go WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
 	}else {
-		fmt.Println("SendPostFormFile9:解析json失败")
+		logs.Error("SendPostFormFile:解析json失败",vin,string(body))
 	}
 	return
 }
@@ -220,13 +217,10 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id in
 	token:=beego.AppConfig.String("app.userTokenet")
 	body_buf := bytes.NewBufferString("")
 	body_writer := multipart.NewWriter(body_buf)
-	// boundary默认会提供一组随机数，也可以自己设置。
-	body_writer.SetBoundary("Pp7Ye2EeWaFDdAY")
 
 	// 1. 要上传的数据
 	resmap:=GetFastValue9(userid,configID,procductlist,vin)
 	sigin:=common.GetSign(resmap,token)
-	fmt.Println("sigin",sigin)
 	for k,v:=range resmap{
 		body_writer.WriteField(k, v)
 	}
@@ -235,12 +229,12 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id in
 	// 3. 读取文件
 	_, err := body_writer.CreateFormFile("application", filename)
 	if err != nil {
-		fmt.Printf("创建FormFile2文件信息异常！", err)
+		logs.Error("创建FormFile2文件信息异常9！", err)
 		return
 	}
 	fb2, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println("打开文件异常!", err)
+		logs.Error("打开文件异常!SendPostFormFile9", err)
 		return
 	}
 	body_buf.Write(fb2)
@@ -252,7 +246,7 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id in
 	req_reader := io.MultiReader(body_buf)
 	req, err := http.NewRequest("POST", url, req_reader)
 	if err != nil {
-		fmt.Printf("站点相机上传图片，创建上次请求异常！异常信息:", err)
+		logs.Error("SendPostFormFile9 error:", err)
 		return
 	}
 	// 添加Post头
@@ -268,9 +262,9 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id in
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("读取回应消息异常:", err)
+		logs.Error("读取回应消息异常SendPostFormFile9:", err)
 	}
-	fmt.Println("发送回应数据:"+vin,string(body))
+	logs.Debug("接收返回数据SendPostFormFile9:"+vin,string(body))
 	endtime:=time.Now()
 	var res models.AppResultModel
 	b:=json.Unmarshal(body,&res)
@@ -279,7 +273,7 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id in
 		Timelength:=endtime.Sub(starttime)  //两个时间相减
 		go WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
 	}else {
-		fmt.Println("SendPostFormFile9:解析json失败")
+		logs.Error("SendPostFormFile9:解析json失败",vin,string(body))
 	}
 
 	return
@@ -298,7 +292,6 @@ func Fast(userid int,procductlist int,vin string,isPretrial int,id int64) {
 	// 1. 要上传的数据
 	resmap:=GetFastValue(userid,procductlist,vin,isPretrial)
 	sigin:=common.GetSign(resmap,token)
-	fmt.Println("sigin",sigin)
 	for k,v:=range resmap{
 		body_writer.WriteField(k, v)
 	}
@@ -310,7 +303,7 @@ func Fast(userid int,procductlist int,vin string,isPretrial int,id int64) {
 	req_reader := io.MultiReader(body_buf)
 	req, err := http.NewRequest("POST", url, req_reader)
 	if err != nil {
-		fmt.Printf("站点相机上传图片，创建上次请求异常！异常信息:", err)
+		logs.Error("创建请求异常 Fast ",err)
 		return
 	}
 	// 添加Post头
@@ -326,18 +319,18 @@ func Fast(userid int,procductlist int,vin string,isPretrial int,id int64) {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("读取回应消息异常:", err)
+		logs.Error("读取回应消息异常 Fast ",err)
 	}
-	fmt.Println("发送回应数据:"+vin,string(body))
+	logs.Debug("收到返回数据 Fast ",vin,string(body))
 	endtime:=time.Now()
 	var res models.AppResultModel
 	b:=json.Unmarshal(body,&res)
-	fmt.Println("调用接口时间",starttime,endtime)
+	logs.Debug("调用接口时间 Fast",starttime,endtime)
 	if b == nil {
 		Timelength:=endtime.Sub(starttime)  //两个时间相减
 		go WriteOrderInfodetail(id,res,Timelength.Seconds(),vin)
 	}else {
-		fmt.Println("SendPostFormFile9:解析json失败")
+		logs.Error("Fast:解析json失败",vin,string(body))
 	}
 	return
 }
@@ -569,7 +562,6 @@ func WriteOrderInfodetail(id int64,mo models.AppResultModel,Timelengthstr float6
 	tail.Des=mo.Msg
 	tail.Vin=vin
 	tail.Timelength= Timelengthstr
-
 	tail.Save()
 }
 

@@ -28,6 +28,6 @@ func GetSign(ma map[string]string, token string)string {
 	keylist = append(keylist,token)
 
 	str:=strings.ToLower(strings.Join(keylist , ""))
-	fmt.Println(str)
+	//logs.Debug(str)
 	return strings.ToUpper(Md5([]byte(str)))
 }

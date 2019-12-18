@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"fmt"
 	"os"
+	"github.com/astaxie/beego/logs"
 )
 
 //随机获取的数据
@@ -20,7 +21,7 @@ func GetRandvin(vins string)string  {
 	defer func() {
 		re:=recover()
 		if re!=nil {
-			fmt.Println("GetRandvin 获取vin出错",re)
+			logs.Error("GetRandvin 获取vin出错",re)
 		}
 	}()
 
