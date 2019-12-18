@@ -14,7 +14,7 @@ var charArray =  []string{"1", "2", "3", "4", "5", "6", "7", "8","9", "A", "B", 
 ///权数
 var WEIGHTVALUE =  []int{8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2}
 
-
+var vinmap map[string] int
 //获取vin
 func GetRandvin(vins string)string  {
 
@@ -55,11 +55,14 @@ func GetRandvin(vins string)string  {
 }
 //获取验证位数
 func getCheck(list []string)int  {
-	m:=GetAtoNum()
+	if len(vinmap)==0  {
+		vinmap=GetAtoNum()
+	}
+
 	count:=0
 	for i:=0;i<len(list) ;i++  {
 		if i!=8 {
-			dy:=m[list[i]]
+			dy:=vinmap[list[i]]
 			count+=WEIGHTVALUE[i]*dy
 		}
 	}
@@ -68,7 +71,13 @@ func getCheck(list []string)int  {
 
 //字母数字对应数字
 func GetAtoNum() map[string] int {
-
+	//字母数字对应数字
+	//var vinmap = map[string]int{"A":1,"B":2,"C":3,"D":4,"E":5,"F":6,"G":7,
+	//"H":8,"J":1,"K":2,"L":3,
+	//"M":4,"N":5,"P":7,"R":9,"S":2,"T":3,
+	//"U":4,"V":5,"W":6,"X":7,"Y":8,"Z":9,
+	//"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"0":0}
+	fmt.Println("获取vin计算的map")
 	var m = make(map[string]int, 0)
 	m["A"] = 1
 	m["B"] = 2
