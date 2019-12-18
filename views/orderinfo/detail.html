@@ -1,0 +1,65 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+
+    <div class="layui-form-item">
+        <button class="layui-btn" lay-submit="" lay-filter="break">《《《返回</button>
+    </div>
+    <table class="layui-table" lay-data="{width: 'full-10', height: 'full-105', url:'/OrderInfo/GetOrderInfodetaillist?id={{.id}}', page:true, id:'idTest'}" lay-filter="demo">
+        <thead>
+        <tr>
+            <th lay-data="{field:'Id', width:80, fixed: true}">ID</th>
+            <th lay-data="{field:'Oid', width:80}">Oid</th>
+            <th lay-data="{field:'Timelength', width:150}">下单时长(秒)</th>
+            <th lay-data="{field:'Vin', width:250}">Vin</th>
+            <th lay-data="{field:'Status', width:250}">下单结果</th>
+            <th lay-data="{field:'Des', width:250}">详情</th>
+        </tr>
+        </thead>
+    </table>
+
+    <script type="text/html" id="barDemo">
+    </script>
+</div>
+<script>
+    var $;
+    layui.config({
+        base : "js/"
+    }).use(['table','element','layer','jquery'], function(){
+        var table = layui.table;
+        var element = layui.element;
+        $ = layui.jquery
+
+        //监听工具条
+        table.on('tool(demo)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                //layer.msg('ID：'+ data.id + ' 的查看操作');
+            } else if(obj.event === 'del'){
+                layer.confirm('真的删除【'+data.Types+'】吗', function(index){
+                    var jsData = {'id':data.Id}
+                    $.post('/orderinfo/ajaxdel', jsData, function (out) {
+                        if (out.status == 0) {
+                            layer.alert('删除成功了', {icon: 1},function(index){
+                                layer.close(index);
+                                window.location.reload();
+                            });
+                        } else {
+                            layer.msg(out.message)
+                        }
+                    }, "json");
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'detail'){
+                window.location.href="/orderinfo/detail?id="+data.Id
+            }
+        });
+
+        $(".layui-btn").click(function () {
+            window.location.href='/OrderInfo/OrderInfoList'
+            return false;
+        });
+
+
+    });
+
+</script>

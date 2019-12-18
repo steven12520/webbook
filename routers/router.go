@@ -20,5 +20,6 @@ func init() {
 	beego.AutoRouter(&controllers.RpcTestController{})
 	beego.AutoRouter(&controllers.DeleteOrderController{})
 	beego.AutoRouter(&controllers.InterficeController{})
+	beego.AutoRouter(&controllers.OrderInfoController{})
 
 }
