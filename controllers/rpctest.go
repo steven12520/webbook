@@ -69,7 +69,7 @@ func (self *RpcTestController) SaveOrder()  {
 
 	isPretrial,_:=self.GetInt("isPretrial")
 
-	//gocount,_:=self.GetInt("gocount")
+	gocount,_:=self.GetInt("gocount")
 
 	var usermodel models.PublicUsersModel
 	usermodel.ID=userid
@@ -86,6 +86,7 @@ func (self *RpcTestController) SaveOrder()  {
 	order.Ordercount=ordercount
 	order.Types=common.StrConvertNameByconfigID(configID)+"["+common.StrConvertNameByprocduct(procductlist)+"]"
 	order.CreateName="下单"
+	order.Gocount=gocount
 	bool :=order.Save()
 	if !bool || order.Id==0  {
 		self.ajaxMsg("失败", MSG_ERR)
