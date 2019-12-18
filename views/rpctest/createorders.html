@@ -149,6 +149,20 @@
                 return;
             }
 
+            if($.trim(vin) ==""){
+                layer.msg("请输入vin")
+                return;
+            }
+
+            if($.trim(ordercount) ==""){
+                layer.msg("请输入下单数量")
+                return;
+            }
+            if($.trim(gocount) ==""){
+                layer.msg("请输入线程数量")
+                return;
+            }
+
             $.post('/RpcTest/SaveOrder', jsData, function (out) {
                 if (out.status == 0) {
                     layer.alert("提交成功")

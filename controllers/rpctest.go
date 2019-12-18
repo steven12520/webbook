@@ -7,6 +7,7 @@ import (
 	"../http"
 
 	"github.com/chenhg5/collection"
+	"github.com/astaxie/beego/logs"
 )
 type RpcTestController struct {
 	BaseController
@@ -16,8 +17,6 @@ func (self *RpcTestController) CreateOrders() {
 	self.Data["pageTitle"] = "创建订单"
 	self.display()
 }
-
-
 
 //获取用户信息
 func (self *RpcTestController) GetPublicUsers()  {
@@ -78,9 +77,6 @@ func (self *RpcTestController) SaveOrder()  {
 	if usermodellist != nil && len(usermodellist) > 0 {
 		sourceid=usermodellist[0].TaskSourceId
 	}
-	var tc models.TaskCarBasicModel
-	vinlist:=make([]string,0)
-
 	var order models.OrderinfoModel
 	order.Vin=vin
 	order.Ordercount=ordercount
@@ -92,37 +88,62 @@ func (self *RpcTestController) SaveOrder()  {
 		self.ajaxMsg("失败", MSG_ERR)
 		return
 	}
+	vinchan:=make(chan string,1000)
+	
+	go InsertVin(sourceid,vin,ordercount,vinchan)
 
+	for i:=0 ;i<gocount ;i++  {
+		go Createorder(isPretrial,procductlist,userid,configID,order.Id,vinchan)
+	}
+
+	self.ajaxMsg("成功", MSG_OK)
+}
+//下单
+func Createorder(isPretrial,procductlist,userid,configID int,orderId int64,vinc chan string)  {
+
+	for {
+		vinnew, ok := <-vinc
+		if ok == false {
+			logs.Debug("当前进程下单结束")
+			break
+		}
+
+		if procductlist == 11 || procductlist == 13 || procductlist == 14 {//快估
+			httpdate.Fast(userid,procductlist,vinnew,isPretrial,orderId)
+		}else {//非快估
+			if configID==5 {
+				httpdate.SendPostFormFile9(userid,configID,procductlist,vinnew,orderId)
+			}else if configID==2 {
+				httpdate.SendPostFormFile6(userid,configID,procductlist,vinnew,orderId)
+			}else {
+				httpdate.SendPostFormFile(userid,configID,procductlist,vinnew,orderId)
+			}
+		}
+	}
+
+}
+//生成vin
+func InsertVin(sourceid int,vin string,ordercount int, cvin chan string)  {
+
+	var tc models.TaskCarBasicModel
+	vinlist:=make([]string,0)
 	for i:=0;i<ordercount ;i++  {
-			reset:
-			vinnew:=common.GetRandvin(vin)
-			if vinnew=="" {
-				ordercount++
-				continue
-			}
-			if collection.Collect(vinlist).Contains(vinnew) {
-				goto reset
-			}
-		vinlist=append(vinlist,vinnew)
+		reset:
+		vinnew:=common.GetRandvin(vin)
+		if vinnew=="" {
+			ordercount++
+			continue
+		}
+		if collection.Collect(vinlist).Contains(vinnew) {
+			goto reset
+		}
 		counts:= tc.IsVinRepeat(vinnew,sourceid)
 		if counts>0 {
 			goto reset
 		}
-		go func() {
-			if procductlist == 11 || procductlist == 13 || procductlist == 14 {//快估
-				httpdate.Fast(userid,procductlist,vinnew,isPretrial,order.Id)
-			}else {//非快估
-				if configID==5 {
-					httpdate.SendPostFormFile9(userid,configID,procductlist,vinnew,order.Id)
-				}else if configID==2 {
-					httpdate.SendPostFormFile6(userid,configID,procductlist,vinnew,order.Id)
-				}else {
-					httpdate.SendPostFormFile(userid,configID,procductlist,vinnew,order.Id)
-				}
-			}
-		}()
+		vinlist=append(vinlist,vinnew)
+		cvin<-vinnew
 	}
-
-
-	self.ajaxMsg("成功", MSG_OK)
+	close(cvin)
+	logs.Debug("InsertVin 结束")
 }
