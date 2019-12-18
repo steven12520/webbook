@@ -27,7 +27,7 @@ type OrderinfodetailModel struct {
 
 func (b OrderinfoModel) GetList(page, pagesize int) []OrderinfoModel {
 
-	sql := "SELECT Id,CreateName,Types,Ordercount,Vin,Gocount,Gotype,Createtime FROM orderinfo "
+	sql := "SELECT Id,CreateName,Types,Ordercount,Vin,Gocount,Gotype,Createtime FROM orderinfo ORDER BY id DESC"
 	sql += fmt.Sprintf(" limit %d,%d", (page-1)*pagesize, pagesize)
 
 	rows, e := Db.Query(sql)
