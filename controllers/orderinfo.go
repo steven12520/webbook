@@ -90,7 +90,7 @@ func (self *OrderInfoController) GetOrderInfodetaillist() {
 	}
 	self.pageSize = limit
 	bookList := models.OrderinfodetailModel{}.GetList(page, limit,id)
-	count := models.OrderinfodetailModel{}.GetCount()
+	count := models.OrderinfodetailModel{}.GetCount(id)
 	if le != nil {
 		limit = 10
 	}

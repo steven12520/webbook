@@ -69,8 +69,9 @@ func (b OrderinfodetailModel) GetList(page, pagesize,id int) []OrderinfodetailMo
 	return list
 }
 
-func (b OrderinfodetailModel) GetCount() (count int64) {
+func (b OrderinfodetailModel) GetCount(oid int) (count int64) {
 	sql := "select count(*)as 'count' from orderinfodetail"
+	sql+=fmt.Sprintf(" where oid=%d ",oid)
 	rows, e := Db.Query(sql)
 	for rows.Next() {
 		rows.Scan(&count)
