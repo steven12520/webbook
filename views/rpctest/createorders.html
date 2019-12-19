@@ -153,6 +153,10 @@
                 layer.msg("请输入vin")
                 return;
             }
+            if($.trim(vin).length <3 || $.trim(vin).length>8){
+                layer.msg("vin应在3到8位之间")
+                return;
+            }
 
             if($.trim(ordercount) ==""){
                 layer.msg("请输入下单数量")
