@@ -16,46 +16,6 @@ import (
 	"github.com/astaxie/beego/logs"
 )
 
-
-func GetRequesDate(userid int,configID int,procductlist int,vin string,ordercount int,gocount int)string  {
-
-
-	m:=""
-
-	m+="RecordBrand=Xjxjjxdj&"
-	m+="TaskOwnerName=Zjzj&"
-	m+="tokenid=6&"
-	m+="appVersion=3.3.9&"
-	m+="Address=beijing&"
-	m+="OrderCityId=901&"
-	m+="Latitude=39.985395&"
-	m+="Tasktel=15313666764&"
-	m+="carLicense=冀ACJXJX&"
-	m+="sign=D53F7B90C8758CF6DFB0DACEEA3AABCD&"
-	m+="BusinessPrice=100000&"
-	m+="OrderProvinceId=9&"
-	m+="productType=9&"
-	m+="op=save&"
-	m+="NewEdition=1&"
-	m+="RecordDate=2019-12-01&"
-	m+="Service=2&"
-	m+="telephone=&"
-	m+="equipmentNo=B3B51F6D80E09F24FD6652BE50E51D80&"
-	m+="ProgramId=2_1&"
-	m+="Longitude=116.312729&"
-	m+="userId="+strconv.Itoa(userid) +"&"
-	m+="deviceInfo={\"brand\":\"HONOR\",\"model\":\"PRA-AL00X\",\"osVersion\":\"8.0.0\",\"platform\":\"android\",\"resolution\":\"1080*1794\"}&"
-	m+="Des=订单备注&"
-	m+="publishType=3&"
-	m+="drivingLicense=&"
-	m+="VinCode="+vin+"&"
-	m+="EngineNum=Xjxjjxjddj&"
-	m+="ConfigID=1&"
-	m+="platType=1"
-
-	return m
-}
-
 //6张下单
 func SendPostFormFile6(userid int,configID int,procductlist int,vin string,id int64)  {
 
@@ -207,9 +167,7 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string,id int
 	}
 	return
 }
-
-//9张
-
+//9张下单
 func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id int64) {
 	url:=beego.AppConfig.String("app.url")+"/app/TaskSave9Pic.ashx"
 
@@ -278,7 +236,7 @@ func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id in
 
 	return
 }
-
+//快估下单
 func Fast(userid int,procductlist int,vin string,isPretrial int,id int64) {
 
 	url:=beego.AppConfig.String("app.Fasturl")+"/api/onLineTask7Pic/addEighteenthTask"
@@ -334,6 +292,8 @@ func Fast(userid int,procductlist int,vin string,isPretrial int,id int64) {
 	}
 	return
 }
+
+//快估获取参数
 func GetFastValue(userid int,procductlist int,vin string,isPretrial int) map[string]string {
 
 	res:=make(map[string]string,0)
@@ -446,6 +406,7 @@ func GetFastValue(userid int,procductlist int,vin string,isPretrial int) map[str
 
 	return res
 }
+//6张获取参数
 func GetFastValue6(userid int,configID int,procductlist int,vin string) map[string]string {
 
 	res := make(map[string]string, 0)
@@ -479,6 +440,7 @@ func GetFastValue6(userid int,configID int,procductlist int,vin string) map[stri
 
 	return res
 }
+//9张获取参数
 func GetFastValue9(userid int,configID int,procductlist int,vin string) map[string]string {
 
 	res := make(map[string]string, 0)
@@ -514,6 +476,7 @@ func GetFastValue9(userid int,configID int,procductlist int,vin string) map[stri
 
 	return res
 }
+//18,20张获取参数
 func GetFastValue18(userid int,configID int,procductlist int,vin string,NewEdition int) map[string]string {
 
 	res := make(map[string]string, 0)
@@ -550,7 +513,7 @@ func GetFastValue18(userid int,configID int,procductlist int,vin string,NewEditi
 
 	return res
 }
-
+//写入操作记录
 func WriteOrderInfodetail(id int64,mo models.AppResultModel,Timelengthstr float64 ,vin string)  {
 
 	var tail models.OrderinfodetailModel
@@ -565,3 +528,6 @@ func WriteOrderInfodetail(id int64,mo models.AppResultModel,Timelengthstr float6
 	tail.Save()
 }
 
+func SendPost()  {
+
+}
