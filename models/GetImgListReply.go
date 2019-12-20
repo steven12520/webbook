@@ -1,5 +1,15 @@
 package models
 
+
+type ResultDate struct {
+	Data GetImgListReply
+	Msg string	`json:"msg"`
+	Status string`json:"status"`
+}
+
+
+
+//图片结合模型
 type GetImgListReply struct {
 	/// <summary>
 	/// 当前要预审的图片在carPicList中的索引, [-1标识所有图片或者视频审核通过]
@@ -44,7 +54,7 @@ type GetImgListReply struct {
 	/// <summary>
 	/// 所有拒评原因
 	/// </summary>
-	RejectReasons ConfigRejectReasonModel `json:"rejectReasons"`
+	RejectReasons []ConfigRejectReasonModel `json:"rejectReasons"`
 	/// <summary>
 	/// 审核补充项目Pop说明
 	/// </summary>
@@ -131,7 +141,7 @@ type PretrialPicV2 struct {
 	/// <summary>
 	/// 修改照片
 	/// </summary>
-	  UpdatePic UpdatePicdetail
+	UpdatePic UpdatePicdetail
 	/// <summary>
 	/// 图片退回原因列表(图片名称,如左前45, 详情参见AssessmentItem表)
 	/// 该数据仅用于在预审总览页以及预审详情页中进行鼠标弹层展示

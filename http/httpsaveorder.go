@@ -169,8 +169,8 @@ func SendPostFormFile(userid int,configID int,procductlist int,vin string,id int
 }
 //9张下单
 func SendPostFormFile9(userid int,configID int,procductlist int,vin string,id int64) {
-	url:=beego.AppConfig.String("app.url")+"/app/TaskSave9Pic.ashx"
 
+	url:=beego.AppConfig.String("app.url")+"/app/TaskSave9Pic.ashx"
 	filename:=beego.AppConfig.String("zip.pic9")
 	token:=beego.AppConfig.String("app.userTokenet")
 	body_buf := bytes.NewBufferString("")
@@ -528,6 +528,42 @@ func WriteOrderInfodetail(id int64,mo models.AppResultModel,Timelengthstr float6
 	tail.Save()
 }
 
-func SendPost()  {
+func SendPost(url string ,resmap map[string] string) ([]byte,bool)  {
 
+
+	body_buf := bytes.NewBufferString("")
+	body_writer := multipart.NewWriter(body_buf)
+	var resbyte []byte
+	for k,v:=range resmap{
+		body_writer.WriteField(k, v)
+	}
+
+	// 结束整个消息body
+	body_writer.Close()
+
+	req_reader := io.MultiReader(body_buf)
+	req, err := http.NewRequest("POST", url, req_reader)
+	if err != nil {
+		logs.Error("SendPost error:", err)
+		return resbyte,false
+	}
+	// 添加Post头
+	req.Header.Set("Connection", "close")
+	req.Header.Set("Pragma", "no-cache")
+	req.Header.Set("Content-Type", body_writer.FormDataContentType())
+	req.ContentLength = int64(body_buf.Len())
+	// 发送消息
+	client := &http.Client{}
+	starttime:=time.Now()
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logs.Error("读取回应消息异常SendPost:", err)
+		return resbyte,false
+	}
+	logs.Debug("接收返回数据SendPost:",string(body))
+	endtime:=time.Now()
+	fmt.Println("调用接口时间",starttime,endtime)
+	return body,true
 }
