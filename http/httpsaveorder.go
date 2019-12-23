@@ -530,7 +530,6 @@ func WriteOrderInfodetail(id int64,mo models.AppResultModel,Timelengthstr float6
 
 func SendPost(url string ,resmap map[string] string) ([]byte,bool)  {
 
-
 	body_buf := bytes.NewBufferString("")
 	body_writer := multipart.NewWriter(body_buf)
 	var resbyte []byte

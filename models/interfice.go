@@ -8,12 +8,13 @@ type Interfice struct {
 	Txt        string
 	Ranges 		int
 	Createtime string
+	Orders int
 }
 
 
 func (br Interfice) GetInterficeList() []Interfice {
 
-	sql := "SELECT `id`,`iname`,`txt`,`ranges`,`createtime` FROM interfice order by id"
+	sql := "SELECT `id`,`iname`,`txt`,`ranges`,`createtime` FROM interfice order by orders,id"
 
 	rows, e := Db.Query(sql)
 	if e != nil {

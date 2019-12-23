@@ -1,11 +1,228 @@
 package models
 
-
+//图片列表
 type ResultDate struct {
 	Data GetImgListReply
 	Msg string	`json:"msg"`
-	Status string`json:"status"`
+	Status int`json:"status"`
 }
+//拉取自己的订单
+type PretrialPush struct {
+	Data PretrialOrderInfoAll
+	Msg string	`json:"msg"`
+	Status int`json:"status"`
+}
+
+//历史订单
+type OrderHistoryDate struct {
+	Data OrderHistory
+	Msg string	`json:"msg"`
+	Status int`json:"status"`
+}
+//操作历史
+type OperateLogDate struct {
+	Data OperateLogModel
+	Msg string	`json:"msg"`
+	Status int`json:"status"`
+}
+type OperateLogModel struct {
+	Oper       string
+	Op         string
+	OpSource   string
+	Remark     string
+	CreateTime string
+}
+type GetImgDetailReplyDate struct {
+	Data GetImgDetailReply
+	Msg string	`json:"msg"`
+	Status int`json:"status"`
+}
+
+//图片详情
+type GetImgDetailReply struct {
+	/// <summary>
+	/// 图片名称
+	/// </summary>
+	ImageName string
+	/// <summary>
+	/// 审核标准
+	/// </summary>
+	CheckPassDesc string
+
+	/// <summary>
+	/// 是否通过 1通过  0未通过  -1未审核过 2 重新上传图片
+	/// </summary>
+	IsPass int
+
+	/// <summary>
+	/// 车牌地区
+	/// </summary>
+	Carlicensetitle string
+
+	/// <summary>
+	/// 车牌号码
+	/// </summary>
+	Carlicensetxt string
+
+	/// <summary>
+	/// 登记地区
+	/// </summary>
+	RegisterArea string
+
+	/// <summary>
+	/// 是否显示车主地址
+	/// </summary>
+	IsShowLikeAddr bool
+
+	/// <summary>
+	/// 产品类型
+	/// </summary>
+	TaskTypeName string
+
+	/// <summary>
+	/// 文本退回原因列表
+	/// </summary>
+	TxtReturnList []TaskReturnLogVo
+
+	/// <summary>
+	/// 获取Redis中缓存的json数据并序列化为对象
+	/// </summary>
+	RedisPretrail RedisPretrailModelV2
+}
+
+type TaskReturnLogVo struct {
+	/// <summary>
+	/// 0,不选中，1 选中
+	/// </summary>
+
+	IsChecked int
+
+	/// <summary>
+	/// 是否默认示例照片
+	/// </summary>
+
+	IsDefaultAttach bool
+
+	/// <summary>
+	/// 默认示例照片
+	/// </summary>
+	DefaultAttachUrl string
+}
+
+//历史订单
+type OrderHistory struct {
+	Id int
+	/// <summary>
+	/// 评估日期
+	/// </summary>
+	Datestr string
+	/// <summary>
+	/// 机构名称
+	/// </summary>
+	SourceName string
+	/// <summary>
+	/// 品牌车型
+	/// </summary>
+	CarFullName string
+	/// <summary>
+	/// 收车价
+	/// </summary>
+	AssessmentPrace string
+	/// <summary>
+	/// 售车价
+	/// </summary>
+	SalePrice string
+	/// <summary>
+	/// 状态
+	/// </summary>
+	Status string
+	/// <summary>
+	/// 报告地址
+	/// </summary>
+	Reporturl string
+	/// <summary>
+	/// 详情地址
+	/// </summary>
+	Detailurl string
+}
+
+type PretrialOrderInfoAll struct {
+	UserId   int
+	UserName string
+
+	/// <summary>
+	/// 接单状态,1:接单中（页面显示停止接单按钮）；0:停止接单（页面显示接单按钮）；-1:无权限
+	/// </summary>
+	UserReceiptOrderStatus int
+
+	WebSocketOnline map[int]string
+
+	/// <summary>
+	/// 新分派的订单，待领单
+	/// </summary>
+	Neworder []PretrialOrderInfo
+
+	/// <summary>
+	/// 自己领取的订单，预审中和挂起
+	/// </summary>
+	Selforder []PretrialOrderInfo
+
+	/// <summary>
+	/// 评估师退回的订单
+	/// </summary>
+	Returnorder []PretrialOrderInfo
+
+	/// <summary>
+	/// 被退回数量
+	/// </summary>
+	ReturnOrder int
+	/// <summary>
+	/// 排队订单数量
+	/// </summary>
+	QueueOrder int
+	/// <summary>
+	/// 预审中
+	/// </summary>
+	PretrialOrder int
+	/// <summary>
+	/// 待修改 
+	/// </summary>
+	UpdateOrder int
+	/// <summary>
+	/// 待处理 
+	/// </summary>
+	NeedFixed int
+	/// <summary>
+	/// 新订单 
+	/// </summary>
+	NewOrder int
+
+	/// <summary>
+	/// 本月已签收
+	/// </summary>
+	MonthEvaluated int
+	/// <summary>
+	/// 本day已签收
+	/// </summary>
+	DayEvaluated int
+}
+
+
+
+
+type PretrialOrderInfo struct {
+	TaskID        int
+	Vin           string
+	SourceName    string
+	CreateTime    string
+	CreateTimeStr string
+	Status        int
+	TbStatus      int
+	StatusName    string
+	StatusStr     string
+}
+
+
 
 
 
@@ -60,7 +277,6 @@ type GetImgListReply struct {
 	/// </summary>
 	PromptTip RejectPromptMessage `json:"PromptTip"`
 }
-
 type VedioInfo struct {
 	/// <summary>
 	/// ItemId field
@@ -88,7 +304,6 @@ type VedioInfo struct {
 	/// </summary>
 	PicReturnReason []TaskReturnLogModel
 }
-
 type RedisPretrailModelV2 struct {
 	/// <summary>
 	/// 订单图片基本信息；(服务端内部缓存图片基本信息，包含附加照片； 只用于索引查询)
@@ -158,7 +373,6 @@ type UpdatePicdetail struct {
 	/// </summary>
 	 Picstatus int
 }
-
 type CarPicModelSimple struct {
 	/// <summary>
 	/// ID field
@@ -187,7 +401,6 @@ type CarPicModelSimple struct {
 	/// </summary>
 	IsAnnex bool
 }
-
 type TaskReconsiderationModel struct {
 	 Id int `json:"id"`
 	 Opid int `json:"opid"`
@@ -199,9 +412,6 @@ type TaskReconsiderationModel struct {
 	 ItemName string `json:"itemName"`
 	 OrderKey int `json:"orderKey"`
 }
-
-
-
 type TaskCarBasicEPModel struct {
 	/// <summary>
 	/// 车主名称
@@ -414,7 +624,7 @@ type TaskCarBasicEPModel struct {
 	/// <summary>
 	/// CarDes field
 	/// </summary>
-	//   CarDes { get; set; }
+	//   CarDes 
 	 CreateUserId int
 	/// <summary>
 	/// 下单省份ID
@@ -440,12 +650,12 @@ type TaskCarBasicEPModel struct {
 	///// <summary>
 	///// 复核收车价，C2B
 	///// </summary>
-	//32 CompositeProPrice { get; set; }
+	//32 CompositeProPrice 
 
 	///// <summary>
 	///// 复核售车价,B2C
 	///// </summary>
-	//32 SuggestSellPrice { get; set; }
+	//32 SuggestSellPrice 
 	/// <summary>
 	/// 下单机构名称
 	/// </summary>
@@ -469,18 +679,18 @@ type TaskCarBasicEPModel struct {
 	///// <summary>
 	///// 发单人
 	///// </summary>
-	// TaskOwnerName { get; set; }
+	// TaskOwnerName 
 	 Tasktel string
 	 ProductType int
 	 AppraiseBackReasonNew string
 	///// <summary>
 	///// 数据模型车商收车价
 	///// </summary>
-	// JZGAssessmentPrice { get; set; }
+	// JZGAssessmentPrice 
 	///// <summary>
 	///// 数据模型车商售车价
 	///// </summary>
-	// JZGSalePrice { get; set; }
+	// JZGSalePrice 
 	/// <summary>
 	/// 是否显示机构名称 0-否 1-是
 	/// </summary>
@@ -585,12 +795,10 @@ type TaskCarBasicEPModel struct {
 	/// </summary>
 	 Reconsideration int
 }
-
 type CheckPassDescGroup struct {
 	Category string `json:"category"`
 	Text     string `json:"text"`
 }
-
 type ConfigRejectReasonModel struct {
 	SourceName   string
 	SourceID     int
@@ -607,12 +815,10 @@ type ConfigRejectReasonModel struct {
 	RejectID     int
 	UpdateTime   string
 }
-
 type RejectPromptMessage struct {
 	ItemName string
 	Message  string
 }
-
 type CarPicModelSimpleVo struct {
 	Id     int
 	ItemId int
@@ -635,7 +841,6 @@ type CarPicModelSimpleVo struct {
 	/// </summary>
 	PicReturnReason []TaskReturnLogModel
 }
-
 type TaskReturnLogModel struct {
 	/// <summary>
 	/// 自增
