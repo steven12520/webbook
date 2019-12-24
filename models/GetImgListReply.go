@@ -1,5 +1,10 @@
 package models
 
+type ResultPublicDate struct {
+	Msg string	`json:"msg"`
+	Status int`json:"status"`
+}
+
 //图片列表
 type ResultDate struct {
 	Data GetImgListReply
@@ -25,6 +30,9 @@ type OperateLogDate struct {
 	Msg string	`json:"msg"`
 	Status int`json:"status"`
 }
+
+
+//操作历史
 type OperateLogModel struct {
 	Oper       string
 	Op         string
@@ -32,6 +40,7 @@ type OperateLogModel struct {
 	Remark     string
 	CreateTime string
 }
+//图片详情
 type GetImgDetailReplyDate struct {
 	Data GetImgDetailReply
 	Msg string	`json:"msg"`
@@ -88,6 +97,120 @@ type GetImgDetailReply struct {
 	/// 获取Redis中缓存的json数据并序列化为对象
 	/// </summary>
 	RedisPretrail RedisPretrailModelV2
+}
+
+//获取订单基本信息
+type OrderInfoModelDate struct {
+	Data GetImgDetailReply
+	Msg string	`json:"msg"`
+	Status int`json:"status"`
+}
+//获取城市列表
+type ProvincesAndCitysVoDate struct {
+	Data ProvincesAndCitysVo
+	Msg string	`json:"msg"`
+	Status int`json:"status"`
+}
+//根据车牌定位城市
+type ProvinceCityModelDate struct {
+	Data ProvinceCityModel
+	Msg string	`json:"msg"`
+	Status int`json:"status"`
+}
+type ProvinceCityModel struct {
+	/// <summary>
+	/// 省ID
+	/// </summary>
+	ProvinceID int
+	/// <summary>
+	/// 省份名称
+	/// </summary>
+	ProvinceName string
+}
+
+
+
+
+
+//获取城市列表
+type ProvincesAndCitysVo struct {
+	ProvincesAndCitys []ProvincesAndCitysVoItem
+}
+
+type ProvincesAndCitysVoItem struct {
+	  Value string
+	  Label string
+	  Children []ProvincesAndCitysVoItem
+}
+
+type OrderInfoModel struct {
+	StatusName string
+	Status     int
+	Taskid     int
+	/// <summary>
+	/// 下单账号
+	/// </summary>
+	CreateUserId int
+	/// <summary>
+	/// 下单账号+名称
+	/// </summary>
+	CreateUser string
+	/// <summary>
+	/// 机构id
+	/// </summary>
+	SourceID int
+	/// <summary>
+	/// 机构名称
+	/// </summary>
+	SourceName string
+	/// <summary>
+	/// 下单地区
+	/// </summary>
+	CreateCity string
+	/// <summary>
+	///下单人机构端填写
+	/// </summary>
+	LikeMan string
+	/// <summary>
+	/// 下单张数和类型
+	/// </summary>
+	TaskTypeName string
+	/// <summary>
+	/// App下单备注
+	/// </summary>
+	AppRemark string
+	/// <summary>
+	/// 预审备注备注
+	/// </summary>
+	PretrialRemark string
+	/// <summary>
+	/// 评估师备注
+	/// </summary>
+	PGSRemark string
+	/// <summary>
+	/// 系统提示
+	/// </summary>
+	SysRemark string
+
+	/// <summary>
+	/// VIN疑似造假描述
+	/// </summary>
+	VinSuspectmsg string
+
+	/// <summary>
+	/// 订单编号
+	/// </summary>
+	OrderNo string
+
+	/// <summary>
+	/// 是否挂起,true:挂起
+	/// </summary>
+	IsForked bool
+
+	/// <summary>
+	/// 是否显示挂起按钮: 0: 挂起解挂都不显示；1：显示挂起 2：显示解卦
+	/// </summary>
+	ShowForkBtnFlag int
 }
 
 type TaskReturnLogVo struct {
