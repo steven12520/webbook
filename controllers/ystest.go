@@ -30,10 +30,10 @@ func (self *YstestController) Plays()  {
 	}
 	if Ranges==1 {//预审通过提交
 		logs.Debug("操作类型预审通过提交。。。。。。。。。")
-		YSPassO(Userid)
+		go YSPassO(Userid)
 	}else if Ranges==2{//退回修改
 		logs.Debug("操作类型退回修改。。。。。。。。。")
-
+		go YSReturnUpdate(Userid)
 	}else if Ranges==3{//关闭订单
 		logs.Debug("操作类型关闭订单。。。。。。。。。")
 
@@ -125,6 +125,101 @@ func YSPassO(Userid int) {
 		}
 	}
 	fmt.Println("执行结束。。。。。。。。。")
+}
+//预审退回
+func YSReturnUpdate(Userid int)  {
+	//1，判断是否是接单状态，不是则改成接单,
+	thisstart:
+	m, b := PretrialPush(Userid)
+	if b && m.Status == 100 {
+		if m.Data.UserReceiptOrderStatus == 0 {
+			logs.Debug("接单中...")
+		} else {
+			w, er := Working(Userid, 1)
+			if er && w.Status == 100 {
+				logs.Debug("开始接单成功")
+			} else {
+				logs.Error("开始接单失败")
+				fmt.Println("结束...")
+				return
+			}
+		}
+	}
+	var temporder models.PretrialOrderInfo
+	//2,优先级 退回，预审中，新订单
+	if len(m.Data.Returnorder) > 0 {
+		temporder = m.Data.Returnorder[0]
+	} else if len(m.Data.Selforder) > 0 {
+		temporder = m.Data.Selforder[0]
+	} else if len(m.Data.Neworder) > 0 {
+		ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
+		goto thisstart
+	} else { //无订单是停止3秒继续
+		time.Sleep(time.Second * 3)
+		goto thisstart
+	}
+	if temporder.Status == 4 { //挂起
+		UnlockForkedOrder(temporder.TaskID, Userid)
+		goto thisstart
+	}
+	//3，审核图片
+	imgDate, bol := GetImgList(Userid, temporder.TaskID)
+	if bol && len(imgDate.Data.CarPicList) > 0 {
+		for _, list := range imgDate.Data.CarPicList {
+			//查看图片详情
+			ImgDetail, bol := GetImgDetail(temporder.TaskID, list.ItemId, Userid)
+			if !bol {
+				logs.Error("获取图片详情错误", temporder.TaskID, list.ItemId, Userid)
+				return
+			}
+			itemid := list.ItemId
+			p:= int64(len(imgDate.Data.CarPicList))
+			r:= common.RandInt64(1,p)
+			if r%2==0 {
+				//替换图片
+				date, bol := UploadPic(temporder.TaskID,list.Id,itemid)
+				if !bol || date.Status != 100 {
+					logs.Error("替换错误", temporder.TaskID,list.Id,itemid)
+					return
+				}
+			}
+			r= common.RandInt64(1,p)
+			if r%2==0 {
+				date, bol := ImgCheckPass(temporder.TaskID, Userid, itemid, 0)
+				if !bol || date.Status != 100 {
+					logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, itemid, 0)
+					return
+				}
+			}else {
+				date, bol := ImgCheckUnPass(temporder.TaskID, Userid, itemid, 0, ImgDetail)
+				if !bol || date.Status != 100 {
+					logs.Error("图片审不核通过出现错误", temporder.TaskID, Userid, itemid, 0)
+					return
+				}
+			}
+			//图片审核通过
+		}
+	}
+	//3，审核视频
+	if imgDate.Data.VedioInfo.Path != "" {
+		date, bol := ImgCheckPass(temporder.TaskID, Userid, -1, 1)
+		if !bol || date.Status != 100 {
+			logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, -1, 1)
+			return
+		}
+	}
+	//3，保存基本信息
+	date, bol := SaveFormData(imgDate.Data.Tc, Userid)
+	if !bol || date.Status != 100 {
+		logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, -1, 1)
+		return
+	}
+	//date, bol = PretrailSubmitPass(temporder.TaskID, Userid)
+	//if !bol || date.Status != 100 {
+	//	logs.Error("预审通过提交", temporder.TaskID, Userid, -1, 1)
+	//	return
+	//}
+
 }
 //获取图片列表
 func GetImgList(userid,taskid int) (models.ResultDate,bool)  {
@@ -543,3 +638,111 @@ func UploadPic(taskId,picId,itemId int)(models.ResultPublicDate,bool)  {
 	}
 }
 
+//审核不通过加照片
+func Upload_SampleImg(taskId,userId,itemId,returnId int)(models.UploadPic,bool)  {
+	url:= beego.AppConfig.String("pgs.url")+"/APP/Pretrial/PretrialV2.ashx"
+
+	m:=make(map[string]string,0)
+	m["op"]="Upload_SampleImg"
+	m["taskId"]=strconv.Itoa(taskId)
+	m["userId"]=strconv.Itoa(userId)
+	m["itemId"]=strconv.Itoa(itemId)
+	m["returnId"]=strconv.Itoa(returnId)
+
+	filename:= beego.AppConfig.String("pic.picthpic")
+	res,b:= httpdate.SendPost(url,m,filename)
+	var Data models.UploadPic
+	if b {
+		err:= json.Unmarshal(res,&Data)
+		if err!=nil {
+			return Data,false
+		}
+	}
+	if Data.Status==100 {
+		return Data,true
+	}else {
+		return Data,false
+	}
+}
+
+//审核不通过
+func ImgCheckUnPass(taskId,userId,itemId,video int,pic models.GetImgDetailReplyDate)(models.ResultPublicDate,bool) {
+	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
+
+	//unPassReasonJson: [{"Type":1,"ItemID":270,"ReturnID":253,"ReturnReason":"拍摄位置错误，请重拍","ReturnName":"后排座椅","SampleImg":"http://192.168.0.156/group2/M01/0E/91/wKgAl14GI8qAAYUOAAK-Sixj33g537.jpg","FastDFSBasePath":"","TitleText":"eeeeeeeeeeeee","FileName":"2.jpg","DefaultAttachUrl":"https://image.jingzhengu.com/JCXTImgUrl/SampleImage/eighteen6.png"}]
+	var Data models.ResultPublicDate
+	m := make(map[string]string, 0)
+	m["op"] = "ImgCheckUnPass"
+	m["taskId"] = strconv.Itoa(taskId)
+	m["userId"] = strconv.Itoa(userId)
+	m["itemId"] = strconv.Itoa(itemId) //-1为视频
+
+	len:=len(pic.Data.TxtReturnList)
+	if len == 0 {
+		return Data,false
+	}
+
+	r:= common.RandInt64(1,int64(len))
+	mo:=pic.Data.TxtReturnList[r]
+
+	relist := make([]models.TaskReturnLogModel, 0)
+	mo.TitleText="预审自动测试提交"
+	//可以上传图片
+	relist = append(relist, mo.TaskReturnLogModel)
+
+	t, _ := json.Marshal(relist)
+	m["unPassReasonJson"] = string(t)
+
+	if video == 1 { //视频
+		m["itemId"] = "-1" //-1为视频
+	}
+
+	res, b := httpdate.SendPost(url, m, "")
+
+	if b {
+		err := json.Unmarshal(res, &Data)
+		if err != nil {
+			return Data, false
+		}
+	}
+	if Data.Status == 100 {
+		return Data, true
+	} else {
+		return Data, false
+	}
+}
+//驳回附加图片
+func YsyReturnSummaryReason_Save(taskId,userId int)  {
+	url:= beego.AppConfig.String("pgs.url")+"/APP/Pretrial/PretrialV2.ashx"
+
+	m:=make(map[string]string,0)
+	m["op"]="YsyReturnSummaryReason_Save"
+	m["taskId"]=strconv.Itoa(taskId)
+	m["userId"]=strconv.Itoa(userId)
+
+	list:=make([]models.AddFJ,0)
+	var mo models.AddFJ
+	mo.ReturnReason ="新增附加1"
+	mo.TitleText  ="新增附加1说明"
+	mo.SampleImg =""
+	mo.FileName =""
+	mo.PicID=0
+	list= append(list,mo )
+	jso,_:=json.Marshal(list)
+	m["data"]=string(jso)
+
+	res,b:= httpdate.SendPost(url,m,"")
+	var Data models.UploadPic
+	if b {
+		err:= json.Unmarshal(res,&Data)
+		if err!=nil {
+			return Data,false
+		}
+	}
+	if Data.Status==100 {
+		return Data,true
+	}else {
+		return Data,false
+	}
+
+}

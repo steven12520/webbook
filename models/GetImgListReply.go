@@ -17,7 +17,13 @@ type PretrialPush struct {
 	Msg string	`json:"msg"`
 	Status int`json:"status"`
 }
-
+type AddFJ struct {
+	ReturnReason string
+	TitleText  string
+	SampleImg string
+	FileName string
+	PicID int
+} 
 //历史订单
 type OrderHistoryDate struct {
 	Data OrderHistory
@@ -128,8 +134,14 @@ type ProvinceCityModel struct {
 	ProvinceName string
 }
 
-
-
+type UploadPic struct {
+	Status          int
+	Msg             string
+	PicId           int
+	PicName         string
+	FastDFSBasePath string
+	PicPath         string
+}
 
 
 //获取城市列表
@@ -214,6 +226,7 @@ type OrderInfoModel struct {
 }
 
 type TaskReturnLogVo struct {
+	TaskReturnLogModel
 	/// <summary>
 	/// 0,不选中，1 选中
 	/// </summary>
