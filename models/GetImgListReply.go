@@ -398,7 +398,7 @@ type GetImgListReply struct {
 	/// <summary>
 	/// 审核补充项目Pop说明
 	/// </summary>
-	PromptTip RejectPromptMessage `json:"PromptTip"`
+	PromptTip []RejectPromptMessage `json:"PromptTip"`
 }
 type VedioInfo struct {
 	/// <summary>

@@ -1,28 +1,35 @@
-<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
-    <div class="layui-btn-group demoTable" style="margin-top: 10px; ">
-    </div>
-    <div>
+<div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
 
-
-        <div style="font-size: 18px">
-
-
-            <p style="margin-top: 10px;">
-                Taskid：
-                <input type="text" id="Taskid" style=" width: 100px" value="">
-            </p>
-            <p style="margin-top: 10px;">
-                Userid：
-                <input type="text" id="Userid" style=" width: 100px"  value="" >
-            </p>
-
-            <p style="margin-top: 30px;">
-                <input type="button" id="submit" value="提交"  >
-            </p>
+    <form class="layui-form" action="" method="post" >
+        <div class="layui-form-item">
+            <label class="layui-form-label">预审测试</label>
+            <div class="layui-input-inline">
+                <input type="text" name="Userid" id="Userid"  lay-verify="required" autocomplete="off" placeholder="预审员id" class="layui-input" value="2082">
+            </div>
+            <div class="layui-form-mid layui-word-aux">*</div>
+        </div>
+        <div class="layui-form-item">
+            预审提交类型：
+            <span class="fas1">
+                  <input type="radio" name="Ranges" checked="checked" title="预审通过" value="1">
+            </span>
+            <span class="fas2">
+                  <input type="radio" name="Ranges"  title="退回修改"value="2">
+            </span>
+            <span class="fas3">
+                  <input type="radio" name="Ranges"  title="关闭订单"value="3"> &nbsp;
+            </span>
+            <span class="fas4">
+                  <input type="radio" name="Ranges"  title="机构审批"value="4">
+            </span>
         </div>
 
-
-    </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="sub">立即提交</button>
+            </div>
+        </div>
+    </form>
 
 
 </div>
@@ -30,30 +37,14 @@
     var $;
     layui.config({
         base : "js/"
-    }).use(['table','element','layer','jquery'], function(){
-        $ = layui.jquery
+    }).use(['form','element','layer','jquery'],function(){
+        var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+        var $ = layui.jquery;
 
-        $("#submit").click(function () {
+        form.on('submit(sub)', function(data){
+            var form_data = $("form").serialize();
 
-            var Taskid=$("#Taskid").val()
-            var Userid=$("#Userid").val();
-
-
-            var jsData = {'Taskid':Taskid,"Userid":Userid}
-
-
-            if($.trim(Taskid) ==""){
-                layer.msg("请输入Taskid")
-                return;
-            }
-
-            if($.trim(Userid) ==""){
-                layer.msg("请输入Userid")
-                return;
-            }
-
-
-            $.post('/Ystest/Plays', jsData, function (out) {
+            $.post('/Ystest/Plays', form_data, function (out) {
                 if (out.status == 0) {
                     layer.alert("提交成功")
                 }else {
@@ -62,7 +53,14 @@
             }, "json");
 
         });
+        form.on('submit(break)', function(data){
+            window.location.href='/Interfice/InterficeList'
+            return false;
+        });
 
+
+        //但是，如果你的HTML是动态生成的，自动渲染就会失效
+        //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+        form.render();
     });
-
 </script>

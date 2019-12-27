@@ -418,6 +418,7 @@ func GetFastValue6(userid int,configID int,procductlist int,vin string) map[stri
 	res["ConfigID"] = strconv.Itoa(configID)
 	res["equipmentNo"] = "868198FA7F3B804B8557021B509C8CD0"
 	res["MakeId"] = "136"
+	res["ModelId"] = "4303"
 	res["RegDate"] = "2017-12-01"
 	res["Perf_DriveType"] = "前轮驱动"
 	res["op"] = "save"
@@ -430,12 +431,10 @@ func GetFastValue6(userid int,configID int,procductlist int,vin string) map[stri
 	res["telephone"] = ""
 	res["Latitude"] = "39.985435"
 	res["OrderProvinceId"] = "9"
-	res["ModelId"] = "4303"
 	res["TransmissionType"] = "手自一体"
 	res["ConfigID"] = "2"
 	res["Des"] = "LJS备注"
 	res["platType"] = "1"
-
 	res["deviceInfo"] ="{\"brand\":\"OPPO\",\"model\":\"\",\"osVersion\":\"5.1.1\",\"platform\":\"android\",\"resolution\":\"1080*1920\"}"
 
 	return res
@@ -528,7 +527,7 @@ func WriteOrderInfodetail(id int64,mo models.AppResultModel,Timelengthstr float6
 	tail.Save()
 }
 
-func SendPost(url string ,resmap map[string] string) ([]byte,bool)  {
+func SendPost(url string ,resmap map[string] string,filename string) ([]byte,bool)  {
 
 	body_buf := bytes.NewBufferString("")
 	body_writer := multipart.NewWriter(body_buf)
@@ -537,6 +536,20 @@ func SendPost(url string ,resmap map[string] string) ([]byte,bool)  {
 		body_writer.WriteField(k, v)
 	}
 
+	if filename != "" {//上传文件
+		//  读取文件
+		_, err := body_writer.CreateFormFile("application", filename)
+		if err != nil {
+			logs.Error("创建FormFile2文件信息异常！", err)
+			return resbyte, false
+		}
+		fb2, err := ioutil.ReadFile(filename)
+		if err != nil {
+			logs.Error("打开文件异常!", err)
+			return resbyte, false
+		}
+		body_buf.Write(fb2)
+	}
 	// 结束整个消息body
 	body_writer.Close()
 
