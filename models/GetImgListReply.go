@@ -124,20 +124,16 @@ type ProvinceCityModelDate struct {
 	Status int`json:"status"`
 }
 type ProvinceCityModel struct {
-	/// <summary>
-	/// 省ID
-	/// </summary>
 	ProvinceID int
-	/// <summary>
-	/// 省份名称
-	/// </summary>
 	ProvinceName string
+	CityId int
+	CityName string
 }
 
 type UploadPic struct {
 	Status          int
 	Msg             string
-	PicId           int
+	PicId           string
 	PicName         string
 	FastDFSBasePath string
 	PicPath         string
