@@ -44,9 +44,16 @@
         <div class="layui-form-item">
             <label class="layui-form-label">平均数量</label>
             <div class="layui-input-inline">
-                <input type="text" name="Usercount" id="Usercount"  lay-verify="required" autocomplete="off" placeholder="平均数量" class="layui-input" value="10">
+                <input type="text" name="Usercount" id="Usercount"  lay-verify="required" autocomplete="off" placeholder="平均数量" class="layui-input" value="">
             </div>
-            <div class="layui-form-mid layui-word-aux">*</div>
+            <div class="layui-form-mid layui-word-aux">N+1个订单</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">停止时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="timelen" id="timelen"  lay-verify="required" autocomplete="off" placeholder="N分钟之后停止" class="layui-input" value="">
+            </div>
+            <div class="layui-form-mid layui-word-aux">分钟</div>
         </div>
         <div class="layui-form-item">
             预审提交类型：
@@ -89,24 +96,18 @@
             });
             var Ranges=$("input[name='Ranges']:checked").val();
             var Usercount=$("#Usercount").val();
-            var jsData = {'Ranges':Ranges,"Useridlist":Useridlist,"Usercount":Usercount}
+            var timelen=$("#timelen").val();
+
+            var jsData = {'Ranges':Ranges,"Useridlist":Useridlist,"Usercount":Usercount,"timelen":timelen}
             $.post('/Ystest/Plays', jsData, function (out) {
                 if (out.status == 0) {
-                    layer.alert("提交成功")
+                    layer.msg("提交成功")
                 }else {
                     layer.msg("提交失败，"+out.message)
                 }
             }, "json");
 
         });
-        form.on('submit(break)', function(data){
-            window.location.href='/Interfice/InterficeList'
-            return false;
-        });
 
-
-        //但是，如果你的HTML是动态生成的，自动渲染就会失效
-        //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
-        form.render();
     });
 </script>

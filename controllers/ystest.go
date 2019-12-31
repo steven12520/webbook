@@ -19,7 +19,9 @@ type YstestController struct {
 var CityA = []string{"京A","京B","京C","京D","冀A","冀B","冀C","冀D"}
 
 func (self *YstestController) Ystest()  {
-	GetOperateRecord(168204)
+	//GetOperateRecord(168204)
+
+
 	self.Data["pageTitle"]="预审测试"
 	self.display()
 }
@@ -30,54 +32,63 @@ func (self *YstestController) Plays()  {
 
 	Ranges,_:=self.GetInt("Ranges")
 	Usercount,_:=self.GetInt("Usercount")
+	timelen,_:=self.GetInt("timelen")
 
-	if Useridlist=="" || Ranges==0  {
+	if Useridlist=="" || Ranges==0 || Usercount==0 || timelen==0  {
+		logs.Debug("参数错误",Useridlist, Ranges, Usercount,timelen)
 		self.ajaxMsg("参数错误",MSG_ERR)
+		return
 	}
 	arr:=strings.Split(strings.TrimRight(Useridlist,",") ,",")
 	for _,Userid:=range arr  {
 		id,_:=strconv.Atoi(Userid)
 		if Ranges==1 {//预审通过提交
 			logs.Debug("操作类型预审通过提交。。。。。。。。。")
-			go YSPassO(id,Usercount)
+			go YSPassO(id,Usercount,timelen)
 		}else if Ranges==2{//退回修改
 			logs.Debug("操作类型退回修改。。。。。。。。。")
-			go YSReturnUpdate(id,Usercount)
+			go YSReturnUpdate(id,Usercount,timelen)
 		}else if Ranges==3{//关闭订单
 			logs.Debug("操作类型关闭订单。。。。。。。。。")
-			go ClossOrder(id,Usercount)
+			go ClossOrder(id,Usercount,timelen)
 		}else if Ranges==4{//机构审批
 			logs.Debug("操作类型机构审批。。。。。。。。。")
-			go SourceSP(id,Usercount)
+			go SourceSP(id,Usercount,timelen)
 		}
 	}
-
+fmt.Println(Usercount,timelen,arr)
 	self.ajaxMsg("成功",MSG_OK)
 }
 
 //预审通过完成提交
-func YSPassO(Userid,Usercount int) {
-	for i := 0; i < 5; i++ {
+func YSPassO(Userid,Usercount,timelen int) {
 
+	endtime:= time.Now().Add(time.Minute*time.Duration(timelen))
+
+	m, b := PretrialPush(Userid)
+	if b && m.Status == 100 {
+		if m.Data.UserReceiptOrderStatus == 0 {
+			logs.Debug("接单中...")
+		} else {
+			w, er := Working(Userid, 1)
+			if er && w.Status == 100 {
+				logs.Debug("开始接单成功")
+			} else {
+				logs.Error("开始接单失败")
+				fmt.Println("结束...")
+				return
+			}
+		}
+	}else {
+		logs.Error("开始接单失败",m.Msg)
+		return
+	}
+thisend:
+	for i := 0; i < Usercount; i++ {
 		//1，判断是否是接单状态，不是则改成接单,
 		thisstart:
-			m, b := PretrialPush(Userid)
-		if b && m.Status == 100 {
-			if m.Data.UserReceiptOrderStatus == 0 {
-				logs.Debug("接单中...")
-			} else {
-				w, er := Working(Userid, 1)
-				if er && w.Status == 100 {
-					logs.Debug("开始接单成功")
-				} else {
-					logs.Error("开始接单失败")
-					fmt.Println("结束...")
-					return
-				}
-			}
-		}else {
-			logs.Error("开始接单失败",m.Msg)
-		}
+			m, b = PretrialPush(Userid)
+
 		var temporder models.PretrialOrderInfo
 		//2,优先级 退回，预审中，新订单
 		if len(m.Data.Returnorder) > 0 {
@@ -85,10 +96,19 @@ func YSPassO(Userid,Usercount int) {
 		} else if len(m.Data.Selforder) > 0 {
 			temporder = m.Data.Selforder[0]
 		} else if len(m.Data.Neworder) > 0 {
-			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
+			date, _ := ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
+			if date.Status!=100 && date.Msg=="操作失败此订单已被操作！" {
+				Deleteorder(m.Data.Neworder[0].Vin)
+			}
 			goto thisstart
 		} else { //无订单是停止3秒继续
+			if endtime.Before(time.Now())  {
+				logs.Debug("时间已到结束。。。")
+				break
+			}
+
 			time.Sleep(time.Second * 2)
+			logs.Debug("无订单停止2秒继续。。。")
 			goto thisstart
 		}
 		if temporder.Status == 4 { //挂起
@@ -143,29 +163,50 @@ func YSPassO(Userid,Usercount int) {
 		}
 	}
 	fmt.Println("执行结束。。。。。。。。。")
+
+	if  m.Data.UserReceiptOrderStatus == 0 {
+	thisstop:
+		w, er := Working(Userid, 0)
+		if er && w.Status == 100 {
+			logs.Debug("停止接单")
+			Usercount=1
+			goto thisend
+		}else {
+			time.Sleep(time.Second*2)
+			goto thisstop
+		}
+	}
+
+
 }
 //预审退回
-func YSReturnUpdate(Userid,Usercount int)  {
+func YSReturnUpdate(Userid,Usercount,timelen  int)  {
+	endtime:= time.Now().Add(time.Minute*time.Duration(timelen))
+	m, b := PretrialPush(Userid)
+	if b && m.Status == 100 {
+		if m.Data.UserReceiptOrderStatus == 0 {
+			logs.Debug("接单中...")
+		} else {
+			w, er := Working(Userid, 1)
+			if er && w.Status == 100 {
+				logs.Debug("开始接单成功")
+			} else {
+				logs.Error("开始接单失败")
+				fmt.Println("结束...")
+				return
+			}
+		}
+	} else {
+		logs.Error("开始接单失败", m.Msg)
+		return
+	}
+
+	thisend:
 	for i:=0;i<Usercount ;i++ {
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
-		m, b := PretrialPush(Userid)
-		if b && m.Status == 100 {
-			if m.Data.UserReceiptOrderStatus == 0 {
-				logs.Debug("接单中...")
-			} else {
-				w, er := Working(Userid, 1)
-				if er && w.Status == 100 {
-					logs.Debug("开始接单成功")
-				} else {
-					logs.Error("开始接单失败")
-					fmt.Println("结束...")
-					return
-				}
-			}
-		} else {
-			logs.Error("开始接单失败", m.Msg)
-		}
+		m, b = PretrialPush(Userid)
+
 		var temporder models.PretrialOrderInfo
 		//2,优先级 退回，预审中，新订单
 		if len(m.Data.Returnorder) > 0 {
@@ -176,6 +217,11 @@ func YSReturnUpdate(Userid,Usercount int)  {
 			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
 			goto thisstart
 		} else { //无订单是停止3秒继续
+			if endtime.Before(time.Now())  {
+				logs.Debug("时间已到结束。。。")
+				break
+			}
+
 			time.Sleep(time.Second * 3)
 			goto thisstart
 		}
@@ -262,29 +308,45 @@ func YSReturnUpdate(Userid,Usercount int)  {
 		}
 		logs.Debug("退回修改提交成功", temporder.TaskID, Userid)
 	}
+	fmt.Println("执行结束。。。。。。。。。")
+	if  m.Data.UserReceiptOrderStatus == 0 {
+	thisstop:
+		w, er := Working(Userid, 0)
+		if er && w.Status == 100 {
+			logs.Debug("停止接单")
+			Usercount=1
+			goto thisend
+		}else {
+			time.Sleep(time.Second*2)
+			goto thisstop
+		}
+	}
 }
 //关闭订单
-func ClossOrder(Userid,Usercount int)  {
+func ClossOrder(Userid,Usercount,timelen  int)  {
+	endtime:= time.Now().Add(time.Minute*time.Duration(timelen))
+	m, b := PretrialPush(Userid)
+	if b && m.Status == 100 {
+		if m.Data.UserReceiptOrderStatus == 0 {
+			logs.Debug("接单中...")
+		} else {
+			w, er := Working(Userid, 1)
+			if er && w.Status == 100 {
+				logs.Debug("开始接单成功")
+			} else {
+				logs.Error("开始接单失败")
+				fmt.Println("结束...")
+				return
+			}
+		}
+	} else {
+		logs.Error("开始接单失败", m.Msg)
+	}
+	thisend:
 	for i:=0;i<Usercount ;i++ {
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
-		m, b := PretrialPush(Userid)
-		if b && m.Status == 100 {
-			if m.Data.UserReceiptOrderStatus == 0 {
-				logs.Debug("接单中...")
-			} else {
-				w, er := Working(Userid, 1)
-				if er && w.Status == 100 {
-					logs.Debug("开始接单成功")
-				} else {
-					logs.Error("开始接单失败")
-					fmt.Println("结束...")
-					return
-				}
-			}
-		} else {
-			logs.Error("开始接单失败", m.Msg)
-		}
+		m, b = PretrialPush(Userid)
 		var temporder models.PretrialOrderInfo
 		//2,优先级 退回，预审中，新订单
 		if len(m.Data.Returnorder) > 0 {
@@ -295,6 +357,11 @@ func ClossOrder(Userid,Usercount int)  {
 			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
 			goto thisstart
 		} else { //无订单是停止3秒继续
+			if endtime.Before(time.Now())  {
+				logs.Debug("时间已到结束。。。")
+				break
+			}
+
 			time.Sleep(time.Second * 3)
 			goto thisstart
 		}
@@ -324,31 +391,48 @@ func ClossOrder(Userid,Usercount int)  {
 
 		logs.Debug("订单关闭操作结束", temporder.TaskID, Userid, txt)
 	}
+	fmt.Println("执行结束。。。。。。。。。")
+	if  m.Data.UserReceiptOrderStatus == 0 {
+	thisstop:
+		w, er := Working(Userid, 0)
+		if er && w.Status == 100 {
+			logs.Debug("停止接单")
+			Usercount=1
+			goto thisend
+		}else {
+			time.Sleep(time.Second*2)
+			goto thisstop
+		}
+	}
 }
 //机构审批
-func SourceSP(Userid,Usercount int)  {
+func SourceSP(Userid,Usercount,timelen  int)  {
+	endtime:= time.Now().Add(time.Minute*time.Duration(timelen))
+	m, b := PretrialPush(Userid)
+	if b && m.Status == 100 {
+		if m.Data.UserReceiptOrderStatus == 0 {
+			logs.Debug("接单中...")
+		} else {
+			w, er := Working(Userid, 1)
+			if er && w.Status == 100 {
+				logs.Debug("开始接单成功")
+			} else {
+				logs.Error("开始接单失败")
+				fmt.Println("结束...")
+				return
+			}
+		}
+	} else {
+		logs.Error("开始接单失败", m.Msg)
+		return
+	}
 
+	thisend:
 	for i:=0;i<Usercount ;i++ {
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
-		m, b := PretrialPush(Userid)
-		if b && m.Status == 100 {
-			if m.Data.UserReceiptOrderStatus == 0 {
-				logs.Debug("接单中...")
-			} else {
-				w, er := Working(Userid, 1)
-				if er && w.Status == 100 {
-					logs.Debug("开始接单成功")
-				} else {
-					logs.Error("开始接单失败")
-					fmt.Println("结束...")
-					return
-				}
-			}
-		} else {
-			logs.Error("开始接单失败", m.Msg)
-			return
-		}
+		m, b = PretrialPush(Userid)
+
 		var temporder models.PretrialOrderInfo
 		//2,优先级 退回，预审中，新订单
 		if len(m.Data.Returnorder) > 0 {
@@ -359,6 +443,11 @@ func SourceSP(Userid,Usercount int)  {
 			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
 			goto thisstart
 		} else { //无订单是停止3秒继续
+			if endtime.Before(time.Now())  {
+				logs.Debug("时间已到结束。。。")
+				break
+			}
+
 			time.Sleep(time.Second * 3)
 			goto thisstart
 		}
@@ -388,6 +477,19 @@ func SourceSP(Userid,Usercount int)  {
 			logs.Error("订单审批失败。。", temporder.TaskID, Userid, txt)
 		}
 		logs.Debug("订单审批操作结束", temporder.TaskID, Userid, txt)
+	}
+	fmt.Println("执行结束。。。。。。。。。")
+	if  m.Data.UserReceiptOrderStatus == 0 {
+	thisstop:
+		w, er := Working(Userid, 0)
+		if er && w.Status == 100 {
+			logs.Debug("停止接单")
+			Usercount=1
+			goto thisend
+		}else {
+			time.Sleep(time.Second*2)
+			goto thisstop
+		}
 	}
 }
 //获取图片列表
@@ -1066,3 +1168,4 @@ func TestInfoDate(vin string,taskid,userId int)bool {
 	}
 	return true
 }
+

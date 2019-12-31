@@ -530,7 +530,7 @@ func WriteOrderInfodetail(id int64,mo models.AppResultModel,Timelengthstr float6
 func SendPost(url string ,resmap map[string] string,filename string) ([]byte,bool)  {
 
 	token:=beego.AppConfig.String("app.userToken")
-	resmap["sigin"]=common.GetSign(resmap,token)
+	resmap["sign"]=common.GetSign(resmap,token)
 
 	body_buf := bytes.NewBufferString("")
 	body_writer := multipart.NewWriter(body_buf)
