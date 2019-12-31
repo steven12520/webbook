@@ -967,12 +967,12 @@ func ImgCheckUnPass(taskId,userId,itemId,video int,pic models.GetImgDetailReplyD
 	m["userId"] = strconv.Itoa(userId)
 	m["itemId"] = strconv.Itoa(itemId) //-1为视频
 
-	len:=len(pic.Data.TxtReturnList)
-	if len == 0 {
+	lens:=len(pic.Data.TxtReturnList)
+	if lens == 0 {
 		return Data,false
 	}
 
-	r:= common.RandInt64(1,int64(len))
+	r:= common.RandInt64(1,int64(lens))
 	mo:=pic.Data.TxtReturnList[r]
 
 	relist := make([]models.TaskReturnLogModel, 0)
@@ -1169,3 +1169,14 @@ func TestInfoDate(vin string,taskid,userId int)bool {
 	return true
 }
 
+//
+//Working、loginOut、GetOperateRecord、
+//GetOrderInfo、UnlockForkedOrder、ReciveOrderCheck、
+//ReciveOrderConfirm、GetProvincesAndCitys、GetCityAndProvinceByPlatName、
+//SaveFormData、CheckPassDescSearch、DeletePic、
+//YsyReturnSummaryReason_Save、DeletePic_YsAttach、Ys_AddRemark、
+//GetImgDetail、ImgCheckUnPass、ImgCheckPass、
+//ImgCheckUnPass_AttachDelete、ForkOrder、UnlockForkedOrder、
+//PretrailSubmitReject、PretrailSubmitBackOrg、PretrailSubmitBackOrg、
+//PretrailSubmitBack、PretrailSubmitPass、GetHistoryReports、
+//Ys_ImgCheckUnPassSummaryRemark、GetImgList
