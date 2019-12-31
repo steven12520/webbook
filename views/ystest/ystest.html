@@ -1,10 +1,50 @@
 <div class="layui-layout layui-layout-admin" style="padding-left: 40px;margin-top: 20px;">
 
     <form class="layui-form" action="" method="post" >
+
+
         <div class="layui-form-item">
-            <label class="layui-form-label">预审测试</label>
+            预审员：
+            <span class="fas1">
+                  <input type="checkbox" name="Userids"  title="ysy001" value="2082">
+            </span>
+            <span class="fas2">
+                  <input type="checkbox" name="Userids"  title="ysy002"value="2083">
+            </span>
+            <span class="fas3">
+                  <input type="checkbox" name="Userids"  title="ysy003"value="2084"> &nbsp;
+            </span>
+            <span class="fas4">
+                  <input type="checkbox" name="Userids"  title="ysy004"value="2085">
+            </span>
+            <span class="fas4">
+                  <input type="checkbox" name="Userids"  title="ysy005"value="2086">
+            </span>
+            <span class="fas4">
+                  <input type="checkbox" name="Userids"  title="ysy006"value="2087">
+            </span>
+            <span class="fas4">
+                  <input type="checkbox" name="Userids"  title="ysy007"value="2088">
+            </span>
+            <span class="fas4">
+                  <input type="checkbox" name="Userids"  title="ysy008"value="2089">
+            </span>
+            <span class="fas4">
+                  <input type="checkbox" name="Userids"  title="ysy009"value="2090">
+            </span>
+            <span class="fas4">
+                  <input type="checkbox" name="Userids"  title="ysy0010"value="2091">
+            </span>
+            <span class="fas4">
+                  <input type="checkbox" name="Userids"  title="QAysy3001"value="2076">
+            </span>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">平均数量</label>
             <div class="layui-input-inline">
-                <input type="text" name="Userid" id="Userid"  lay-verify="required" autocomplete="off" placeholder="预审员id" class="layui-input" value="2082">
+                <input type="text" name="Usercount" id="Usercount"  lay-verify="required" autocomplete="off" placeholder="平均数量" class="layui-input" value="10">
             </div>
             <div class="layui-form-mid layui-word-aux">*</div>
         </div>
@@ -42,9 +82,15 @@
         var $ = layui.jquery;
 
         form.on('submit(sub)', function(data){
-            var form_data = $("form").serialize();
-
-            $.post('/Ystest/Plays', form_data, function (out) {
+           // var form_data = $("form").serialize();
+            var Useridlist="";
+            $('input[name="Userids"]:checked').each(function(){
+                Useridlist+=$(this).val()+",";
+            });
+            var Ranges=$("input[name='Ranges']:checked").val();
+            var Usercount=$("#Usercount").val();
+            var jsData = {'Ranges':Ranges,"Useridlist":Useridlist,"Usercount":Usercount}
+            $.post('/Ystest/Plays', jsData, function (out) {
                 if (out.status == 0) {
                     layer.alert("提交成功")
                 }else {

@@ -10,6 +10,7 @@ import (
 	"time"
 	"github.com/astaxie/beego/logs"
 	"../common"
+	"strings"
 )
 type YstestController struct {
 	BaseController
@@ -18,38 +19,44 @@ type YstestController struct {
 var CityA = []string{"京A","京B","京C","京D","冀A","冀B","冀C","冀D"}
 
 func (self *YstestController) Ystest()  {
-
+	GetOperateRecord(168204)
 	self.Data["pageTitle"]="预审测试"
 	self.display()
 }
 
 func (self *YstestController) Plays()  {
 
-	Userid,_:=self.GetInt("Userid")
+	Useridlist:=self.GetString("Useridlist")
+
 	Ranges,_:=self.GetInt("Ranges")
-	if Userid==0 || Ranges==0  {
+	Usercount,_:=self.GetInt("Usercount")
+
+	if Useridlist=="" || Ranges==0  {
 		self.ajaxMsg("参数错误",MSG_ERR)
 	}
-
-
-	if Ranges==1 {//预审通过提交
-		logs.Debug("操作类型预审通过提交。。。。。。。。。")
-		go YSPassO(Userid)
-	}else if Ranges==2{//退回修改
-		logs.Debug("操作类型退回修改。。。。。。。。。")
-		go YSReturnUpdate(Userid)
-	}else if Ranges==3{//关闭订单
-		logs.Debug("操作类型关闭订单。。。。。。。。。")
-		go ClossOrder(Userid)
-	}else if Ranges==4{//机构审批
-		logs.Debug("操作类型机构审批。。。。。。。。。")
-		go SourceSP(Userid)
+	arr:=strings.Split(strings.TrimRight(Useridlist,",") ,",")
+	for _,Userid:=range arr  {
+		id,_:=strconv.Atoi(Userid)
+		if Ranges==1 {//预审通过提交
+			logs.Debug("操作类型预审通过提交。。。。。。。。。")
+			go YSPassO(id,Usercount)
+		}else if Ranges==2{//退回修改
+			logs.Debug("操作类型退回修改。。。。。。。。。")
+			go YSReturnUpdate(id,Usercount)
+		}else if Ranges==3{//关闭订单
+			logs.Debug("操作类型关闭订单。。。。。。。。。")
+			go ClossOrder(id,Usercount)
+		}else if Ranges==4{//机构审批
+			logs.Debug("操作类型机构审批。。。。。。。。。")
+			go SourceSP(id,Usercount)
+		}
 	}
+
 	self.ajaxMsg("成功",MSG_OK)
 }
 
 //预审通过完成提交
-func YSPassO(Userid int) {
+func YSPassO(Userid,Usercount int) {
 	for i := 0; i < 5; i++ {
 
 		//1，判断是否是接单状态，不是则改成接单,
@@ -138,252 +145,259 @@ func YSPassO(Userid int) {
 	fmt.Println("执行结束。。。。。。。。。")
 }
 //预审退回
-func YSReturnUpdate(Userid int)  {
-	//1，判断是否是接单状态，不是则改成接单,
+func YSReturnUpdate(Userid,Usercount int)  {
+	for i:=0;i<Usercount ;i++ {
+		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
 		m, b := PretrialPush(Userid)
-	if b && m.Status == 100 {
-		if m.Data.UserReceiptOrderStatus == 0 {
-			logs.Debug("接单中...")
-		} else {
-			w, er := Working(Userid, 1)
-			if er && w.Status == 100 {
-				logs.Debug("开始接单成功")
+		if b && m.Status == 100 {
+			if m.Data.UserReceiptOrderStatus == 0 {
+				logs.Debug("接单中...")
 			} else {
-				logs.Error("开始接单失败")
-				fmt.Println("结束...")
+				w, er := Working(Userid, 1)
+				if er && w.Status == 100 {
+					logs.Debug("开始接单成功")
+				} else {
+					logs.Error("开始接单失败")
+					fmt.Println("结束...")
+					return
+				}
+			}
+		} else {
+			logs.Error("开始接单失败", m.Msg)
+		}
+		var temporder models.PretrialOrderInfo
+		//2,优先级 退回，预审中，新订单
+		if len(m.Data.Returnorder) > 0 {
+			temporder = m.Data.Returnorder[0]
+		} else if len(m.Data.Selforder) > 0 {
+			temporder = m.Data.Selforder[0]
+		} else if len(m.Data.Neworder) > 0 {
+			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
+			goto thisstart
+		} else { //无订单是停止3秒继续
+			time.Sleep(time.Second * 3)
+			goto thisstart
+		}
+		if temporder.Status == 4 { //挂起
+			UnlockForkedOrder(temporder.TaskID, Userid)
+			goto thisstart
+		}
+		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid)
+		if !infoDate {
+			logs.Error("TestInfoDate 错误停止所有执行")
+			return
+		}
+		//3，审核图片
+		imgDate, bol := GetImgList(Userid, temporder.TaskID)
+		if bol && len(imgDate.Data.CarPicList) > 0 {
+			for _, list := range imgDate.Data.CarPicList {
+				//查看图片详情
+				ImgDetail, bol := GetImgDetail(temporder.TaskID, list.ItemId, Userid)
+				if !bol {
+					logs.Error("获取图片详情错误", temporder.TaskID, list.ItemId, Userid)
+					return
+				}
+				itemid := list.ItemId
+				p := int64(len(imgDate.Data.CarPicList))
+				r := common.RandInt64(1, p)
+				if r%2 == 0 {
+					//替换图片
+					date, bol := UploadPic(temporder.TaskID, list.Id, itemid)
+					if !bol || date.Status != 100 {
+						logs.Error("替换错误", temporder.TaskID, list.Id, itemid)
+						return
+					}
+				}
+				r = common.RandInt64(1, p)
+				if r%2 == 0 {
+					date, bol := ImgCheckPass(temporder.TaskID, Userid, itemid, 0)
+					if !bol || date.Status != 100 {
+						logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, itemid, 0)
+						return
+					}
+				} else {
+					date, bol := ImgCheckUnPass(temporder.TaskID, Userid, itemid, 0, ImgDetail)
+					if !bol || date.Status != 100 {
+						logs.Error("图片审不核通过出现错误", temporder.TaskID, Userid, itemid, 0)
+						return
+					}
+				}
+				//图片审核通过
+			}
+		}
+		//3，审核视频
+		if imgDate.Data.VedioInfo.Path != "" {
+			date, bol := ImgCheckPass(temporder.TaskID, Userid, -1, 1)
+			if !bol || date.Status != 100 {
+				logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, -1, 1)
 				return
 			}
 		}
-	}else {
-		logs.Error("开始接单失败",m.Msg)
-	}
-	var temporder models.PretrialOrderInfo
-	//2,优先级 退回，预审中，新订单
-	if len(m.Data.Returnorder) > 0 {
-		temporder = m.Data.Returnorder[0]
-	} else if len(m.Data.Selforder) > 0 {
-		temporder = m.Data.Selforder[0]
-	} else if len(m.Data.Neworder) > 0 {
-		ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
-		goto thisstart
-	} else { //无订单是停止3秒继续
-		time.Sleep(time.Second * 3)
-		goto thisstart
-	}
-	if temporder.Status == 4 { //挂起
-		UnlockForkedOrder(temporder.TaskID, Userid)
-		goto thisstart
-	}
-	infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid)
-	if !infoDate {
-		logs.Error("TestInfoDate 错误停止所有执行")
-		return
-	}
-	//3，审核图片
-	imgDate, bol := GetImgList(Userid, temporder.TaskID)
-	if bol && len(imgDate.Data.CarPicList) > 0 {
-		for _, list := range imgDate.Data.CarPicList {
-			//查看图片详情
-			ImgDetail, bol := GetImgDetail(temporder.TaskID, list.ItemId, Userid)
-			if !bol {
-				logs.Error("获取图片详情错误", temporder.TaskID, list.ItemId, Userid)
-				return
-			}
-			itemid := list.ItemId
-			p:= int64(len(imgDate.Data.CarPicList))
-			r:= common.RandInt64(1,p)
-			if r%2==0 {
-				//替换图片
-				date, bol := UploadPic(temporder.TaskID,list.Id,itemid)
-				if !bol || date.Status != 100 {
-					logs.Error("替换错误", temporder.TaskID,list.Id,itemid)
-					return
-				}
-			}
-			r= common.RandInt64(1,p)
-			if r%2==0 {
-				date, bol := ImgCheckPass(temporder.TaskID, Userid, itemid, 0)
-				if !bol || date.Status != 100 {
-					logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, itemid, 0)
-					return
-				}
-			}else {
-				date, bol := ImgCheckUnPass(temporder.TaskID, Userid, itemid, 0, ImgDetail)
-				if !bol || date.Status != 100 {
-					logs.Error("图片审不核通过出现错误", temporder.TaskID, Userid, itemid, 0)
-					return
-				}
-			}
-			//图片审核通过
-		}
-	}
-	//3，审核视频
-	if imgDate.Data.VedioInfo.Path != "" {
-		date, bol := ImgCheckPass(temporder.TaskID, Userid, -1, 1)
+		//3，保存基本信息
+		date, bol := SaveFormData(imgDate.Data.Tc, Userid)
 		if !bol || date.Status != 100 {
 			logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, -1, 1)
 			return
 		}
-	}
-	//3，保存基本信息
-	date, bol := SaveFormData(imgDate.Data.Tc, Userid)
-	if !bol || date.Status != 100 {
-		logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, -1, 1)
-		return
-	}
-	//4，添加附加照片
-	date, bol  = YsyReturnSummaryReason_Save(temporder.TaskID, Userid)
-	if !bol || date.Status != 100 {
-		logs.Error("添加附加图片错误", temporder.TaskID, Userid)
-		return
-	}
-	//5,退回修改入缓存
-	date, bol =Ys_ImgCheckUnPassSummaryRemark(temporder.TaskID, Userid)
+		//4，添加附加照片
+		date, bol = YsyReturnSummaryReason_Save(temporder.TaskID, Userid)
+		if !bol || date.Status != 100 {
+			logs.Error("添加附加图片错误", temporder.TaskID, Userid)
+			return
+		}
+		//5,退回修改入缓存
+		date, bol = Ys_ImgCheckUnPassSummaryRemark(temporder.TaskID, Userid)
 
-	if !bol || date.Status != 100 {
-		logs.Error("退回修改提存入缓存失败", temporder.TaskID, Userid)
-		return
-	}
-	//6,退回修改最终提交
-	date, bol =PretrailSubmitBack(temporder.TaskID, Userid)
+		if !bol || date.Status != 100 {
+			logs.Error("退回修改提存入缓存失败", temporder.TaskID, Userid)
+			return
+		}
+		//6,退回修改最终提交
+		date, bol = PretrailSubmitBack(temporder.TaskID, Userid)
 
-	if !bol || date.Status != 100 {
-		logs.Error("退回修改最终提交失败", temporder.TaskID, Userid)
-		return
+		if !bol || date.Status != 100 {
+			logs.Error("退回修改最终提交失败", temporder.TaskID, Userid)
+			return
+		}
+		logs.Debug("退回修改提交成功", temporder.TaskID, Userid)
 	}
-	logs.Debug("退回修改提交成功", temporder.TaskID, Userid)
-
 }
 //关闭订单
-func ClossOrder(Userid int)  {
-	//1，判断是否是接单状态，不是则改成接单,
+func ClossOrder(Userid,Usercount int)  {
+	for i:=0;i<Usercount ;i++ {
+		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
 		m, b := PretrialPush(Userid)
-	if b && m.Status == 100 {
-		if m.Data.UserReceiptOrderStatus == 0 {
-			logs.Debug("接单中...")
-		} else {
-			w, er := Working(Userid, 1)
-			if er && w.Status == 100 {
-				logs.Debug("开始接单成功")
+		if b && m.Status == 100 {
+			if m.Data.UserReceiptOrderStatus == 0 {
+				logs.Debug("接单中...")
 			} else {
-				logs.Error("开始接单失败")
-				fmt.Println("结束...")
-				return
+				w, er := Working(Userid, 1)
+				if er && w.Status == 100 {
+					logs.Debug("开始接单成功")
+				} else {
+					logs.Error("开始接单失败")
+					fmt.Println("结束...")
+					return
+				}
 			}
+		} else {
+			logs.Error("开始接单失败", m.Msg)
 		}
-	}else {
-		logs.Error("开始接单失败",m.Msg)
-	}
-	var temporder models.PretrialOrderInfo
-	//2,优先级 退回，预审中，新订单
-	if len(m.Data.Returnorder) > 0 {
-		temporder = m.Data.Returnorder[0]
-	} else if len(m.Data.Selforder) > 0 {
-		temporder = m.Data.Selforder[0]
-	} else if len(m.Data.Neworder) > 0 {
-		ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
-		goto thisstart
-	} else { //无订单是停止3秒继续
-		time.Sleep(time.Second * 3)
-		goto thisstart
-	}
-	if temporder.Status == 4 { //挂起
-		UnlockForkedOrder(temporder.TaskID, Userid)
-		goto thisstart
-	}
-	infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid)
-	if !infoDate {
-		logs.Error("TestInfoDate 错误停止所有执行")
-		return
-	}
-	//3，审核图片
-	imgDate, bol := GetImgList(Userid, temporder.TaskID)
-    count:=	len(imgDate.Data.RejectReasons)
-    txt:=""
+		var temporder models.PretrialOrderInfo
+		//2,优先级 退回，预审中，新订单
+		if len(m.Data.Returnorder) > 0 {
+			temporder = m.Data.Returnorder[0]
+		} else if len(m.Data.Selforder) > 0 {
+			temporder = m.Data.Selforder[0]
+		} else if len(m.Data.Neworder) > 0 {
+			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
+			goto thisstart
+		} else { //无订单是停止3秒继续
+			time.Sleep(time.Second * 3)
+			goto thisstart
+		}
+		if temporder.Status == 4 { //挂起
+			UnlockForkedOrder(temporder.TaskID, Userid)
+			goto thisstart
+		}
+		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid)
+		if !infoDate {
+			logs.Error("TestInfoDate 错误停止所有执行")
+			return
+		}
+		//3，审核图片
+		imgDate, bol := GetImgList(Userid, temporder.TaskID)
+		count := len(imgDate.Data.RejectReasons)
+		txt := ""
 
-	if bol && count > 0 {
-		r:=common.RandInt64(0,int64(count)-1)
-		txt= imgDate.Data.RejectReasons[r].Reason
-	}
-	txt+=",自动关闭备注"
-	date, b := PretrailSubmitReject(temporder.TaskID, Userid, txt)
-	if !b && date.Status!=100 {
-		logs.Error("订单关闭失败。。",temporder.TaskID, Userid, txt)
-	}
+		if bol && count > 0 {
+			r := common.RandInt64(0, int64(count)-1)
+			txt = imgDate.Data.RejectReasons[r].Reason
+		}
+		txt += ",自动关闭备注"
+		date, b := PretrailSubmitReject(temporder.TaskID, Userid, txt)
+		if !b && date.Status != 100 {
+			logs.Error("订单关闭失败。。", temporder.TaskID, Userid, txt)
+		}
 
-	logs.Debug("订单关闭操作结束",temporder.TaskID, Userid, txt)
+		logs.Debug("订单关闭操作结束", temporder.TaskID, Userid, txt)
+	}
 }
 //机构审批
-func SourceSP(Userid int)  {
-	//1，判断是否是接单状态，不是则改成接单,
-thisstart:
-	m, b := PretrialPush(Userid)
-	if b && m.Status == 100 {
-		if m.Data.UserReceiptOrderStatus == 0 {
-			logs.Debug("接单中...")
-		} else {
-			w, er := Working(Userid, 1)
-			if er && w.Status == 100 {
-				logs.Debug("开始接单成功")
-			} else {
-				logs.Error("开始接单失败")
-				fmt.Println("结束...")
-				return
-			}
-		}
-	}else {
-		logs.Error("开始接单失败",m.Msg)
-		return
-	}
-	var temporder models.PretrialOrderInfo
-	//2,优先级 退回，预审中，新订单
-	if len(m.Data.Returnorder) > 0 {
-		temporder = m.Data.Returnorder[0]
-	} else if len(m.Data.Selforder) > 0 {
-		temporder = m.Data.Selforder[0]
-	} else if len(m.Data.Neworder) > 0 {
-		ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
-		goto thisstart
-	} else { //无订单是停止3秒继续
-		time.Sleep(time.Second * 3)
-		goto thisstart
-	}
-	if temporder.Status == 4 { //挂起
-		UnlockForkedOrder(temporder.TaskID, Userid)
-		goto thisstart
-	}
-	infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid)
-	if !infoDate {
-		logs.Error("TestInfoDate 错误停止所有执行")
-		return
-	}
-	//3，审核图片
-	imgDate, bol := GetImgList(Userid, temporder.TaskID)
-	count:=	len(imgDate.Data.RejectReasons)
-	txt:=""
+func SourceSP(Userid,Usercount int)  {
 
-	if bol && count > 0 {
-		r:=common.RandInt64(0,int64(count)-1)
-		txt= imgDate.Data.RejectReasons[r].Reason
-	}else{
-		logs.Error("订单审批操错误。。",temporder.TaskID, Userid, txt)
+	for i:=0;i<Usercount ;i++ {
+		//1，判断是否是接单状态，不是则改成接单,
+	thisstart:
+		m, b := PretrialPush(Userid)
+		if b && m.Status == 100 {
+			if m.Data.UserReceiptOrderStatus == 0 {
+				logs.Debug("接单中...")
+			} else {
+				w, er := Working(Userid, 1)
+				if er && w.Status == 100 {
+					logs.Debug("开始接单成功")
+				} else {
+					logs.Error("开始接单失败")
+					fmt.Println("结束...")
+					return
+				}
+			}
+		} else {
+			logs.Error("开始接单失败", m.Msg)
+			return
+		}
+		var temporder models.PretrialOrderInfo
+		//2,优先级 退回，预审中，新订单
+		if len(m.Data.Returnorder) > 0 {
+			temporder = m.Data.Returnorder[0]
+		} else if len(m.Data.Selforder) > 0 {
+			temporder = m.Data.Selforder[0]
+		} else if len(m.Data.Neworder) > 0 {
+			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid)
+			goto thisstart
+		} else { //无订单是停止3秒继续
+			time.Sleep(time.Second * 3)
+			goto thisstart
+		}
+		if temporder.Status == 4 { //挂起
+			UnlockForkedOrder(temporder.TaskID, Userid)
+			goto thisstart
+		}
+		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid)
+		if !infoDate {
+			logs.Error("TestInfoDate 错误停止所有执行")
+			return
+		}
+		//3，审核图片
+		imgDate, bol := GetImgList(Userid, temporder.TaskID)
+		count := len(imgDate.Data.RejectReasons)
+		txt := ""
+
+		if bol && count > 0 {
+			r := common.RandInt64(0, int64(count)-1)
+			txt = imgDate.Data.RejectReasons[r].Reason
+		} else {
+			logs.Error("订单审批操错误。。", temporder.TaskID, Userid, txt)
+		}
+		txt += ",自动审批备注"
+		date, b := PretrailSubmitBackOrg(temporder.TaskID, Userid, txt)
+		if !b && date.Status != 100 {
+			logs.Error("订单审批失败。。", temporder.TaskID, Userid, txt)
+		}
+		logs.Debug("订单审批操作结束", temporder.TaskID, Userid, txt)
 	}
-	txt+=",自动审批备注"
-	date, b := PretrailSubmitBackOrg(temporder.TaskID, Userid, txt)
-	if !b && date.Status!=100 {
-		logs.Error("订单审批失败。。",temporder.TaskID, Userid, txt)
-	}
-	logs.Debug("订单审批操作结束",temporder.TaskID, Userid, txt)
 }
 //获取图片列表
 func GetImgList(userid,taskid int) (models.ResultDate,bool)  {
-	url:= beego.AppConfig.String("pgs.url")+"/APP/Pretrial/PretrialV2.ashx"
+	url:= beego.AppConfig.String("pgs.url")+"/APP/Pretrial/PretrialV2.ashx?"
 	m:=make(map[string]string,0)
 	m["op"]="GetImgList"
 	m["taskId"]=strconv.Itoa(taskid)
 	m["userId"]=strconv.Itoa(userid)
+
 	res,b:= httpdate.SendPost(url,m,"")
 	var Data models.ResultDate
 	if b {
@@ -407,6 +421,7 @@ func Working(userid,Working int)(models.ResultDate,bool)  {
 	m["op"]="Working"
 	m["Working"]=strconv.Itoa(Working)//1接单，0停止接单
 	m["userId"]=strconv.Itoa(userid)
+
 	res,b:= httpdate.SendPost(url,m,"")
 	var Data models.ResultDate
 	if b {
@@ -425,10 +440,9 @@ func Working(userid,Working int)(models.ResultDate,bool)  {
 }
 //拉取派单数据
 func PretrialPush(userid int)(models.PretrialPush,bool)  {
-	url:= beego.AppConfig.String("pgs.url")+"/APP/Pretrial/PretrialPush.ashx?userId="+strconv.Itoa(userid)
-	//url:= beego.AppConfig.String("pgs.url")+"/APP/Pretrial/PretrialPush.ashx?userId=2082"
+	url:= beego.AppConfig.String("pgs.url")+"/APP/Pretrial/PretrialPush.ashx"
 	m:=make(map[string]string,0)
-	//m["userId"]=strconv.Itoa(userid)
+	m["userId"]=strconv.Itoa(userid)
 	res,b:= httpdate.SendPost(url,m,"")
 	var Data models.PretrialPush
 	if b {
