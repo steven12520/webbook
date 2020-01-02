@@ -1,9 +1,25 @@
 package models
 
+type FJpic struct {
+	Msg       string
+	Status    int
+	PicId     int
+	PicName   string
+	PicItemId int
+	PicUrl    string
+}
+
+
 type ResultPublicDate struct {
 	Msg string	`json:"msg"`
 	Status int`json:"status"`
 }
+type CheckPassDescGroupDate struct {
+	Data CheckPassDescGroup
+	Msg string	`json:"msg"`
+	Status int`json:"status"`
+}
+
 
 //图片列表
 type ResultDate struct {
