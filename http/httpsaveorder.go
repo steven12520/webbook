@@ -573,12 +573,74 @@ func SendPost(url string ,resmap map[string] string,filename string) ([]byte,boo
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	endtime:=time.Now()
+
 	if err != nil {
 		logs.Error("读取回应消息异常SendPost:", err)
 		return resbyte,false
 	}
 	logs.Debug("接收返回数据SendPost:",string(body))
-	endtime:=time.Now()
+
 	fmt.Println("调用接口时间",starttime,endtime)
+
 	return body,true
+}
+
+func SendPostys(url string ,resmap map[string] string,filename string) ([]byte,bool,float64)  {
+
+	token:=beego.AppConfig.String("app.userToken")
+	resmap["sign"]=common.GetSign(resmap,token)
+	var Timelength float64=0
+	body_buf := bytes.NewBufferString("")
+	body_writer := multipart.NewWriter(body_buf)
+	var resbyte []byte
+	for k,v:=range resmap{
+		body_writer.WriteField(k, v)
+	}
+
+	if filename != "" {//上传文件
+		//  读取文件
+		_, err := body_writer.CreateFormFile("application", filename)
+		if err != nil {
+			logs.Error("创建FormFile2文件信息异常！", err)
+			return resbyte, false,Timelength
+		}
+		fb2, err := ioutil.ReadFile(filename)
+		if err != nil {
+			logs.Error("打开文件异常!", err)
+			return resbyte, false,Timelength
+		}
+		body_buf.Write(fb2)
+	}
+	// 结束整个消息body
+	body_writer.Close()
+
+	req_reader := io.MultiReader(body_buf)
+	req, err := http.NewRequest("POST", url, req_reader)
+	if err != nil {
+		logs.Error("SendPost error:", err)
+		return resbyte,false,Timelength
+	}
+	// 添加Post头
+	req.Header.Set("Connection", "close")
+	req.Header.Set("Pragma", "no-cache")
+	req.Header.Set("Content-Type", body_writer.FormDataContentType())
+	req.ContentLength = int64(body_buf.Len())
+	// 发送消息
+	client := &http.Client{}
+	starttime:=time.Now()
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	endtime:=time.Now()
+	Timelength=endtime.Sub(starttime).Seconds()
+	if err != nil {
+		logs.Error("读取回应消息异常SendPost:", err)
+		return resbyte,false,Timelength
+	}
+	logs.Debug("接收返回数据SendPost:",string(body))
+
+	fmt.Println("调用接口时间",starttime,endtime)
+
+	return body,true,Timelength
 }

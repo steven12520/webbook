@@ -17,7 +17,7 @@ type Ysyinfo struct {
 
 func (br Ysyinfo) Add() bool {
 
-	sql := "INSERT INTO Ysyinfo(Yname,Avgcount,Timelength,Types,Username)VALUES(?,?,?,?,?)"
+	sql := "INSERT INTO ysyinfo(yname,avgcount,timelength,types,username)VALUES(?,?,?,?,?)"
 
 	result, e := Db.Exec(sql, br.Yname, br.Avgcount,br.Timelength,br.Types,br.Username)
 	if e != nil {
@@ -41,7 +41,7 @@ type Ysyinfodetail struct {
 
 func (br Ysyinfodetail) Add() bool {
 
-	sql := "INSERT INTO Ysyinfodetail(Ysyid,Vin,Satus,Satusmsg,Userid)VALUES(?,?,?,?,?)"
+	sql := "INSERT INTO ysyinfodetail(ysyid,vin,satus,satusmsg,userid)VALUES(?,?,?,?,?)"
 
 	result, e := Db.Exec(sql, br.Ysyid, br.Vin,br.Satus,br.Satusmsg,br.Userid)
 	if e != nil {
@@ -54,7 +54,7 @@ func (br Ysyinfodetail) Add() bool {
 }
 func (b Ysyinfodetail) Update() bool {
 
-	sql := "UPDATE Ysyinfodetail SET Vin=?,Satus=?,Satusmsg=? WHERE id=?"
+	sql := "UPDATE ysyinfodetail SET vin=?,satus=?,satusmsg=? WHERE id=?"
 	_, e := Db.Exec(sql, b.Vin, b.Satus, b.Satusmsg, b.Id)
 
 	if e == nil {
@@ -79,7 +79,7 @@ type Ysyinfodetailinterfice struct {
 }
 func (br Ysyinfodetailinterfice) Add() bool {
 
-	sql := "INSERT INTO Ysyinfodetail(Ysyid,ysydid,iname,timelen,txt,status)VALUES(?,?,?,?,?,?)"
+	sql := "INSERT INTO ysyinfodetailinterfice(ysyid,ysydid,iname,timelen,txt,status)VALUES(?,?,?,?,?,?)"
 
 	_, e := Db.Exec(sql, br.Ysyid, br.Ysydid,br.Iname,br.Timelen,br.Txt,br.Status)
 	if e != nil {
