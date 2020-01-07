@@ -21,7 +21,8 @@ var CityA = []string{"京A", "京B", "京C", "京D", "冀A", "冀B", "冀C", "�
 
 func (self *YstestController) Ystest() {
 	//GetOperateRecord(168204)
-	insetinterfice(1,2,3,"","",4)
+
+	//GetImgDetail(169131, 240, 2083 ,0,0)
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
 }
@@ -83,33 +84,27 @@ func (self *YstestController) Plays() {
 func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 
 	endtime := time.Now().Add(time.Minute * time.Duration(timelen))
+	var ddid int64
+	ddvin:=""
 
-	var mo models.Ysyinfodetail
-	mo.Ysyid = Ysyid
-	mo.Userid = Userid
-	mo.Satus = 0
-	mo.Satusmsg = ""
-
-	mo.Add()
-	if mo.Id == 0 {
-		return
-	}
-	defer func(mo models.Ysyinfodetail) {
-
+	defer func(ddid int64) {
+		var mo models.Ysyinfodetail
+		mo.Id=ddid
 		if err := recover(); err != nil {
 			mo.Satus = 0
 			mo.Satusmsg = err.(string)
 			mo.Update()
+			common.Requestdderror(strconv.Itoa(Userid)+":"+err.(string))
 			return
 		}
-	}(mo)
+	}(ddid)
 
-	m, b := PretrialPush(Userid, Ysyid, mo.Id)
-	if b && m.Status == 100 {
+	m, _ := PretrialPush(Userid, Ysyid, 0)
+	if  m.Status == 100 {
 		if m.Data.UserReceiptOrderStatus == 0 {
 			logs.Debug("接单中...")
 		} else {
-			w, er := Working(Userid, 1, Ysyid, mo.Id)
+			w, er := Working(Userid, 1, Ysyid, 0)
 			if er && w.Status == 100 {
 				logs.Debug("开始接单成功")
 			} else {
@@ -120,13 +115,13 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 		}
 	} else {
 		logs.Error("开始接单失败", m.Msg)
-		panic("开始接单失败")
+		panic("开始接单失败"+m.Msg)
 	}
 
 	for i := 0; i < Usercount; i++ {
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
-		m, b = PretrialPush(Userid, Ysyid, mo.Id)
+		m, _ = PretrialPush(Userid, Ysyid, 0)
 
 		var temporder models.PretrialOrderInfo
 		//2,优先级 退回，预审中，新订单
@@ -135,7 +130,7 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 		} else if len(m.Data.Selforder) > 0 {
 			temporder = m.Data.Selforder[0]
 		} else if len(m.Data.Neworder) > 0 {
-			date, _ := ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid, Ysyid, mo.Id)
+			date, _ := ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid, Ysyid, 0)
 			if date.Status != 100 && date.Msg == "操作失败此订单已被操作！" {
 				Deleteorder(m.Data.Neworder[0].Vin)
 			}
@@ -150,12 +145,30 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 			logs.Debug("无订单停止2秒继续。。。")
 			goto thisstart
 		}
+
+		var mo models.Ysyinfodetail
+		mo.Ysyid = Ysyid
+		mo.Userid = Userid
+		mo.Satus = 0
+		mo.Satusmsg = ""
 		mo.Vin = temporder.Vin
+		if temporder.Vin!=ddvin{
+			mo.Add()
+			if mo.Id == 0 {
+				return
+			}
+			ddid=mo.Id
+			ddvin=temporder.Vin
+		}else {
+			mo.Id=ddid
+			temporder.Vin=ddvin
+		}
+
 		if temporder.Status == 4 { //挂起
 			date, _ := UnlockForkedOrder(temporder.TaskID, Userid, Ysyid, mo.Id)
 			if date.Status != 100 {
 				logs.Error("解除挂起失败", temporder.TaskID, Userid)
-				panic("解除挂起失败")
+				panic(date.Msg)
 			}
 			goto thisstart
 		} else {
@@ -163,7 +176,7 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 				date, _ := ForkOrder(temporder.TaskID, Userid, Ysyid, mo.Id)
 				if date.Status != 100 {
 					logs.Error("挂起失败", temporder.TaskID, Userid)
-					panic("挂起失败")
+					panic(date.Msg)
 				}
 				goto thisstart
 			}
@@ -231,10 +244,10 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 			logs.Error("图片审添加备注", temporder.TaskID, Userid, -1, 1)
 			panic("图片审添加备注")
 		}
-		date, bol = PretrailSubmitPass(temporder.TaskID, Userid, Ysyid, mo.Id)
-		if !bol || date.Status != 100 {
+		date, _ = PretrailSubmitPass(temporder.TaskID, Userid, Ysyid, mo.Id)
+		if  date.Status != 100 {
 			logs.Error("预审通过提交", temporder.TaskID, Userid, -1, 1)
-			panic("预审通过提交")
+			goto thisstart
 		}
 		mo.Satus = 1
 		mo.Satusmsg = "成功"
@@ -246,7 +259,7 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 
 	if m.Data.UserReceiptOrderStatus == 0 {
 	thisstop:
-		w, er := Working(Userid, 0, Ysyid, mo.Id)
+		w, er := Working(Userid, 0, Ysyid, 0)
 		if er && w.Status == 100 {
 			logs.Debug("停止接单")
 		} else {
@@ -261,32 +274,27 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 	endtime := time.Now().Add(time.Minute * time.Duration(timelen))
 
-	var mo models.Ysyinfodetail
-	mo.Ysyid = Ysyid
-	mo.Userid = Userid
-	mo.Satus = 0
-	mo.Satusmsg = ""
+	var ddid int64
+	ddvin:=""
 
-	mo.Add()
-	if mo.Id == 0 {
-		return
-	}
-	defer func(mo models.Ysyinfodetail) {
-
+	defer func(ddid int64) {
+		var mo models.Ysyinfodetail
+		mo.Id=ddid
 		if err := recover(); err != nil {
 			mo.Satus = 0
 			mo.Satusmsg = err.(string)
 			mo.Update()
+			common.Requestdderror(strconv.Itoa(Userid)+":"+err.(string))
 			return
 		}
-	}(mo)
+	}(ddid)
 
-	m, b := PretrialPush(Userid, Ysyid, mo.Id)
+	m, b := PretrialPush(Userid, Ysyid, 0)
 	if b && m.Status == 100 {
 		if m.Data.UserReceiptOrderStatus == 0 {
 			logs.Debug("接单中...")
 		} else {
-			w, er := Working(Userid, 1, Ysyid, mo.Id)
+			w, er := Working(Userid, 1, Ysyid, 0)
 			if er && w.Status == 100 {
 				logs.Debug("开始接单成功")
 			} else {
@@ -303,7 +311,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 	for i := 0; i < Usercount; i++ {
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
-		m, b = PretrialPush(Userid, Ysyid, mo.Id)
+		m, b = PretrialPush(Userid, Ysyid,0)
 
 		var temporder models.PretrialOrderInfo
 		//2,优先级 退回，预审中，新订单
@@ -312,7 +320,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 		} else if len(m.Data.Selforder) > 0 {
 			temporder = m.Data.Selforder[0]
 		} else if len(m.Data.Neworder) > 0 {
-			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid, Ysyid, mo.Id)
+			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid, Ysyid, 0)
 			goto thisstart
 		} else { //无订单是停止3秒继续
 			if endtime.Before(time.Now()) {
@@ -324,10 +332,27 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 			goto thisstart
 		}
 		if temporder.Status == 4 { //挂起
-			UnlockForkedOrder(temporder.TaskID, Userid, Ysyid, mo.Id)
+			UnlockForkedOrder(temporder.TaskID, Userid, Ysyid, 0)
 			goto thisstart
 		}
+		var mo models.Ysyinfodetail
+		mo.Ysyid = Ysyid
+		mo.Userid = Userid
+		mo.Satus = 0
+		mo.Satusmsg = ""
 		mo.Vin = temporder.Vin
+		if temporder.Vin!=ddvin{
+			mo.Add()
+			if mo.Id == 0 {
+				return
+			}
+			ddid=mo.Id
+			ddvin=temporder.Vin
+		}else {
+			mo.Id=ddid
+			temporder.Vin=ddvin
+		}
+
 		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid, Ysyid, mo.Id)
 		if !infoDate {
 			logs.Error("TestInfoDate 错误停止所有执行")
@@ -346,7 +371,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 				itemid := list.ItemId
 				p := int64(len(imgDate.Data.CarPicList))
 				r := common.RandInt64(1, p)
-				if r%2 == 0 {
+				if r%2 == 0 && common.RandInt64(1, 6)==2 {
 					//替换图片
 					date, bol := UploadPic(temporder.TaskID, list.Id, itemid, Ysyid, mo.Id)
 					if !bol || date.Status != 100 {
@@ -373,7 +398,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 						logs.Error("图片审不核通过出现错误", temporder.TaskID, Userid, itemid, 0)
 						panic("图片审不核通过出现错误")
 					}
-					if itemid%2 == 0 {
+					if itemid%2 == 0  && common.RandInt64(1, 6)==2  {
 						date, bol = ImgCheckUnPass_AttachDelete(temporder.TaskID, Userid, itemid, returnId, Ysyid, mo.Id)
 						if !bol || date.Status != 100 {
 							logs.Error("驳回图片删除出现错误", temporder.TaskID, Userid, itemid, returnId)
@@ -429,7 +454,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 	fmt.Println("执行结束。。。。。。。。。")
 	if m.Data.UserReceiptOrderStatus == 0 {
 	thisstop:
-		w, er := Working(Userid, 0, Ysyid, mo.Id)
+		w, er := Working(Userid, 0, Ysyid, 0)
 		if er && w.Status == 100 {
 			logs.Debug("停止接单")
 		} else {
@@ -442,32 +467,28 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 //关闭订单
 func ClossOrder(Userid, Usercount, timelen int, Ysyid int64) {
 	endtime := time.Now().Add(time.Minute * time.Duration(timelen))
-	var mo models.Ysyinfodetail
-	mo.Ysyid = Ysyid
-	mo.Userid = Userid
-	mo.Satus = 0
-	mo.Satusmsg = ""
 
-	mo.Add()
-	if mo.Id == 0 {
-		return
-	}
-	defer func(mo models.Ysyinfodetail) {
+	var ddid int64
+	ddvin:=""
 
+	defer func(ddid int64) {
+		var mo models.Ysyinfodetail
+		mo.Id=ddid
 		if err := recover(); err != nil {
 			mo.Satus = 0
 			mo.Satusmsg = err.(string)
 			mo.Update()
+			common.Requestdderror(strconv.Itoa(Userid)+":"+err.(string))
 			return
 		}
-	}(mo)
+	}(ddid)
 
-	m, b := PretrialPush(Userid, Ysyid, mo.Id)
+	m, b := PretrialPush(Userid, Ysyid, 0)
 	if b && m.Status == 100 {
 		if m.Data.UserReceiptOrderStatus == 0 {
 			logs.Debug("接单中...")
 		} else {
-			w, er := Working(Userid, 1, Ysyid, mo.Id)
+			w, er := Working(Userid, 1, Ysyid, 0)
 			if er && w.Status == 100 {
 				logs.Debug("开始接单成功")
 			} else {
@@ -482,7 +503,7 @@ func ClossOrder(Userid, Usercount, timelen int, Ysyid int64) {
 	for i := 0; i < Usercount; i++ {
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
-		m, b = PretrialPush(Userid, Ysyid, mo.Id)
+		m, b = PretrialPush(Userid, Ysyid, 0)
 		var temporder models.PretrialOrderInfo
 		//2,优先级 退回，预审中，新订单
 		if len(m.Data.Returnorder) > 0 {
@@ -490,7 +511,7 @@ func ClossOrder(Userid, Usercount, timelen int, Ysyid int64) {
 		} else if len(m.Data.Selforder) > 0 {
 			temporder = m.Data.Selforder[0]
 		} else if len(m.Data.Neworder) > 0 {
-			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid, Ysyid, mo.Id)
+			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid, Ysyid, 0)
 			goto thisstart
 		} else { //无订单是停止3秒继续
 			if endtime.Before(time.Now()) {
@@ -502,10 +523,26 @@ func ClossOrder(Userid, Usercount, timelen int, Ysyid int64) {
 			goto thisstart
 		}
 		if temporder.Status == 4 { //挂起
-			UnlockForkedOrder(temporder.TaskID, Userid, Ysyid, mo.Id)
+			UnlockForkedOrder(temporder.TaskID, Userid, Ysyid, 0)
 			goto thisstart
 		}
+		var mo models.Ysyinfodetail
+		mo.Ysyid = Ysyid
+		mo.Userid = Userid
+		mo.Satus = 0
+		mo.Satusmsg = ""
 		mo.Vin = temporder.Vin
+		if temporder.Vin!=ddvin{
+			mo.Add()
+			if mo.Id == 0 {
+				return
+			}
+			ddid=mo.Id
+			ddvin=temporder.Vin
+		}else {
+			mo.Id=ddid
+			temporder.Vin=ddvin
+		}
 		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid, Ysyid, mo.Id)
 		if !infoDate {
 			logs.Error("TestInfoDate 错误停止所有执行")
@@ -536,7 +573,7 @@ func ClossOrder(Userid, Usercount, timelen int, Ysyid int64) {
 	fmt.Println("执行结束。。。。。。。。。")
 	if m.Data.UserReceiptOrderStatus == 0 {
 	thisstop:
-		w, er := Working(Userid, 0, Ysyid, mo.Id)
+		w, er := Working(Userid, 0, Ysyid, 0)
 		if er && w.Status == 100 {
 			logs.Debug("停止接单")
 		} else {
@@ -550,32 +587,26 @@ func ClossOrder(Userid, Usercount, timelen int, Ysyid int64) {
 func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 	endtime := time.Now().Add(time.Minute * time.Duration(timelen))
 
-	var mo models.Ysyinfodetail
-	mo.Ysyid = Ysyid
-	mo.Userid = Userid
-	mo.Satus = 0
-	mo.Satusmsg = ""
+	var ddid int64
+	ddvin:=""
 
-	mo.Add()
-	if mo.Id == 0 {
-		return
-	}
-	defer func(mo models.Ysyinfodetail) {
-
+	defer func(ddid int64) {
+		var mo models.Ysyinfodetail
+		mo.Id=ddid
 		if err := recover(); err != nil {
 			mo.Satus = 0
 			mo.Satusmsg = err.(string)
 			mo.Update()
+			common.Requestdderror(strconv.Itoa(Userid)+":"+err.(string))
 			return
 		}
-	}(mo)
-
-	m, b := PretrialPush(Userid, Ysyid, mo.Id)
+	}(ddid)
+	m, b := PretrialPush(Userid, Ysyid, 0)
 	if b && m.Status == 100 {
 		if m.Data.UserReceiptOrderStatus == 0 {
 			logs.Debug("接单中...")
 		} else {
-			w, er := Working(Userid, 1, Ysyid, mo.Id)
+			w, er := Working(Userid, 1, Ysyid,0)
 			if er && w.Status == 100 {
 				logs.Debug("开始接单成功")
 			} else {
@@ -592,7 +623,7 @@ func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 	for i := 0; i < Usercount; i++ {
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
-		m, b = PretrialPush(Userid, Ysyid, mo.Id)
+		m, b = PretrialPush(Userid, Ysyid, 0)
 
 		var temporder models.PretrialOrderInfo
 		//2,优先级 退回，预审中，新订单
@@ -601,7 +632,7 @@ func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 		} else if len(m.Data.Selforder) > 0 {
 			temporder = m.Data.Selforder[0]
 		} else if len(m.Data.Neworder) > 0 {
-			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid, Ysyid, mo.Id)
+			ReciveOrderConfirm(m.Data.Neworder[0].TaskID, Userid, Ysyid, 0)
 			goto thisstart
 		} else { //无订单是停止3秒继续
 			if endtime.Before(time.Now()) {
@@ -613,10 +644,26 @@ func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 			goto thisstart
 		}
 		if temporder.Status == 4 { //挂起
-			UnlockForkedOrder(temporder.TaskID, Userid, Ysyid, mo.Id)
+			UnlockForkedOrder(temporder.TaskID, Userid, Ysyid, 0)
 			goto thisstart
 		}
+		var mo models.Ysyinfodetail
+		mo.Ysyid = Ysyid
+		mo.Userid = Userid
+		mo.Satus = 0
+		mo.Satusmsg = ""
 		mo.Vin = temporder.Vin
+		if temporder.Vin!=ddvin{
+			mo.Add()
+			if mo.Id == 0 {
+				return
+			}
+			ddid=mo.Id
+			ddvin=temporder.Vin
+		}else {
+			mo.Id=ddid
+			temporder.Vin=ddvin
+		}
 		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid, Ysyid, mo.Id)
 		if !infoDate {
 			logs.Error("TestInfoDate 错误停止所有执行")
@@ -651,7 +698,7 @@ func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 	fmt.Println("执行结束。。。。。。。。。")
 	if m.Data.UserReceiptOrderStatus == 0 {
 	thisstop:
-		w, er := Working(Userid, 0, Ysyid, mo.Id)
+		w, er := Working(Userid, 0, Ysyid, 0)
 		if er && w.Status == 100 {
 			logs.Debug("停止接单")
 		} else {
@@ -1567,6 +1614,10 @@ func UploadPic_YsAttach(taskid, itemId int, Ysyid, Ysydid int64) (models.FJpic, 
 }
 
 func insetinterfice(Ysyid, Ysydid int64, Status int, Txt, Iname string, Timelen float64) {
+
+	if Ysyid==0 || Ysydid==0 {
+		return
+	}
 
 	var m models.Ysyinfodetailinterfice
 	m.Ysyid = Ysyid

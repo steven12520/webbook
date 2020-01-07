@@ -2,8 +2,7 @@ package models
 
 import (
 	"github.com/astaxie/beego/logs"
-	"fmt"
-)
+	)
 
 type Ysyinfo struct {
 	Id         int64
@@ -15,7 +14,7 @@ type Ysyinfo struct {
 	Createtime string
 }
 
-func (br Ysyinfo) Add() bool {
+func (br *Ysyinfo) Add() bool {
 
 	sql := "INSERT INTO ysyinfo(yname,avgcount,timelength,types,username)VALUES(?,?,?,?,?)"
 
@@ -39,7 +38,7 @@ type Ysyinfodetail struct {
 	Userid int
 }
 
-func (br Ysyinfodetail) Add() bool {
+func (br *Ysyinfodetail) Add() bool {
 
 	sql := "INSERT INTO ysyinfodetail(ysyid,vin,satus,satusmsg,userid)VALUES(?,?,?,?,?)"
 
@@ -60,7 +59,7 @@ func (b Ysyinfodetail) Update() bool {
 	if e == nil {
 		return true
 	} else {
-		fmt.Println("Ysyinfodetail 保存失败", e.Error())
+		logs.Error("Ysyinfodetail 保存失败", e.Error())
 		return false
 	}
 }
