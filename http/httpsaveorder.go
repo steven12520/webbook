@@ -598,6 +598,14 @@ func SendPostys(url string ,resmap map[string] string,filename string) ([]byte,b
 		body_writer.WriteField(k, v)
 	}
 
+	defer func() {
+		i := recover()
+		if i!=nil{
+			marshal, _ := json.Marshal(resmap)
+			common.Requestdderror(string(marshal))
+		}
+	}()
+
 	if filename != "" {//上传文件
 		//  读取文件
 		_, err := body_writer.CreateFormFile("application", filename)
@@ -630,7 +638,7 @@ func SendPostys(url string ,resmap map[string] string,filename string) ([]byte,b
 	client := &http.Client{}
 	starttime:=time.Now()
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
+
 	body, err := ioutil.ReadAll(resp.Body)
 	endtime:=time.Now()
 	Timelength=endtime.Sub(starttime).Seconds()
@@ -641,6 +649,7 @@ func SendPostys(url string ,resmap map[string] string,filename string) ([]byte,b
 	logs.Debug("接收返回数据SendPost:",string(body))
 
 	fmt.Println("调用接口时间",starttime,endtime)
+	resp.Body.Close()
 
 	return body,true,Timelength
 }

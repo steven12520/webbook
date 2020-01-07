@@ -29,6 +29,13 @@ func (self *YstestController) Ystest() {
 
 func (self *YstestController) Plays() {
 
+	defer func() {
+		i := recover()
+		if i != nil {
+			common.Requestdderror("Plays error"+i.(string))
+		}
+	}()
+
 	Useridlist := self.GetString("Useridlist")
 
 	Ranges, _ := self.GetInt("Ranges")
@@ -186,7 +193,7 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid, Ysyid, mo.Id)
 		if !infoDate {
 			logs.Error("TestInfoDate 错误停止所有执行")
-			panic("错误停止所有执行")
+			panic("错误停止所有执行TestInfoDate")
 		}
 		//3，审核图片
 		imgDate, bol := GetImgList(Userid, temporder.TaskID, Ysyid, mo.Id)
@@ -711,7 +718,7 @@ func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 
 ////////////////////////////////接口逻辑//////////////////////////////////
 
-//获取图片列表
+//获取图片列表 ok
 func GetImgList(userid, taskid int, Ysyid, Ysydid int64) (models.ResultDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx?"
 	m := make(map[string]string, 0)
@@ -739,7 +746,7 @@ func GetImgList(userid, taskid int, Ysyid, Ysydid int64) (models.ResultDate, boo
 
 }
 
-//开始接单/停止接单
+//开始接单/停止接单 ok
 func Working(userid, Working int, Ysyid, Ysydid int64) (models.ResultDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -766,7 +773,7 @@ func Working(userid, Working int, Ysyid, Ysydid int64) (models.ResultDate, bool)
 	}
 }
 
-//拉取派单数据
+//拉取派单数据 ok
 func PretrialPush(userid int, Ysyid, Ysydid int64) (models.PretrialPush, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialPush.ashx"
 	m := make(map[string]string, 0)
@@ -788,7 +795,7 @@ func PretrialPush(userid int, Ysyid, Ysydid int64) (models.PretrialPush, bool) {
 	}
 }
 
-//获取历史订单
+//获取历史订单 t
 func GetHistoryReports(vin string, Ysyid, Ysydid int64) (models.OrderHistoryDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -811,7 +818,7 @@ func GetHistoryReports(vin string, Ysyid, Ysydid int64) (models.OrderHistoryDate
 	}
 }
 
-//获取操作历史
+//获取操作历史 t
 func GetOperateRecord(taskid int, Ysyid, Ysydid int64) (models.OperateLogDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -835,7 +842,7 @@ func GetOperateRecord(taskid int, Ysyid, Ysydid int64) (models.OperateLogDate, b
 	}
 }
 
-//获取图片详情
+//获取图片详情 ok
 func GetImgDetail(taskid, itemId, userId int, Ysyid, Ysydid int64) (models.GetImgDetailReplyDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -861,7 +868,7 @@ func GetImgDetail(taskid, itemId, userId int, Ysyid, Ysydid int64) (models.GetIm
 	}
 }
 
-//获取订单基本信息
+//获取订单基本信息 ok
 func GetOrderInfo(taskid, userId int, Ysyid, Ysydid int64) (models.OrderInfoModelDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -886,7 +893,7 @@ func GetOrderInfo(taskid, userId int, Ysyid, Ysydid int64) (models.OrderInfoMode
 	}
 }
 
-//获取省市列表
+//获取省市列表 ok
 func GetProvincesAndCitys(taskid, userId int, Ysyid, Ysydid int64) (models.ProvincesAndCitysVoDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -909,7 +916,7 @@ func GetProvincesAndCitys(taskid, userId int, Ysyid, Ysydid int64) (models.Provi
 	}
 }
 
-//根据车牌定位城市
+//根据车牌定位城市 ok
 func GetCityAndProvinceByPlatName(plateName string, Ysyid, Ysydid int64) (models.ProvinceCityModelDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -932,7 +939,7 @@ func GetCityAndProvinceByPlatName(plateName string, Ysyid, Ysydid int64) (models
 	}
 }
 
-//图片和视频审核通过
+//图片和视频审核通过 ok
 func ImgCheckPass(taskId, userId, itemId, video int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -962,7 +969,7 @@ func ImgCheckPass(taskId, userId, itemId, video int, Ysyid, Ysydid int64) (model
 	}
 }
 
-//基本信息保存
+//基本信息保存 ok
 func SaveFormData(model models.TaskCarBasicEPModel, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	var Data models.ResultPublicDate
@@ -1063,7 +1070,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 	//VIN码：	品牌型号：	出厂日期：	登记日期：	发动机号：	使用性质：	车牌号码：	上牌地区：	车身颜色：	表显里程
 }
 
-//预审通过提交
+//预审通过提交 ok
 func PretrailSubmitPass(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1088,7 +1095,7 @@ func PretrailSubmitPass(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	}
 }
 
-//解除挂起
+//解除挂起 ok
 func UnlockForkedOrder(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1112,7 +1119,7 @@ func UnlockForkedOrder(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPu
 	}
 }
 
-//认领验证
+//认领验证 ok
 func ReciveOrderCheck(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1138,7 +1145,7 @@ func ReciveOrderCheck(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPub
 	}
 }
 
-//订单认领
+//订单认领 ok
 func ReciveOrderConfirm(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -1167,7 +1174,7 @@ func ReciveOrderConfirm(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	}
 }
 
-//替换图片
+//替换图片 ok
 func UploadPic(taskId, picId, itemId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -1194,7 +1201,7 @@ func UploadPic(taskId, picId, itemId int, Ysyid, Ysydid int64) (models.ResultPub
 	}
 }
 
-//审核不通过加照片
+//审核不通过加照片 ok
 func Upload_SampleImg(taskId, userId, itemId, returnId int, Ysyid, Ysydid int64) (models.UploadPic, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -1223,7 +1230,7 @@ func Upload_SampleImg(taskId, userId, itemId, returnId int, Ysyid, Ysydid int64)
 	}
 }
 
-//审核不通过
+//审核不通过 ok
 func ImgCheckUnPass(taskId, userId, itemId, video int, pic models.GetImgDetailReplyDate, Ysyid, Ysydid int64) (models.ResultPublicDate, bool, int) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -1281,7 +1288,7 @@ func ImgCheckUnPass(taskId, userId, itemId, video int, pic models.GetImgDetailRe
 	}
 }
 
-//驳回新增附加图片
+//驳回新增附加图片 ok
 func YsyReturnSummaryReason_Save(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -1319,7 +1326,7 @@ func YsyReturnSummaryReason_Save(taskId, userId int, Ysyid, Ysydid int64) (model
 
 }
 
-//退回修改
+//退回修改 ok
 func Ys_ImgCheckUnPassSummaryRemark(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -1346,7 +1353,7 @@ func Ys_ImgCheckUnPassSummaryRemark(taskId, userId int, Ysyid, Ysydid int64) (mo
 	}
 }
 
-//退回修改
+//退回修改 ok
 func PretrailSubmitBack(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -1373,7 +1380,7 @@ func PretrailSubmitBack(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	}
 }
 
-//订单关闭
+//订单关闭 ok
 func PretrailSubmitReject(taskId, userId int, txt string, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -1400,7 +1407,7 @@ func PretrailSubmitReject(taskId, userId int, txt string, Ysyid, Ysydid int64) (
 	}
 }
 
-//机构审批提交
+//机构审批提交 ok
 func PretrailSubmitBackOrg(taskId, userId int, txt string, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1430,36 +1437,32 @@ func TestInfoDate(vin string, taskid, userId int, Ysyid, Ysydid int64) bool {
 	//历史报告
 	date, _ := GetHistoryReports(vin, Ysyid, Ysydid)
 	if date.Status != 100 {
-		logs.Error("TestInfoDate——GetHistoryReports 错误", vin)
-		return false
+		panic("TestInfoDate——GetHistoryReports 错误")
 	}
 	//操作历史
 	logDate, _ := GetOperateRecord(taskid, Ysyid, Ysydid)
 	if logDate.Status != 100 {
-		logs.Error("TestInfoDate——GetOperateRecord 错误", taskid)
-		return false
+		panic("TestInfoDate——GetOperateRecord 错误")
 	}
 	//获取订单基本信息
 	modelDate, _ := GetOrderInfo(taskid, userId, Ysyid, Ysydid)
 	if modelDate.Status != 100 {
-		logs.Error("TestInfoDate——GetOrderInfo 错误", taskid, userId)
-		return false
+		panic("TestInfoDate——GetOrderInfo 错误")
 	}
 	//获取省市列表
 	voDate, _ := GetProvincesAndCitys(taskid, userId, Ysyid, Ysydid)
 	if voDate.Status != 100 {
-		logs.Error("TestInfoDate——GetOrderInfo 错误", taskid, userId)
-		return false
+		panic("TestInfoDate——GetOrderInfo 错误")
 	}
 	groupDate, _ := CheckPassDescSearch(taskid, "订单", Ysyid, Ysydid)
 	if groupDate.Status != 100 {
 		logs.Error("TestInfoDate——CheckPassDescSearch 错误", taskid, userId)
-		return false
+		panic("TestInfoDate——CheckPassDescSearch 错误")
 	}
 	return true
 }
 
-//机构标准搜索
+//机构标准搜索 t
 func CheckPassDescSearch(taskid int, keyWord string, Ysyid, Ysydid int64) (models.CheckPassDescGroupDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1484,7 +1487,7 @@ func CheckPassDescSearch(taskid int, keyWord string, Ysyid, Ysydid int64) (model
 	}
 }
 
-//添加备注
+//添加备注 ok
 func Ys_AddRemark(taskid, userId int, remark string, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1510,7 +1513,7 @@ func Ys_AddRemark(taskid, userId int, remark string, Ysyid, Ysydid int64) (model
 	}
 }
 
-//删除图片,预审附件
+//删除图片,预审附件 ok
 func DeletePic_YsAttach(taskid, picId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1535,7 +1538,7 @@ func DeletePic_YsAttach(taskid, picId int, Ysyid, Ysydid int64) (models.ResultPu
 	}
 }
 
-//驳回图片删除
+//驳回图片删除 ok
 func ImgCheckUnPass_AttachDelete(taskid, userId, itemId, returnId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1562,7 +1565,7 @@ func ImgCheckUnPass_AttachDelete(taskid, userId, itemId, returnId int, Ysyid, Ys
 	}
 }
 
-//挂起订单
+//挂起订单 ok
 func ForkOrder(taskid, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1586,7 +1589,7 @@ func ForkOrder(taskid, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate
 	}
 }
 
-//附件图片操作记录显示
+//附件图片操作记录显示 ok
 func UploadPic_YsAttach(taskid, itemId int, Ysyid, Ysydid int64) (models.FJpic, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
