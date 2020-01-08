@@ -20,9 +20,10 @@ type YstestController struct {
 var CityA = []string{"京A", "京B", "京C", "京D", "冀A", "冀B", "冀C", "冀D"}
 
 func (self *YstestController) Ystest() {
-	//GetOperateRecord(168204)
+
 
 	//GetImgDetail(169131, 240, 2083 ,0,0)
+
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
 }
@@ -730,8 +731,8 @@ func GetImgList(userid, taskid int, Ysyid, Ysydid int64) (models.ResultDate, boo
 	var Data models.ResultDate
 	if b {
 		fmt.Println(string(res))
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		 json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -757,8 +758,8 @@ func Working(userid, Working int, Ysyid, Ysydid int64) (models.ResultDate, bool)
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			logs.Error(string(res))
 			return Data, false
 		}
@@ -781,8 +782,8 @@ func PretrialPush(userid int, Ysyid, Ysydid int64) (models.PretrialPush, bool) {
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.PretrialPush
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		 json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -795,7 +796,7 @@ func PretrialPush(userid int, Ysyid, Ysydid int64) (models.PretrialPush, bool) {
 	}
 }
 
-//获取历史订单 t
+//获取历史订单 ok
 func GetHistoryReports(vin string, Ysyid, Ysydid int64) (models.OrderHistoryDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -804,8 +805,9 @@ func GetHistoryReports(vin string, Ysyid, Ysydid int64) (models.OrderHistoryDate
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.OrderHistoryDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
+			fmt.Print(string(res))
 			return Data, false
 		}
 	}
@@ -818,7 +820,7 @@ func GetHistoryReports(vin string, Ysyid, Ysydid int64) (models.OrderHistoryDate
 	}
 }
 
-//获取操作历史 t
+//获取操作历史 ok
 func GetOperateRecord(taskid int, Ysyid, Ysydid int64) (models.OperateLogDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -828,13 +830,14 @@ func GetOperateRecord(taskid int, Ysyid, Ysydid int64) (models.OperateLogDate, b
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.OperateLogDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
+			fmt.Print(string(res))
 			return Data, false
 		}
+
 	}
 	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"GetOperateRecord",Timelength)
-
 	if Data.Status == 100 {
 		return Data, true
 	} else {
@@ -854,10 +857,11 @@ func GetImgDetail(taskid, itemId, userId int, Ysyid, Ysydid int64) (models.GetIm
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.GetImgDetailReplyDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
+
 	}
 	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"GetImgDetail",Timelength)
 
@@ -879,8 +883,8 @@ func GetOrderInfo(taskid, userId int, Ysyid, Ysydid int64) (models.OrderInfoMode
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.OrderInfoModelDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -902,8 +906,8 @@ func GetProvincesAndCitys(taskid, userId int, Ysyid, Ysydid int64) (models.Provi
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ProvincesAndCitysVoDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		 json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -925,8 +929,8 @@ func GetCityAndProvinceByPlatName(plateName string, Ysyid, Ysydid int64) (models
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ProvinceCityModelDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -955,8 +959,8 @@ func ImgCheckPass(taskId, userId, itemId, video int, Ysyid, Ysydid int64) (model
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		 json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1005,8 +1009,8 @@ func SaveFormData(model models.TaskCarBasicEPModel, userId int, Ysyid, Ysydid in
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		 json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1081,8 +1085,8 @@ func PretrailSubmitPass(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1105,8 +1109,8 @@ func UnlockForkedOrder(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPu
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1131,8 +1135,8 @@ func ReciveOrderCheck(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPub
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1160,8 +1164,8 @@ func ReciveOrderConfirm(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		 json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1187,8 +1191,8 @@ func UploadPic(taskId, picId, itemId int, Ysyid, Ysydid int64) (models.ResultPub
 	res, b,Timelength := httpdate.SendPostys(url, m, filename)
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1216,8 +1220,8 @@ func Upload_SampleImg(taskId, userId, itemId, returnId int, Ysyid, Ysydid int64)
 	res, b,Timelength := httpdate.SendPostys(url, m, filename)
 	var Data models.UploadPic
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1274,8 +1278,8 @@ func ImgCheckUnPass(taskId, userId, itemId, video int, pic models.GetImgDetailRe
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false, 0
 		}
 	}
@@ -1311,8 +1315,8 @@ func YsyReturnSummaryReason_Save(taskId, userId int, Ysyid, Ysydid int64) (model
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1339,8 +1343,8 @@ func Ys_ImgCheckUnPassSummaryRemark(taskId, userId int, Ysyid, Ysydid int64) (mo
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1366,8 +1370,8 @@ func PretrailSubmitBack(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1393,8 +1397,8 @@ func PretrailSubmitReject(taskId, userId int, txt string, Ysyid, Ysydid int64) (
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1418,8 +1422,8 @@ func PretrailSubmitBackOrg(taskId, userId int, txt string, Ysyid, Ysydid int64) 
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1462,7 +1466,7 @@ func TestInfoDate(vin string, taskid, userId int, Ysyid, Ysydid int64) bool {
 	return true
 }
 
-//机构标准搜索 t
+//机构标准搜索 ok
 func CheckPassDescSearch(taskid int, keyWord string, Ysyid, Ysydid int64) (models.CheckPassDescGroupDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
@@ -1473,8 +1477,8 @@ func CheckPassDescSearch(taskid int, keyWord string, Ysyid, Ysydid int64) (model
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.CheckPassDescGroupDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1499,8 +1503,8 @@ func Ys_AddRemark(taskid, userId int, remark string, Ysyid, Ysydid int64) (model
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1524,8 +1528,8 @@ func DeletePic_YsAttach(taskid, picId int, Ysyid, Ysydid int64) (models.ResultPu
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1551,8 +1555,8 @@ func ImgCheckUnPass_AttachDelete(taskid, userId, itemId, returnId int, Ysyid, Ys
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1576,8 +1580,8 @@ func ForkOrder(taskid, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1602,8 +1606,8 @@ func UploadPic_YsAttach(taskid, itemId int, Ysyid, Ysydid int64) (models.FJpic, 
 
 	var Data models.FJpic
 	if b {
-		err := json.Unmarshal(res, &Data)
-		if err != nil {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
 			return Data, false
 		}
 	}
@@ -1618,7 +1622,7 @@ func UploadPic_YsAttach(taskid, itemId int, Ysyid, Ysydid int64) (models.FJpic, 
 
 func insetinterfice(Ysyid, Ysydid int64, Status int, Txt, Iname string, Timelen float64) {
 
-	if Ysyid==0 || Ysydid==0 {
+	if Ysyid==0  {
 		return
 	}
 

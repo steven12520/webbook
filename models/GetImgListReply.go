@@ -48,7 +48,7 @@ type OrderHistoryDate struct {
 }
 //操作历史
 type OperateLogDate struct {
-	Data OperateLogModel
+	Data []OperateLogModel
 	Msg string	`json:"msg"`
 	Status int`json:"status"`
 }
@@ -66,7 +66,7 @@ type OperateLogModel struct {
 type GetImgDetailReplyDate struct {
 	Data GetImgDetailReply
 	Msg string	`json:"msg"`
-	Status int`json:"status"`
+	Status int `json:"status"`
 }
 
 //图片详情

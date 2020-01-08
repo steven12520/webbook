@@ -642,14 +642,12 @@ func SendPostys(url string ,resmap map[string] string,filename string) ([]byte,b
 	body, err := ioutil.ReadAll(resp.Body)
 	endtime:=time.Now()
 	Timelength=endtime.Sub(starttime).Seconds()
+	defer resp.Body.Close()
 	if err != nil {
 		logs.Error("读取回应消息异常SendPost:", err)
+		logs.Debug("接收返回数据SendPost:",string(body))
 		return resbyte,false,Timelength
 	}
-	logs.Debug("接收返回数据SendPost:",string(body))
-
-	fmt.Println("调用接口时间",starttime,endtime)
-	resp.Body.Close()
 
 	return body,true,Timelength
 }
