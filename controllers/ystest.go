@@ -22,7 +22,11 @@ var CityA = []string{"京A", "京B", "京C", "京D", "冀A", "冀B", "冀C", "�
 func (self *YstestController) Ystest() {
 
 
-	//GetImgDetail(169131, 240, 2083 ,0,0)
+	DeletePic(170389,5809422,0,0)
+	//Working(2083,1,0,0)
+	//UploadPic(170389, 0, 0 , 0, 0 )
+	//UploadPic(170389, 0, 0 , 0, 0 )
+	//DeletePic(170389,5809377,0,0)
 
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
@@ -196,8 +200,35 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 			logs.Error("TestInfoDate 错误停止所有执行")
 			panic("错误停止所有执行TestInfoDate")
 		}
+
+		//添加附加图片2张
+		publicDate, _ := UploadPic(temporder.TaskID, 0, 0, Ysyid, mo.Id)
+		if publicDate.Status!=100 {
+			logs.Error("上传附加图失败1", temporder.TaskID, 0, 0, Ysyid, mo.Id)
+			panic(publicDate.Msg)
+		}
+		publicDate, _ = UploadPic(temporder.TaskID, 0, 0, Ysyid, mo.Id)
+		if publicDate.Status!=100 {
+			logs.Error("上传附加图失败2", temporder.TaskID, 0, 0, Ysyid, mo.Id)
+			panic(publicDate.Msg)
+		}
+
 		//3，审核图片
 		imgDate, bol := GetImgList(Userid, temporder.TaskID, Ysyid, mo.Id)
+		l:=len(imgDate.Data.RedisPretrail.AddPicTemp)
+		deleteid:=0
+		if imgDate.Status==100 && l > 0 {
+			for _,k:=range imgDate.Data.RedisPretrail.AddPicTemp  {
+				deleteid=k.Id
+			}
+		}
+		resultPublicDate, _ := DeletePic(temporder.TaskID, deleteid, Ysyid, mo.Id)
+		if resultPublicDate.Status!=100 {
+			logs.Error("DeletePic附加图失败", temporder.TaskID, deleteid, Ysyid, mo.Id)
+			panic(resultPublicDate.Msg)
+
+		}
+		imgDate, bol = GetImgList(Userid, temporder.TaskID, Ysyid, mo.Id)
 		if bol && len(imgDate.Data.CarPicList) > 0 {
 			for _, list := range imgDate.Data.CarPicList {
 				itemid := list.ItemId
@@ -1178,7 +1209,7 @@ func ReciveOrderConfirm(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	}
 }
 
-//替换图片 ok
+//替换图片，上传附加 ok
 func UploadPic(taskId, picId, itemId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 
@@ -1619,6 +1650,31 @@ func UploadPic_YsAttach(taskid, itemId int, Ysyid, Ysydid int64) (models.FJpic, 
 	}
 
 }
+//删除附加
+func DeletePic(taskId,picId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
+	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
+	m := make(map[string]string, 0)
+	m["op"] = "DeletePic"
+	m["picId"] = strconv.Itoa(picId)
+	m["taskId"] = strconv.Itoa(taskId)
+
+	res, b,Timelength := httpdate.SendPostys(url, m, "")
+
+	var Data models.ResultPublicDate
+	if b {
+		json.Unmarshal(res, &Data)
+		if Data.Status != 100 {
+			return Data, false
+		}
+	}
+	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"UploadPic_YsAttach",Timelength)
+	if Data.Status == 100 {
+		return Data, true
+	} else {
+		return Data, false
+	}
+
+}
 
 func insetinterfice(Ysyid, Ysydid int64, Status int, Txt, Iname string, Timelen float64) {
 
@@ -1635,3 +1691,4 @@ func insetinterfice(Ysyid, Ysydid int64, Status int, Txt, Iname string, Timelen 
 	m.Timelen = Timelen
 	m.Add()
 }
+

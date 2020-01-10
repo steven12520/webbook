@@ -8,12 +8,16 @@ import (
 
 	"github.com/chenhg5/collection"
 	"github.com/astaxie/beego/logs"
+	"fmt"
+					"log"
+	"github.com/fogleman/gg"
 )
 type RpcTestController struct {
 	BaseController
 }
 
 func (self *RpcTestController) CreateOrders() {
+	createpic(1726)
 	self.Data["pageTitle"] = "创建订单"
 	self.display()
 }
@@ -113,6 +117,8 @@ func Createorder(isPretrial,procductlist,userid,configID int,orderId int64,vinc 
 			break
 		}
 
+		createpic(userid)
+
 		if procductlist == 11 || procductlist == 13 || procductlist == 14 {//快估
 			httpdate.Fast(userid,procductlist,vinnew,isPretrial,orderId)
 		}else {//非快估
@@ -127,6 +133,38 @@ func Createorder(isPretrial,procductlist,userid,configID int,orderId int64,vinc 
 	}
 
 }
+//创建特殊照片
+func createpic(userid int)string  {
+	var p models.PicSpecialSetModel
+	list:= p.GetPicSpecialSet(strconv.Itoa(userid))
+	for _,m:=range list{
+		fmt.Print(m.ItemID,m.Name)
+	}
+
+	rectangle := "E:\\pic\\test\\rectangle.png"
+
+	const S = 1024
+	im, err := gg.LoadImage(rectangle)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dc := gg.NewContext(S, S)
+	dc.SetRGB(1, 1, 1)
+	dc.Clear()
+	dc.SetRGB(0, 0, 0)
+
+	dc.DrawStringAnchored("Hello, world!", S/2, S/2, 0.5, 0.5)
+
+	dc.DrawRoundedRectangle(0, 0, 512, 512, 0)
+	dc.DrawImage(im, 0, 0)
+	dc.DrawStringAnchored("Hello, world!", S/2, S/2, 0.5, 0.5)
+	dc.Clip()
+	dc.SavePNG("E:\\pic\\test\\rectangle2.png")
+
+	return ""
+}
+
 //生成vin
 func InsertVin(sourceid int,vin string,ordercount int, cvin chan string)  {
 
