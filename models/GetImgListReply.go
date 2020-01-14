@@ -119,6 +119,7 @@ type GetImgDetailReply struct {
 	/// 获取Redis中缓存的json数据并序列化为对象
 	/// </summary>
 	RedisPretrail RedisPretrailModelV2
+	DrivingLicense  string
 }
 
 //获取订单基本信息

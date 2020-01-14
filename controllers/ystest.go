@@ -22,12 +22,12 @@ var CityA = []string{"京A", "京B", "京C", "京D", "冀A", "冀B", "冀C", "�
 func (self *YstestController) Ystest() {
 
 
-	DeletePic(170389,5809422,0,0)
+	//DeletePic(170389,5809422,0,0)
 	//Working(2083,1,0,0)
 	//UploadPic(170389, 0, 0 , 0, 0 )
 	//UploadPic(170389, 0, 0 , 0, 0 )
 	//DeletePic(170389,5809377,0,0)
-
+	//GetOrderInfo(1917299,10269,0,0)
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
 }
