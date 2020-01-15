@@ -387,7 +387,14 @@ func GetFastValue(userid int,procductlist int,vin string,isPretrial int) map[str
 			m7.PartCode=308
 			m7.ImageUrl="group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
 			list=append(list,m7)
-
+			var m8 	models.ImageList
+			m8.PartCode=293
+			m8.ImageUrl="group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			list=append(list,m8)
+			var m9 	models.ImageList
+			m9.PartCode=309
+			m9.ImageUrl="group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			list=append(list,m9)
 
 			j,e:=json.Marshal(list)
 			if e==nil {

@@ -131,6 +131,8 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 	}
 
 	for i := 0; i < Usercount; i++ {
+
+		fjcount:=0
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
 		m, _ = PretrialPush(Userid, Ysyid, 0)
@@ -202,15 +204,21 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 		}
 
 		//添加附加图片2张
-		publicDate, _ := UploadPic(temporder.TaskID, 0, 0, Ysyid, mo.Id)
-		if publicDate.Status!=100 {
-			logs.Error("上传附加图失败1", temporder.TaskID, 0, 0, Ysyid, mo.Id)
-			panic(publicDate.Msg)
+		if fjcount<9 {
+			publicDate, _ := UploadPic(temporder.TaskID, 0, 0, Ysyid, mo.Id)
+			if publicDate.Status!=100 {
+				logs.Error("上传附加图失败1", temporder.TaskID, 0, 0, Ysyid, mo.Id)
+				panic(publicDate.Msg)
+			}
+			fjcount+=1
 		}
-		publicDate, _ = UploadPic(temporder.TaskID, 0, 0, Ysyid, mo.Id)
-		if publicDate.Status!=100 {
-			logs.Error("上传附加图失败2", temporder.TaskID, 0, 0, Ysyid, mo.Id)
-			panic(publicDate.Msg)
+		if fjcount<9 {
+			publicDate, _ := UploadPic(temporder.TaskID, 0, 0, Ysyid, mo.Id)
+			if publicDate.Status!=100 {
+				logs.Error("上传附加图失败2", temporder.TaskID, 0, 0, Ysyid, mo.Id)
+				panic(publicDate.Msg)
+			}
+			fjcount+=1
 		}
 
 		//3，审核图片
@@ -222,12 +230,14 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 				deleteid=k.Id
 			}
 		}
-		resultPublicDate, _ := DeletePic(temporder.TaskID, deleteid, Ysyid, mo.Id)
-		if resultPublicDate.Status!=100 {
-			logs.Error("DeletePic附加图失败", temporder.TaskID, deleteid, Ysyid, mo.Id)
-			panic(resultPublicDate.Msg)
-
+		if	deleteid>0{
+			resultPublicDate, _ := DeletePic(temporder.TaskID, deleteid, Ysyid, mo.Id)
+			if resultPublicDate.Status!=100 {
+				logs.Error("DeletePic附加图失败", temporder.TaskID, deleteid, Ysyid, mo.Id)
+				panic(resultPublicDate.Msg)
+			}
 		}
+
 		imgDate, bol = GetImgList(Userid, temporder.TaskID, Ysyid, mo.Id)
 		if bol && len(imgDate.Data.CarPicList) > 0 {
 			for _, list := range imgDate.Data.CarPicList {
