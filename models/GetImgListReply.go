@@ -15,7 +15,7 @@ type ResultPublicDate struct {
 	Status int`json:"status"`
 }
 type CheckPassDescGroupDate struct {
-	Data CheckPassDescGroup
+	Data []CheckPassDescGroup
 	Msg string	`json:"msg"`
 	Status int`json:"status"`
 }
@@ -120,6 +120,9 @@ type GetImgDetailReply struct {
 	/// </summary>
 	RedisPretrail RedisPretrailModelV2
 	DrivingLicense  string
+	ProductType int
+	SourceID int
+	CarFullName string
 }
 
 //获取订单基本信息

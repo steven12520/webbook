@@ -576,11 +576,9 @@ func SendPost(url string ,resmap map[string] string,filename string) ([]byte,boo
 	req.ContentLength = int64(body_buf.Len())
 	// 发送消息
 	client := &http.Client{}
-	starttime:=time.Now()
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	endtime:=time.Now()
 
 	if err != nil {
 		logs.Error("读取回应消息异常SendPost:", err)
@@ -588,7 +586,7 @@ func SendPost(url string ,resmap map[string] string,filename string) ([]byte,boo
 	}
 	logs.Debug("接收返回数据SendPost:",string(body))
 
-	fmt.Println("调用接口时间",starttime,endtime)
+	fmt.Println(string(body))
 
 	return body,true
 }

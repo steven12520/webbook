@@ -28,6 +28,7 @@ func (self *YstestController) Ystest() {
 	//UploadPic(170389, 0, 0 , 0, 0 )
 	//DeletePic(170389,5809377,0,0)
 	//GetOrderInfo(1917299,10269,0,0)
+	CheckPassDescSearch(1880,9,204,"订单",0,0)
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
 }
@@ -1499,7 +1500,7 @@ func TestInfoDate(vin string, taskid, userId int, Ysyid, Ysydid int64) bool {
 	if voDate.Status != 100 {
 		panic("TestInfoDate——GetOrderInfo 错误")
 	}
-	groupDate, _ := CheckPassDescSearch(taskid, "订单", Ysyid, Ysydid)
+	groupDate, _ := CheckPassDescSearch(taskid, modelDate.Data.ProductType,modelDate.Data.SourceID,"订单", Ysyid, Ysydid)
 	if groupDate.Status != 100 {
 		logs.Error("TestInfoDate——CheckPassDescSearch 错误", taskid, userId)
 		panic("TestInfoDate——CheckPassDescSearch 错误")
@@ -1508,16 +1509,19 @@ func TestInfoDate(vin string, taskid, userId int, Ysyid, Ysydid int64) bool {
 }
 
 //机构标准搜索 ok
-func CheckPassDescSearch(taskid int, keyWord string, Ysyid, Ysydid int64) (models.CheckPassDescGroupDate, bool) {
+func CheckPassDescSearch(taskid,ProductType,SourceID int, keyWord string, Ysyid, Ysydid int64) (models.CheckPassDescGroupDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
 	m["op"] = "CheckPassDescSearch"
 	m["TaskID"] = strconv.Itoa(taskid)
 	m["keyWord"] = keyWord
+	m["ProductType"] = strconv.Itoa(ProductType)
+	m["SourceID"] = strconv.Itoa(SourceID)
 
 	res, b,Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.CheckPassDescGroupDate
 	if b {
+		fmt.Print(string(res))
 		json.Unmarshal(res, &Data)
 		if Data.Status != 100 {
 			return Data, false
