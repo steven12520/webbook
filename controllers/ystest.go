@@ -28,7 +28,7 @@ func (self *YstestController) Ystest() {
 	//UploadPic(170389, 0, 0 , 0, 0 )
 	//DeletePic(170389,5809377,0,0)
 	//GetOrderInfo(1917299,10269,0,0)
-	CheckPassDescSearch(1880,9,204,"订单",0,0)
+	//CheckPassDescSearch(1880,9,204,"订单",0,0)
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
 }

@@ -18,6 +18,7 @@ var vinmap map[string] int
 //获取vin
 func GetRandvin(vins string)string  {
 
+	var vin=make([]string,0)
 	defer func() {
 		re:=recover()
 		if re!=nil {
@@ -25,8 +26,6 @@ func GetRandvin(vins string)string  {
 		}
 	}()
 
-
-	var vin=make([]string,0)
 	for i:=0;i<17 ;i++  {
 		if i==8 {
 			vin=append(vin,"0" )
@@ -45,10 +44,9 @@ func GetRandvin(vins string)string  {
 	th:
 	c:= getCheck(vin)
 	if c>9 {
-		vin[17]=strconv.Itoa(i)
+		vin[16]=strconv.Itoa(i)
 		i++
 		goto th
-
 	}
 	vin[8]=strconv.Itoa(c)
 	return strings.Join(vin,"")

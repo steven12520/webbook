@@ -14,6 +14,9 @@ type RpcTestController struct {
 }
 
 func (self *RpcTestController) CreateOrders() {
+
+	vinchan:=make(chan string,1000)
+	InsertVin(1,"LJS0120",100,vinchan)
 	self.Data["pageTitle"] = "创建订单"
 	self.display()
 }
