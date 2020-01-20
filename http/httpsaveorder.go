@@ -310,7 +310,7 @@ func GetFastValue(userid int,procductlist int,vin string,isPretrial int) map[str
 	res["engineNum"]= "SDFASDF"
 	res["tokenid"]= "6"
 	res["seating"]= "2"
-	res["Address"]= "北京市"
+	res["Address"]= "中国北京市海淀区苏州街16号"
 	res["appVersion"]= "3.3.9"
 	res["registerCityId"]= "201"
 	res["color"]= "黑色"
