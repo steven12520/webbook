@@ -1,0 +1,82 @@
+<div class="layui-layout layui-layout-admin" style="padding-left: 20px;">
+    <div class="layui-btn-group demoTable" style="margin-top: 10px; ">
+    </div>
+    <div>
+
+        <div style="display: flex">
+
+            <input type="text" style="width: 200px" name="bookName" id="Taskid" lay-verify="required" autocomplete="off" placeholder="taskid" class="layui-input" value="1726">
+
+            <input id="seach" type="button" class="layui-btn" data-type="tabAdd" style="margin-left: 30px" value="查询">
+
+        </div>
+
+        <div style="font-size: 18px">
+
+
+
+            <p style="margin-top: 10px;" id="teshupic" >
+                <span class="teshupic">   </span>
+            </p>
+
+            <p style="margin-top: 30px;">
+                <input type="button" id="submit" style="display: none" value="提交"  >
+            </p>
+        </div>
+
+
+    </div>
+
+
+</div>
+<script>
+    var $;
+    layui.config({
+        base : "js/"
+    }).use(['table','element','layer','jquery'], function(){
+        $ = layui.jquery
+
+
+        //查询用户信息
+        $("#seach").click(function () {
+
+            $("#submit").hide();
+            var Taskid=$("#Taskid").val()
+            var jsData = {'Taskid':Taskid}
+
+            //特殊粘片获取
+            $.post('/KG/GetRes', jsData, function (out) {
+                if (out.code == 0) {
+
+                    var str="";
+
+                    if (out.data==6 || out.data==7) {
+                        str="可以补照片"
+                        $("#submit").show();
+                    }else {
+                        str="不可以补照片"
+                    }
+                    $(".teshupic").html(str);
+                }
+            }, "json");
+
+        });
+
+        $("#submit").click(function () {
+
+            var Taskid=$("#Taskid").val()
+            var jsData = {'Taskid':Taskid}
+
+            $.post('/KG/Commit', jsData, function (out) {
+                if (out.code == 0) {
+                    layer.alert("提交成功")
+                }else {
+                    layer.msg("提交失败，"+out.message)
+                }
+            }, "json");
+
+        });
+
+    });
+
+</script>

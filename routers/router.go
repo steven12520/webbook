@@ -22,5 +22,6 @@ func init() {
 	beego.AutoRouter(&controllers.InterficeController{})
 	beego.AutoRouter(&controllers.OrderInfoController{})
 	beego.AutoRouter(&controllers.YstestController{})
+	beego.AutoRouter(&controllers.KGController{})
 
 }

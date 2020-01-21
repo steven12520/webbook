@@ -656,3 +656,87 @@ func SendPostys(url string ,resmap map[string] string,filename string) ([]byte,b
 
 	return body,true,Timelength
 }
+
+func SendPostKG(taskid,userid int)int {
+
+	url:=beego.AppConfig.String("app.url")+"/App/TaskReconsideration.ashx"
+	filename:=beego.AppConfig.String("zip.kg")
+	token:=beego.AppConfig.String("app.userTokenet")
+	body_buf := bytes.NewBufferString("")
+	body_writer := multipart.NewWriter(body_buf)
+
+	// 1. 要上传的数据
+	resmap:=GetFastValueKG(taskid,userid)
+	sigin:=common.GetSign(resmap,token)
+	for k,v:=range resmap{
+		body_writer.WriteField(k, v)
+	}
+	body_writer.WriteField("sign", sigin)
+
+	// 3. 读取文件
+	_, err := body_writer.CreateFormFile("application", filename)
+	if err != nil {
+		logs.Error("创建FormFile2文件信息异常9！", err)
+		return 0
+	}
+	fb2, err := ioutil.ReadFile(filename)
+	if err != nil {
+		logs.Error("打开文件异常!SendPostFormFile9", err)
+		return 0
+	}
+	body_buf.Write(fb2)
+
+	// 结束整个消息body
+	body_writer.Close()
+
+
+	req_reader := io.MultiReader(body_buf)
+	req, err := http.NewRequest("POST", url, req_reader)
+	if err != nil {
+		logs.Error("SendPostKG error:", err)
+		return 0
+	}
+	// 添加Post头
+	req.Header.Set("Connection", "close")
+	req.Header.Set("Pragma", "no-cache")
+	req.Header.Set("Content-Type", body_writer.FormDataContentType())
+	req.ContentLength = int64(body_buf.Len())
+
+	// 发送消息
+	client := &http.Client{}
+	starttime:=time.Now()
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logs.Error("读取回应消息异常SendPostKG:", err)
+	}
+	logs.Debug("接收返回数据SendPostKG:",string(body))
+	endtime:=time.Now()
+	var res models.AppResultModel
+	json.Unmarshal(body,&res)
+	fmt.Println("调用接口时间",starttime,endtime)
+	if res.Status==100 {
+		return 1
+	}else {
+		return 0
+	}
+
+}
+
+//6张获取参数
+func GetFastValueKG(taskid,userId int) map[string]string {
+
+	res := make(map[string]string, 0)
+	res["op"] = "AllPic"
+	res["appVersion"] = "3.4.2"
+	res["tokenid"] ="6"
+	res["telephone"] = ""
+	res["id"] = strconv.Itoa(taskid)
+	res["equipmentNo"] = "B3B51F6D80E09F24FD6652BE50E51D80"
+	res["platType"] = "1"
+	res["userId"] = strconv.Itoa(userId)
+	res["deviceInfo"] ="{\"brand\":\"OPPO\",\"model\":\"\",\"osVersion\":\"5.1.1\",\"platform\":\"android\",\"resolution\":\"1080*1920\"}"
+
+	return res
+}

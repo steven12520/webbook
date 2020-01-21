@@ -119,6 +119,9 @@ func (t *TaskCarBasicModel) GetList()[]TaskCarBasicModel  {
 	if t.CreateUserId>0 {
 		strwhere+= " and CreateUserId ="+ strconv.Itoa(t.CreateUserId)
 	}
+	if t.Id>0 {
+		strwhere+= " and id ="+ strconv.Itoa(t.Id)
+	}
 	if strwhere=="" {
 		return nil
 	}
@@ -135,7 +138,23 @@ func (t *TaskCarBasicModel) GetList()[]TaskCarBasicModel  {
 		list = append(list, br)
 	}
 	return list
+}
 
+func (t *TaskCarBasicModel) GetRes()int  {
+	if t.Id==0 {
+		return 0
+	}
+	sql := "SELECT  Reconsideration  from TaskOnLineExpand where TaskID ="+strconv.Itoa(t.Id)
+
+	rows, e := Dbsql.Query(sql)
+	if e != nil {
+		fmt.Println("GetRes  error", e.Error())
+	}
+	Reconsideration := 0
+	for rows.Next() {
+		rows.Scan(&Reconsideration)
+	}
+	return Reconsideration
 }
 
 //删除订单
