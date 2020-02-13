@@ -1,12 +1,12 @@
 package models
 
 import (
+	_ "code.google.com/P/odbc"
+	"database/sql"
 	"fmt"
 	"github.com/astaxie/beego"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"database/sql"
-	_ "code.google.com/P/odbc"
 )
 
 var Db *sqlx.DB
@@ -35,7 +35,7 @@ func init() {
 	passwordm := beego.AppConfig.String("dbm.password")
 	portm := beego.AppConfig.String("dbm.port")
 	dbnamem := beego.AppConfig.String("dbm.name")
-	sql_conn_str := fmt.Sprintf("driver={sql server};server=%s;port=%s;uid=%s;pwd=%s;database=%s",hoststrm,portm,userm,passwordm,dbnamem)
+	sql_conn_str := fmt.Sprintf("driver={sql server};server=%s;port=%s;uid=%s;pwd=%s;database=%s", hoststrm, portm, userm, passwordm, dbnamem)
 
 	databasesql, err := sql.Open("odbc", sql_conn_str)
 

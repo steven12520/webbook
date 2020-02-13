@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"../models"
 	"../common"
+	"../models"
 	"strconv"
 )
 
@@ -62,8 +62,8 @@ func (self InterficeController) AjaxSave() {
 	m.Id, _ = self.GetInt("Id")
 	m.Iname = self.GetString("Iname")
 	m.Txt = self.GetString("Txt")
-	Ranges:=self.GetString("Ranges")
-	m.Ranges,_= strconv.Atoi(Ranges)
+	Ranges := self.GetString("Ranges")
+	m.Ranges, _ = strconv.Atoi(Ranges)
 
 	bol := false
 	if m.Id > 0 { //更新

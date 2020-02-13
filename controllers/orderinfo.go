@@ -3,6 +3,7 @@ package controllers
 import (
 	"../models"
 )
+
 type OrderInfoController struct {
 	BaseController
 }
@@ -89,7 +90,7 @@ func (self *OrderInfoController) GetOrderInfodetaillist() {
 		limit = 10
 	}
 	self.pageSize = limit
-	bookList := models.OrderinfodetailModel{}.GetList(page, limit,id)
+	bookList := models.OrderinfodetailModel{}.GetList(page, limit, id)
 	count := models.OrderinfodetailModel{}.GetCount(id)
 	if le != nil {
 		limit = 10
@@ -102,9 +103,9 @@ func (self *OrderInfoController) GetOrderInfodetaillist() {
 		m["Oid"] = b.Oid
 		m["Vin"] = b.Vin
 		m["Des"] = b.Des
-		if b.Status==1 {
+		if b.Status == 1 {
 			m["Status"] = "成功"
-		}else {
+		} else {
 			m["Status"] = "失败"
 		}
 		m["Timelength"] = b.Timelength

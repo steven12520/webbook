@@ -5,7 +5,6 @@ import (
 	"github.com/astaxie/beego/logs"
 )
 
-
 type OrderinfoModel struct {
 	Id         int64
 	CreateName string
@@ -17,12 +16,12 @@ type OrderinfoModel struct {
 	Createtime string
 }
 type OrderinfodetailModel struct {
-	Id 	int64
-	Oid	int64
+	Id         int64
+	Oid        int64
 	Timelength float64
-	Status	int
-	Vin string
-	Des string
+	Status     int
+	Vin        string
+	Des        string
 }
 
 func (b OrderinfoModel) GetList(page, pagesize int) []OrderinfoModel {
@@ -51,15 +50,15 @@ func (b OrderinfoModel) GetCount() (count int64) {
 		rows.Scan(&count)
 	}
 	if e != nil {
-		logs.Error("orderinfo GetCount error",e.Error())
+		logs.Error("orderinfo GetCount error", e.Error())
 	}
 	return count
 }
 
-func (b OrderinfodetailModel) GetList(page, pagesize,id int) []OrderinfodetailModel {
+func (b OrderinfodetailModel) GetList(page, pagesize, id int) []OrderinfodetailModel {
 
 	sql := "SELECT * FROM orderinfodetail"
-	sql += fmt.Sprintf(" where oid=%d limit %d,%d",id, (page-1)*pagesize, pagesize)
+	sql += fmt.Sprintf(" where oid=%d limit %d,%d", id, (page-1)*pagesize, pagesize)
 
 	list := make([]OrderinfodetailModel, 0)
 	er := Db.Select(&list, sql)
@@ -71,13 +70,13 @@ func (b OrderinfodetailModel) GetList(page, pagesize,id int) []OrderinfodetailMo
 
 func (b OrderinfodetailModel) GetCount(oid int) (count int64) {
 	sql := "select count(*)as 'count' from orderinfodetail"
-	sql+=fmt.Sprintf(" where oid=%d ",oid)
+	sql += fmt.Sprintf(" where oid=%d ", oid)
 	rows, e := Db.Query(sql)
 	for rows.Next() {
 		rows.Scan(&count)
 	}
 	if e != nil {
-		logs.Error("OrderinfodetailModel GetCount error",e.Error())
+		logs.Error("OrderinfodetailModel GetCount error", e.Error())
 	}
 	return count
 }
@@ -107,24 +106,22 @@ func (b *OrderinfodetailModel) Delete() bool {
 	}
 }
 
-
-
-func (o *OrderinfoModel)Save()bool  {
+func (o *OrderinfoModel) Save() bool {
 
 	sql := "INSERT INTO orderinfo(CreateName,Ordercount,Vin,Types,Gocount,Gotype)VALUES(?,?,?,?,?,?)"
-	result, e := Db.Exec(sql, o.CreateName,o.Ordercount, o.Vin,o.Types,o.Gocount,o.Gotype)
+	result, e := Db.Exec(sql, o.CreateName, o.Ordercount, o.Vin, o.Types, o.Gocount, o.Gotype)
 	if e != nil {
 		fmt.Println(" interfice add error", e.Error())
 		return false
 	} else {
-		o.Id,_=result.LastInsertId()
+		o.Id, _ = result.LastInsertId()
 		return true
 	}
 
 }
-func (o *OrderinfodetailModel)Save()bool  {
+func (o *OrderinfodetailModel) Save() bool {
 	sql := "INSERT INTO orderinfodetail(oid,timelength,status,des,Vin)VALUES(?,?,?,?,?)"
-	_, e := Db.Exec(sql, o.Oid, o.Timelength, o.Status, o.Des,o.Vin)
+	_, e := Db.Exec(sql, o.Oid, o.Timelength, o.Status, o.Des, o.Vin)
 	if e != nil {
 		fmt.Println(" interfice add error", e.Error())
 		return false

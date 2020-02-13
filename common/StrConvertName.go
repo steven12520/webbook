@@ -1,6 +1,6 @@
 package common
 
-func StrConvertNameBYRanges(id int)string  {
+func StrConvertNameBYRanges(id int) string {
 
 	switch id {
 	case 1:
@@ -15,7 +15,7 @@ func StrConvertNameBYRanges(id int)string  {
 	}
 }
 
-func StrConvertNameByconfigID(id int)string  {
+func StrConvertNameByconfigID(id int) string {
 
 	switch id {
 	case 1:
@@ -31,7 +31,7 @@ func StrConvertNameByconfigID(id int)string  {
 
 	}
 }
-func StrConvertNameByprocduct(id int)string  {
+func StrConvertNameByprocduct(id int) string {
 
 	switch id {
 	case 1:

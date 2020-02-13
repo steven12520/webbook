@@ -1,6 +1,5 @@
 package models
 
-
 type DeviceInfo struct {
 	Brand      string `json:"brand"`
 	Model      string `json:"model"`
@@ -9,9 +8,6 @@ type DeviceInfo struct {
 	Resolution string `json:"resolution"`
 }
 type ImageList struct {
-
-	PartCode      int `json:"partCode"`
-	ImageUrl      string `json:"imageUrl"`
-
+	PartCode int    `json:"partCode"`
+	ImageUrl string `json:"imageUrl"`
 }
-

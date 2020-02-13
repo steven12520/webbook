@@ -6,11 +6,10 @@ type Interfice struct {
 	Id         int
 	Iname      string
 	Txt        string
-	Ranges 		int
+	Ranges     int
 	Createtime string
-	Orders int
+	Orders     int
 }
-
 
 func (br Interfice) GetInterficeList() []Interfice {
 
@@ -24,7 +23,7 @@ func (br Interfice) GetInterficeList() []Interfice {
 	for rows.Next() {
 		var br Interfice
 
-		rows.Scan(&br.Id, &br.Iname, &br.Txt,&br.Ranges, &br.Createtime)
+		rows.Scan(&br.Id, &br.Iname, &br.Txt, &br.Ranges, &br.Createtime)
 		list = append(list, br)
 	}
 	return list
@@ -34,7 +33,7 @@ func (br Interfice) Add() bool {
 
 	sql := "INSERT INTO interfice(Iname,Txt,Ranges)VALUES(?,?,?)"
 
-	_, e := Db.Exec(sql, br.Iname, br.Txt,br.Ranges)
+	_, e := Db.Exec(sql, br.Iname, br.Txt, br.Ranges)
 	if e != nil {
 		fmt.Println(" interfice add error", e.Error())
 		return false
@@ -46,7 +45,7 @@ func (br Interfice) Add() bool {
 func (br Interfice) Update() bool {
 	sql := "UPDATE interfice SET Iname=?,Txt=?,Ranges=? WHERE Id=?"
 
-	_, e := Db.Exec(sql, br.Iname, br.Txt,br.Ranges, br.Id)
+	_, e := Db.Exec(sql, br.Iname, br.Txt, br.Ranges, br.Id)
 	if e != nil {
 		fmt.Println(" interfice Update error", e.Error())
 		return false

@@ -1,13 +1,12 @@
 package common
 
 import (
-	"os"
 	"archive/zip"
-	"io"
+	"github.com/astaxie/beego/logs"
 	"github.com/fogleman/gg"
-				"github.com/astaxie/beego/logs"
-		)
-
+	"io"
+	"os"
+)
 
 //压缩文件
 //files 文件数组，可以是不同dir下的文件或者文件夹
@@ -31,13 +30,13 @@ func compress(file *os.File, prefix string, zw *zip.Writer) error {
 		return err
 	}
 	if info.IsDir() {
-		prefix = prefix +  info.Name()
+		prefix = prefix + info.Name()
 		fileInfos, err := file.Readdir(-1)
 		if err != nil {
 			return err
 		}
 		for _, fi := range fileInfos {
-			f, err := os.Open(file.Name() +  fi.Name())
+			f, err := os.Open(file.Name() + fi.Name())
 			if err != nil {
 				return err
 			}
@@ -48,7 +47,7 @@ func compress(file *os.File, prefix string, zw *zip.Writer) error {
 		}
 	} else {
 		header, err := zip.FileInfoHeader(info)
-		header.Name = prefix +  header.Name
+		header.Name = prefix + header.Name
 		if err != nil {
 			return err
 		}
@@ -66,11 +65,11 @@ func compress(file *os.File, prefix string, zw *zip.Writer) error {
 }
 
 //创建特殊照片
-func Createpic(filename string)string  {
+func Createpic(filename string) string {
 
 	rectangle := "E:\\pic\\test\\rectangle.png"
 
-	filepath:="E:\\pic\\pic\\"+filename+".jpg"
+	filepath := "E:\\pic\\pic\\" + filename + ".jpg"
 
 	_, err := os.Stat(filepath)
 	if err == nil {
@@ -96,12 +95,11 @@ func Createpic(filename string)string  {
 	//dc.DrawStringAnchored("Hello, world!", S/2, S/2, 0.5, 0.5)
 	dc.Clip()
 
-	er:= dc.SavePNG(filepath)
+	er := dc.SavePNG(filepath)
 
 	if er == nil {
 		return filepath
-	}else {
+	} else {
 		return ""
 	}
 }
-

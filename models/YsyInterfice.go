@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/astaxie/beego/logs"
-	)
+)
 
 type Ysyinfo struct {
 	Id         int64
@@ -18,36 +18,35 @@ func (br *Ysyinfo) Add() bool {
 
 	sql := "INSERT INTO ysyinfo(yname,avgcount,timelength,types,username)VALUES(?,?,?,?,?)"
 
-	result, e := Db.Exec(sql, br.Yname, br.Avgcount,br.Timelength,br.Types,br.Username)
+	result, e := Db.Exec(sql, br.Yname, br.Avgcount, br.Timelength, br.Types, br.Username)
 	if e != nil {
 		logs.Error(" Ysyinfo add error", e.Error())
 		return false
 	} else {
-		br.Id,_=result.LastInsertId()
+		br.Id, _ = result.LastInsertId()
 		return true
 	}
 }
 
-
 type Ysyinfodetail struct {
-	Id     int64
-	Ysyid  int64
-	Vin    string
-	Satus  int
+	Id       int64
+	Ysyid    int64
+	Vin      string
+	Satus    int
 	Satusmsg string
-	Userid int
+	Userid   int
 }
 
 func (br *Ysyinfodetail) Add() bool {
 
 	sql := "INSERT INTO ysyinfodetail(ysyid,vin,satus,satusmsg,userid)VALUES(?,?,?,?,?)"
 
-	result, e := Db.Exec(sql, br.Ysyid, br.Vin,br.Satus,br.Satusmsg,br.Userid)
+	result, e := Db.Exec(sql, br.Ysyid, br.Vin, br.Satus, br.Satusmsg, br.Userid)
 	if e != nil {
 		logs.Error(" Ysyinfodetail add error", e.Error())
 		return false
 	} else {
-		br.Id,_=result.LastInsertId()
+		br.Id, _ = result.LastInsertId()
 		return true
 	}
 }
@@ -64,8 +63,6 @@ func (b Ysyinfodetail) Update() bool {
 	}
 }
 
-
-
 type Ysyinfodetailinterfice struct {
 	Id        int64
 	Ysyid     int64
@@ -76,11 +73,12 @@ type Ysyinfodetailinterfice struct {
 	Status    int
 	Cratetime string
 }
+
 func (br Ysyinfodetailinterfice) Add() bool {
 
 	sql := "INSERT INTO ysyinfodetailinterfice(ysyid,ysydid,iname,timelen,txt,status)VALUES(?,?,?,?,?,?)"
 
-	_, e := Db.Exec(sql, br.Ysyid, br.Ysydid,br.Iname,br.Timelen,br.Txt,br.Status)
+	_, e := Db.Exec(sql, br.Ysyid, br.Ysydid, br.Iname, br.Timelen, br.Txt, br.Status)
 	if e != nil {
 		logs.Error(" Ysyinfodetailinterfice add error", e.Error())
 		return false

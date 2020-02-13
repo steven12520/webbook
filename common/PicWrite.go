@@ -1,18 +1,18 @@
 package common
 
 import (
-	"github.com/golang/freetype"
-	"log"
-	"os"
 	"bufio"
-	"image/png"
-	"image/draw"
-	"fmt"
 	"flag"
-	"io/ioutil"
+	"fmt"
+	"github.com/golang/freetype"
+	"golang.org/x/image/font"
 	"image"
 	"image/color"
-	"golang.org/x/image/font"
+	"image/draw"
+	"image/png"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 var (

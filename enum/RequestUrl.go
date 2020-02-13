@@ -1,9 +1,5 @@
 package enum
 
 const (
-	EnumUrl string =""
+	EnumUrl string = ""
 )
-
-
-
-

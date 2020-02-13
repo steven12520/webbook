@@ -1,15 +1,15 @@
 package common
 
 import (
-	"net/http"
 	"bytes"
-	"log"
 	"fmt"
+	"log"
+	"net/http"
 )
 
 func Requestdderror(txt string) {
 	//如果有未发送新闻 请求钉钉webhook
-	body := "{\"msgtype\": \"text\",\"text\": {\"content\": \""+txt+"！\"},\"at\": {\"atMobiles\": [	\"15313256075\"],\"isAtAll\": false}}"
+	body := "{\"msgtype\": \"text\",\"text\": {\"content\": \"" + txt + "！\"},\"at\": {\"atMobiles\": [	\"15313256075\"],\"isAtAll\": false}}"
 
 	url := "https://oapi.dingtalk.com/robot/send?access_token=1d67c5c56787d95de9cd364884f4b9aca6a58a2cd76500c8150fc1bdc9055920"
 	jsonValue := []byte(body)

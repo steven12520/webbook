@@ -1,13 +1,11 @@
 package ziptest
 
-
-
 import (
 	"archive/zip"
 	"io"
 	"os"
 	"strings"
-	)
+)
 
 //压缩文件
 //files 文件数组，可以是不同dir下的文件或者文件夹
@@ -117,8 +115,6 @@ func subString(str string, start, end int) string {
 
 	return string(rs[start:end])
 }
-
-
 
 func TestCompress() {
 	f1, err := os.Open("D:\\zippath\\dada6\\267.jpg")

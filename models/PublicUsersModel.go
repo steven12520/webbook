@@ -56,22 +56,22 @@ type PublicUsersModel struct {
 	ShowPGTime           int
 }
 
-func (p *PublicUsersModel)GetPublicUsers() []PublicUsersModel {
+func (p *PublicUsersModel) GetPublicUsers() []PublicUsersModel {
 
 	list := make([]PublicUsersModel, 0)
 
-	if p.ID<=0 {
+	if p.ID <= 0 {
 		return list
 	}
-	sql := "SELECT * from PublicUsers where id="+strconv.Itoa(p.ID)
+	sql := "SELECT * from PublicUsers where id=" + strconv.Itoa(p.ID)
 
 	rows, e := Dbsql.Query(sql)
 
 	for rows.Next() {
 		var b PublicUsersModel
-		rows.Scan(&b.ID,&b.UserName,&b.Password,&b.Status,&b.CreateTime,&b.HeadPic,&b.Nickname,&b.GUID,&b.UserID,&b.AuthorityID,&b.telephone,&b.ProvinceID,&b.CityID,&b.Address,&b.Type,&b.TaskSourceId,&b.SetAppriasePrice,&b.IsWork,&b.UserType,&b.RegionId,&b.TaskToAllArea,&b.ShowPrice,&b.TaskToAffiliatedArea,&b.CanEditPassword,&b.UserProductType,&b.CanQueryCarClaims,&b.AppraiseRange,&b.UserMD5,&b.FastDFS,&b.PicParameter,&b.IsOrderCheck,&b.IsPalyCheckOrder,&b.PricePrecision,&b.ShowExpression,&b.ShowProgrammeName,&b.ShowProgrammeTime,&b.AppLogin,&b.PlaceOrder,&b.ExtendedWarranty,&b.OrderList,&b.ExtendedWarrantyList,&b.UserIdCS,&b.TokenId,&b.UserProperty,&b.UpdateTime,&b.PreUpdateTime,&b.PreOpUser,&b.ShowPGTime)
+		rows.Scan(&b.ID, &b.UserName, &b.Password, &b.Status, &b.CreateTime, &b.HeadPic, &b.Nickname, &b.GUID, &b.UserID, &b.AuthorityID, &b.telephone, &b.ProvinceID, &b.CityID, &b.Address, &b.Type, &b.TaskSourceId, &b.SetAppriasePrice, &b.IsWork, &b.UserType, &b.RegionId, &b.TaskToAllArea, &b.ShowPrice, &b.TaskToAffiliatedArea, &b.CanEditPassword, &b.UserProductType, &b.CanQueryCarClaims, &b.AppraiseRange, &b.UserMD5, &b.FastDFS, &b.PicParameter, &b.IsOrderCheck, &b.IsPalyCheckOrder, &b.PricePrecision, &b.ShowExpression, &b.ShowProgrammeName, &b.ShowProgrammeTime, &b.AppLogin, &b.PlaceOrder, &b.ExtendedWarranty, &b.OrderList, &b.ExtendedWarrantyList, &b.UserIdCS, &b.TokenId, &b.UserProperty, &b.UpdateTime, &b.PreUpdateTime, &b.PreOpUser, &b.ShowPGTime)
 
-		list = append(list,b)
+		list = append(list, b)
 	}
 	if e != nil {
 		fmt.Println("GetPublicUsers error!")
