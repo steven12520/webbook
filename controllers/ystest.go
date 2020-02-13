@@ -1,16 +1,16 @@
 package controllers
 
 import (
-	"../http"
-	"github.com/astaxie/beego"
-	"strconv"
-	"encoding/json"
-	"../models"
-	"fmt"
-	"time"
-	"github.com/astaxie/beego/logs"
 	"../common"
+	"../http"
+	"../models"
+	"encoding/json"
+	"fmt"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type YstestController struct {
@@ -20,7 +20,6 @@ type YstestController struct {
 var CityA = []string{"京A", "京B", "京C", "京D", "冀A", "冀B", "冀C", "冀D"}
 
 func (self *YstestController) Ystest() {
-
 
 	//DeletePic(170389,5809422,0,0)
 	//Working(2083,1,0,0)
@@ -38,7 +37,7 @@ func (self *YstestController) Plays() {
 	defer func() {
 		i := recover()
 		if i != nil {
-			common.Requestdderror("Plays error"+i.(string))
+			common.Requestdderror("Plays error" + i.(string))
 		}
 	}()
 
@@ -98,22 +97,22 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 
 	endtime := time.Now().Add(time.Minute * time.Duration(timelen))
 	var ddid int64
-	ddvin:=""
+	ddvin := ""
 
 	defer func(ddid int64) {
 		var mo models.Ysyinfodetail
-		mo.Id=ddid
+		mo.Id = ddid
 		if err := recover(); err != nil {
 			mo.Satus = 0
 			mo.Satusmsg = err.(string)
 			mo.Update()
-			common.Requestdderror(strconv.Itoa(Userid)+":"+err.(string))
+			common.Requestdderror(strconv.Itoa(Userid) + ":" + err.(string))
 			return
 		}
 	}(ddid)
 
 	m, _ := PretrialPush(Userid, Ysyid, 0)
-	if  m.Status == 100 {
+	if m.Status == 100 {
 		if m.Data.UserReceiptOrderStatus == 0 {
 			logs.Debug("接单中...")
 		} else {
@@ -128,12 +127,12 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 		}
 	} else {
 		logs.Error("开始接单失败", m.Msg)
-		panic("开始接单失败"+m.Msg)
+		panic("开始接单失败" + m.Msg)
 	}
 
 	for i := 0; i < Usercount; i++ {
 
-		fjcount:=0
+		fjcount := 0
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
 		m, _ = PretrialPush(Userid, Ysyid, 0)
@@ -167,16 +166,16 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 		mo.Satus = 0
 		mo.Satusmsg = ""
 		mo.Vin = temporder.Vin
-		if temporder.Vin!=ddvin{
+		if temporder.Vin != ddvin {
 			mo.Add()
 			if mo.Id == 0 {
 				return
 			}
-			ddid=mo.Id
-			ddvin=temporder.Vin
-		}else {
-			mo.Id=ddid
-			temporder.Vin=ddvin
+			ddid = mo.Id
+			ddvin = temporder.Vin
+		} else {
+			mo.Id = ddid
+			temporder.Vin = ddvin
 		}
 
 		if temporder.Status == 4 { //挂起
@@ -205,35 +204,35 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 		}
 
 		//添加附加图片2张
-		if fjcount<9 {
+		if fjcount < 9 {
 			publicDate, _ := UploadPic(temporder.TaskID, 0, 0, Ysyid, mo.Id)
-			if publicDate.Status!=100 {
+			if publicDate.Status != 100 {
 				logs.Error("上传附加图失败1", temporder.TaskID, 0, 0, Ysyid, mo.Id)
 				panic(publicDate.Msg)
 			}
-			fjcount+=1
+			fjcount += 1
 		}
-		if fjcount<9 {
+		if fjcount < 9 {
 			publicDate, _ := UploadPic(temporder.TaskID, 0, 0, Ysyid, mo.Id)
-			if publicDate.Status!=100 {
+			if publicDate.Status != 100 {
 				logs.Error("上传附加图失败2", temporder.TaskID, 0, 0, Ysyid, mo.Id)
 				panic(publicDate.Msg)
 			}
-			fjcount+=1
+			fjcount += 1
 		}
 
 		//3，审核图片
 		imgDate, bol := GetImgList(Userid, temporder.TaskID, Ysyid, mo.Id)
-		l:=len(imgDate.Data.RedisPretrail.AddPicTemp)
-		deleteid:=0
-		if imgDate.Status==100 && l > 0 {
-			for _,k:=range imgDate.Data.RedisPretrail.AddPicTemp  {
-				deleteid=k.Id
+		l := len(imgDate.Data.RedisPretrail.AddPicTemp)
+		deleteid := 0
+		if imgDate.Status == 100 && l > 0 {
+			for _, k := range imgDate.Data.RedisPretrail.AddPicTemp {
+				deleteid = k.Id
 			}
 		}
-		if	deleteid>0{
+		if deleteid > 0 {
 			resultPublicDate, _ := DeletePic(temporder.TaskID, deleteid, Ysyid, mo.Id)
-			if resultPublicDate.Status!=100 {
+			if resultPublicDate.Status != 100 {
 				logs.Error("DeletePic附加图失败", temporder.TaskID, deleteid, Ysyid, mo.Id)
 				panic(resultPublicDate.Msg)
 			}
@@ -295,7 +294,7 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 			panic("图片审添加备注")
 		}
 		date, _ = PretrailSubmitPass(temporder.TaskID, Userid, Ysyid, mo.Id)
-		if  date.Status != 100 {
+		if date.Status != 100 {
 			logs.Error("预审通过提交", temporder.TaskID, Userid, -1, 1)
 			goto thisstart
 		}
@@ -325,16 +324,16 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 	endtime := time.Now().Add(time.Minute * time.Duration(timelen))
 
 	var ddid int64
-	ddvin:=""
+	ddvin := ""
 
 	defer func(ddid int64) {
 		var mo models.Ysyinfodetail
-		mo.Id=ddid
+		mo.Id = ddid
 		if err := recover(); err != nil {
 			mo.Satus = 0
 			mo.Satusmsg = err.(string)
 			mo.Update()
-			common.Requestdderror(strconv.Itoa(Userid)+":"+err.(string))
+			common.Requestdderror(strconv.Itoa(Userid) + ":" + err.(string))
 			return
 		}
 	}(ddid)
@@ -361,7 +360,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 	for i := 0; i < Usercount; i++ {
 		//1，判断是否是接单状态，不是则改成接单,
 	thisstart:
-		m, b = PretrialPush(Userid, Ysyid,0)
+		m, b = PretrialPush(Userid, Ysyid, 0)
 
 		var temporder models.PretrialOrderInfo
 		//2,优先级 退回，预审中，新订单
@@ -391,16 +390,16 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 		mo.Satus = 0
 		mo.Satusmsg = ""
 		mo.Vin = temporder.Vin
-		if temporder.Vin!=ddvin{
+		if temporder.Vin != ddvin {
 			mo.Add()
 			if mo.Id == 0 {
 				return
 			}
-			ddid=mo.Id
-			ddvin=temporder.Vin
-		}else {
-			mo.Id=ddid
-			temporder.Vin=ddvin
+			ddid = mo.Id
+			ddvin = temporder.Vin
+		} else {
+			mo.Id = ddid
+			temporder.Vin = ddvin
 		}
 
 		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid, Ysyid, mo.Id)
@@ -421,7 +420,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 				itemid := list.ItemId
 				p := int64(len(imgDate.Data.CarPicList))
 				r := common.RandInt64(1, p)
-				if r%2 == 0 && common.RandInt64(1, 6)==2 {
+				if r%2 == 0 && common.RandInt64(1, 6) == 2 {
 					//替换图片
 					date, bol := UploadPic(temporder.TaskID, list.Id, itemid, Ysyid, mo.Id)
 					if !bol || date.Status != 100 {
@@ -448,7 +447,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 						logs.Error("图片审不核通过出现错误", temporder.TaskID, Userid, itemid, 0)
 						panic("图片审不核通过出现错误")
 					}
-					if itemid%2 == 0  && common.RandInt64(1, 6)==2  {
+					if itemid%2 == 0 && common.RandInt64(1, 6) == 2 {
 						date, bol = ImgCheckUnPass_AttachDelete(temporder.TaskID, Userid, itemid, returnId, Ysyid, mo.Id)
 						if !bol || date.Status != 100 {
 							logs.Error("驳回图片删除出现错误", temporder.TaskID, Userid, itemid, returnId)
@@ -519,16 +518,16 @@ func ClossOrder(Userid, Usercount, timelen int, Ysyid int64) {
 	endtime := time.Now().Add(time.Minute * time.Duration(timelen))
 
 	var ddid int64
-	ddvin:=""
+	ddvin := ""
 
 	defer func(ddid int64) {
 		var mo models.Ysyinfodetail
-		mo.Id=ddid
+		mo.Id = ddid
 		if err := recover(); err != nil {
 			mo.Satus = 0
 			mo.Satusmsg = err.(string)
 			mo.Update()
-			common.Requestdderror(strconv.Itoa(Userid)+":"+err.(string))
+			common.Requestdderror(strconv.Itoa(Userid) + ":" + err.(string))
 			return
 		}
 	}(ddid)
@@ -582,16 +581,16 @@ func ClossOrder(Userid, Usercount, timelen int, Ysyid int64) {
 		mo.Satus = 0
 		mo.Satusmsg = ""
 		mo.Vin = temporder.Vin
-		if temporder.Vin!=ddvin{
+		if temporder.Vin != ddvin {
 			mo.Add()
 			if mo.Id == 0 {
 				return
 			}
-			ddid=mo.Id
-			ddvin=temporder.Vin
-		}else {
-			mo.Id=ddid
-			temporder.Vin=ddvin
+			ddid = mo.Id
+			ddvin = temporder.Vin
+		} else {
+			mo.Id = ddid
+			temporder.Vin = ddvin
 		}
 		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid, Ysyid, mo.Id)
 		if !infoDate {
@@ -638,16 +637,16 @@ func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 	endtime := time.Now().Add(time.Minute * time.Duration(timelen))
 
 	var ddid int64
-	ddvin:=""
+	ddvin := ""
 
 	defer func(ddid int64) {
 		var mo models.Ysyinfodetail
-		mo.Id=ddid
+		mo.Id = ddid
 		if err := recover(); err != nil {
 			mo.Satus = 0
 			mo.Satusmsg = err.(string)
 			mo.Update()
-			common.Requestdderror(strconv.Itoa(Userid)+":"+err.(string))
+			common.Requestdderror(strconv.Itoa(Userid) + ":" + err.(string))
 			return
 		}
 	}(ddid)
@@ -656,7 +655,7 @@ func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 		if m.Data.UserReceiptOrderStatus == 0 {
 			logs.Debug("接单中...")
 		} else {
-			w, er := Working(Userid, 1, Ysyid,0)
+			w, er := Working(Userid, 1, Ysyid, 0)
 			if er && w.Status == 100 {
 				logs.Debug("开始接单成功")
 			} else {
@@ -703,16 +702,16 @@ func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 		mo.Satus = 0
 		mo.Satusmsg = ""
 		mo.Vin = temporder.Vin
-		if temporder.Vin!=ddvin{
+		if temporder.Vin != ddvin {
 			mo.Add()
 			if mo.Id == 0 {
 				return
 			}
-			ddid=mo.Id
-			ddvin=temporder.Vin
-		}else {
-			mo.Id=ddid
-			temporder.Vin=ddvin
+			ddid = mo.Id
+			ddvin = temporder.Vin
+		} else {
+			mo.Id = ddid
+			temporder.Vin = ddvin
 		}
 		infoDate := TestInfoDate(temporder.Vin, temporder.TaskID, Userid, Ysyid, mo.Id)
 		if !infoDate {
@@ -758,7 +757,6 @@ func SourceSP(Userid, Usercount, timelen int, Ysyid int64) {
 	}
 }
 
-
 ////////////////////////////////接口逻辑//////////////////////////////////
 
 //获取图片列表 ok
@@ -769,23 +767,22 @@ func GetImgList(userid, taskid int, Ysyid, Ysydid int64) (models.ResultDate, boo
 	m["taskId"] = strconv.Itoa(taskid)
 	m["userId"] = strconv.Itoa(userid)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultDate
 	if b {
 		fmt.Println(string(res))
-		 json.Unmarshal(res, &Data)
+		json.Unmarshal(res, &Data)
 		if Data.Status != 100 {
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"GetImgList",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "GetImgList", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
 	} else {
 		return Data, false
 	}
-
 
 }
 
@@ -797,7 +794,7 @@ func Working(userid, Working int, Ysyid, Ysydid int64) (models.ResultDate, bool)
 	m["Working"] = strconv.Itoa(Working) //1接单，0停止接单
 	m["userId"] = strconv.Itoa(userid)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -806,7 +803,7 @@ func Working(userid, Working int, Ysyid, Ysydid int64) (models.ResultDate, bool)
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"Working",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "Working", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -821,15 +818,15 @@ func PretrialPush(userid int, Ysyid, Ysydid int64) (models.PretrialPush, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialPush.ashx"
 	m := make(map[string]string, 0)
 	m["userId"] = strconv.Itoa(userid)
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.PretrialPush
 	if b {
-		 json.Unmarshal(res, &Data)
+		json.Unmarshal(res, &Data)
 		if Data.Status != 100 {
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"PretrialPush",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "PretrialPush", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -844,7 +841,7 @@ func GetHistoryReports(vin string, Ysyid, Ysydid int64) (models.OrderHistoryDate
 	m := make(map[string]string, 0)
 	m["vin"] = vin
 	m["op"] = "GetHistoryReports"
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.OrderHistoryDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -853,7 +850,7 @@ func GetHistoryReports(vin string, Ysyid, Ysydid int64) (models.OrderHistoryDate
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"GetHistoryReports",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "GetHistoryReports", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -869,7 +866,7 @@ func GetOperateRecord(taskid int, Ysyid, Ysydid int64) (models.OperateLogDate, b
 	m["op"] = "GetOperateRecord"
 	m["taskId"] = strconv.Itoa(taskid)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.OperateLogDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -879,7 +876,7 @@ func GetOperateRecord(taskid int, Ysyid, Ysydid int64) (models.OperateLogDate, b
 		}
 
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"GetOperateRecord",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "GetOperateRecord", Timelength)
 	if Data.Status == 100 {
 		return Data, true
 	} else {
@@ -896,7 +893,7 @@ func GetImgDetail(taskid, itemId, userId int, Ysyid, Ysydid int64) (models.GetIm
 	m["itemId"] = strconv.Itoa(itemId)
 	m["userId"] = strconv.Itoa(userId)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.GetImgDetailReplyDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -905,7 +902,7 @@ func GetImgDetail(taskid, itemId, userId int, Ysyid, Ysydid int64) (models.GetIm
 		}
 
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"GetImgDetail",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "GetImgDetail", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -922,7 +919,7 @@ func GetOrderInfo(taskid, userId int, Ysyid, Ysydid int64) (models.OrderInfoMode
 	m["taskId"] = strconv.Itoa(taskid)
 	m["userId"] = strconv.Itoa(userId)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.OrderInfoModelDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -930,7 +927,7 @@ func GetOrderInfo(taskid, userId int, Ysyid, Ysydid int64) (models.OrderInfoMode
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"GetOrderInfo",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "GetOrderInfo", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -945,15 +942,15 @@ func GetProvincesAndCitys(taskid, userId int, Ysyid, Ysydid int64) (models.Provi
 	m := make(map[string]string, 0)
 	m["op"] = "GetProvincesAndCitys"
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ProvincesAndCitysVoDate
 	if b {
-		 json.Unmarshal(res, &Data)
+		json.Unmarshal(res, &Data)
 		if Data.Status != 100 {
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"GetProvincesAndCitys",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "GetProvincesAndCitys", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -968,7 +965,7 @@ func GetCityAndProvinceByPlatName(plateName string, Ysyid, Ysydid int64) (models
 	m := make(map[string]string, 0)
 	m["op"] = "GetCityAndProvinceByPlatName"
 	m["plateName"] = plateName
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ProvinceCityModelDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -976,7 +973,7 @@ func GetCityAndProvinceByPlatName(plateName string, Ysyid, Ysydid int64) (models
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"GetCityAndProvinceByPlatName",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "GetCityAndProvinceByPlatName", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -994,19 +991,19 @@ func ImgCheckPass(taskId, userId, itemId, video int, Ysyid, Ysydid int64) (model
 	m["taskId"] = strconv.Itoa(taskId)
 	m["userId"] = strconv.Itoa(userId)
 	m["itemId"] = strconv.Itoa(itemId) //-1为视频
-	if video == 1 { //视频
+	if video == 1 {                    //视频
 		m["itemId"] = "-1" //-1为视频
 	}
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		 json.Unmarshal(res, &Data)
+		json.Unmarshal(res, &Data)
 		if Data.Status != 100 {
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"ImgCheckPass",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "ImgCheckPass", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1048,15 +1045,15 @@ func SaveFormData(model models.TaskCarBasicEPModel, userId int, Ysyid, Ysydid in
 	bytes, _ := json.Marshal(model)
 	m["data"] = string(bytes)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 
 	if b {
-		 json.Unmarshal(res, &Data)
+		json.Unmarshal(res, &Data)
 		if Data.Status != 100 {
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"SaveFormData",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "SaveFormData", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1124,7 +1121,7 @@ func PretrailSubmitPass(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	m["taskId"] = strconv.Itoa(taskId)
 	m["userId"] = strconv.Itoa(userId)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1132,7 +1129,7 @@ func PretrailSubmitPass(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"PretrailSubmitPass",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "PretrailSubmitPass", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1148,7 +1145,7 @@ func UnlockForkedOrder(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPu
 	m["op"] = "UnlockForkedOrder"
 	m["taskId"] = strconv.Itoa(taskId)
 	m["userId"] = strconv.Itoa(userId)
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1156,7 +1153,7 @@ func UnlockForkedOrder(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPu
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"UnlockForkedOrder",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "UnlockForkedOrder", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1174,7 +1171,7 @@ func ReciveOrderCheck(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPub
 	m["userId"] = strconv.Itoa(userId)
 	m["types"] = "1"
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1182,7 +1179,7 @@ func ReciveOrderCheck(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPub
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"ReciveOrderCheck",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "ReciveOrderCheck", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1203,15 +1200,15 @@ func ReciveOrderConfirm(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	m["op"] = "ReciveOrderConfirm"
 	m["taskId"] = strconv.Itoa(taskId)
 	m["userId"] = strconv.Itoa(userId)
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
-		 json.Unmarshal(res, &Data)
+		json.Unmarshal(res, &Data)
 		if Data.Status != 100 {
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"ReciveOrderConfirm",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "ReciveOrderConfirm", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1230,7 +1227,7 @@ func UploadPic(taskId, picId, itemId int, Ysyid, Ysydid int64) (models.ResultPub
 	m["picId"] = strconv.Itoa(picId)
 	m["itemId"] = strconv.Itoa(itemId)
 	filename := beego.AppConfig.String("pic.picth")
-	res, b,Timelength := httpdate.SendPostys(url, m, filename)
+	res, b, Timelength := httpdate.SendPostys(url, m, filename)
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1238,7 +1235,7 @@ func UploadPic(taskId, picId, itemId int, Ysyid, Ysydid int64) (models.ResultPub
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"UploadPic",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "UploadPic", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1259,7 +1256,7 @@ func Upload_SampleImg(taskId, userId, itemId, returnId int, Ysyid, Ysydid int64)
 	m["returnId"] = strconv.Itoa(returnId)
 
 	filename := beego.AppConfig.String("pic.picthpic")
-	res, b,Timelength := httpdate.SendPostys(url, m, filename)
+	res, b, Timelength := httpdate.SendPostys(url, m, filename)
 	var Data models.UploadPic
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1267,7 +1264,7 @@ func Upload_SampleImg(taskId, userId, itemId, returnId int, Ysyid, Ysydid int64)
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"Upload_SampleImg",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "Upload_SampleImg", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1299,7 +1296,7 @@ func ImgCheckUnPass(taskId, userId, itemId, video int, pic models.GetImgDetailRe
 	relist := make([]models.TaskReturnLogModel, 0)
 	mo.TitleText = "预审自动测试提交"
 	//可以上传图片
-	uploadPic, bol := Upload_SampleImg(taskId, userId, itemId, mo.TaskReturnLogModel.ReturnID,Ysyid, Ysydid )
+	uploadPic, bol := Upload_SampleImg(taskId, userId, itemId, mo.TaskReturnLogModel.ReturnID, Ysyid, Ysydid)
 	if !bol || uploadPic.Status != 100 {
 		logs.Error("驳回上传图片报错")
 		return Data, false, 0
@@ -1317,7 +1314,7 @@ func ImgCheckUnPass(taskId, userId, itemId, video int, pic models.GetImgDetailRe
 		m["itemId"] = "-1" //-1为视频
 	}
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1325,7 +1322,7 @@ func ImgCheckUnPass(taskId, userId, itemId, video int, pic models.GetImgDetailRe
 			return Data, false, 0
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"ImgCheckUnPass",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "ImgCheckUnPass", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true, mo.TaskReturnLogModel.ReturnID
@@ -1354,7 +1351,7 @@ func YsyReturnSummaryReason_Save(taskId, userId int, Ysyid, Ysydid int64) (model
 	jso, _ := json.Marshal(list)
 	m["data"] = string(jso)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1362,7 +1359,7 @@ func YsyReturnSummaryReason_Save(taskId, userId int, Ysyid, Ysydid int64) (model
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"YsyReturnSummaryReason_Save",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "YsyReturnSummaryReason_Save", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1382,7 +1379,7 @@ func Ys_ImgCheckUnPassSummaryRemark(taskId, userId int, Ysyid, Ysydid int64) (mo
 	m["userId"] = strconv.Itoa(userId)
 	m["remark"] = "订单退回修改备注123"
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1390,7 +1387,7 @@ func Ys_ImgCheckUnPassSummaryRemark(taskId, userId int, Ysyid, Ysydid int64) (mo
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"Ys_ImgCheckUnPassSummaryRemark",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "Ys_ImgCheckUnPassSummaryRemark", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1409,7 +1406,7 @@ func PretrailSubmitBack(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	m["userId"] = strconv.Itoa(userId)
 	m["txt"] = "订单退回修改备注123"
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1417,7 +1414,7 @@ func PretrailSubmitBack(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"PretrailSubmitBack",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "PretrailSubmitBack", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1436,7 +1433,7 @@ func PretrailSubmitReject(taskId, userId int, txt string, Ysyid, Ysydid int64) (
 	m["userId"] = strconv.Itoa(userId)
 	m["txt"] = txt
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1444,7 +1441,7 @@ func PretrailSubmitReject(taskId, userId int, txt string, Ysyid, Ysydid int64) (
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"PretrailSubmitReject",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "PretrailSubmitReject", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1461,7 +1458,7 @@ func PretrailSubmitBackOrg(taskId, userId int, txt string, Ysyid, Ysydid int64) 
 	m["taskId"] = strconv.Itoa(taskId)
 	m["userId"] = strconv.Itoa(userId)
 	m["txt"] = txt
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1469,7 +1466,7 @@ func PretrailSubmitBackOrg(taskId, userId int, txt string, Ysyid, Ysydid int64) 
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"PretrailSubmitBackOrg",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "PretrailSubmitBackOrg", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1500,7 +1497,7 @@ func TestInfoDate(vin string, taskid, userId int, Ysyid, Ysydid int64) bool {
 	if voDate.Status != 100 {
 		panic("TestInfoDate——GetOrderInfo 错误")
 	}
-	groupDate, _ := CheckPassDescSearch(taskid, modelDate.Data.ProductType,modelDate.Data.SourceID,"订单", Ysyid, Ysydid)
+	groupDate, _ := CheckPassDescSearch(taskid, modelDate.Data.ProductType, modelDate.Data.SourceID, "订单", Ysyid, Ysydid)
 	if groupDate.Status != 100 {
 		logs.Error("TestInfoDate——CheckPassDescSearch 错误", taskid, userId)
 		panic("TestInfoDate——CheckPassDescSearch 错误")
@@ -1509,7 +1506,7 @@ func TestInfoDate(vin string, taskid, userId int, Ysyid, Ysydid int64) bool {
 }
 
 //机构标准搜索 ok
-func CheckPassDescSearch(taskid,ProductType,SourceID int, keyWord string, Ysyid, Ysydid int64) (models.CheckPassDescGroupDate, bool) {
+func CheckPassDescSearch(taskid, ProductType, SourceID int, keyWord string, Ysyid, Ysydid int64) (models.CheckPassDescGroupDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
 	m["op"] = "CheckPassDescSearch"
@@ -1518,7 +1515,7 @@ func CheckPassDescSearch(taskid,ProductType,SourceID int, keyWord string, Ysyid,
 	m["ProductType"] = strconv.Itoa(ProductType)
 	m["SourceID"] = strconv.Itoa(SourceID)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.CheckPassDescGroupDate
 	if b {
 		fmt.Print(string(res))
@@ -1527,7 +1524,7 @@ func CheckPassDescSearch(taskid,ProductType,SourceID int, keyWord string, Ysyid,
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"CheckPassDescSearch",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "CheckPassDescSearch", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1545,7 +1542,7 @@ func Ys_AddRemark(taskid, userId int, remark string, Ysyid, Ysydid int64) (model
 	m["userId"] = strconv.Itoa(userId)
 	m["remark"] = remark
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1553,7 +1550,7 @@ func Ys_AddRemark(taskid, userId int, remark string, Ysyid, Ysydid int64) (model
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"Ys_AddRemark",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "Ys_AddRemark", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1570,7 +1567,7 @@ func DeletePic_YsAttach(taskid, picId int, Ysyid, Ysydid int64) (models.ResultPu
 	m["TaskID"] = strconv.Itoa(taskid)
 	m["picId"] = strconv.Itoa(picId)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1578,7 +1575,7 @@ func DeletePic_YsAttach(taskid, picId int, Ysyid, Ysydid int64) (models.ResultPu
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"DeletePic_YsAttach",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "DeletePic_YsAttach", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1597,7 +1594,7 @@ func ImgCheckUnPass_AttachDelete(taskid, userId, itemId, returnId int, Ysyid, Ys
 	m["itemId"] = strconv.Itoa(itemId)
 	m["returnId"] = strconv.Itoa(returnId)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1605,7 +1602,7 @@ func ImgCheckUnPass_AttachDelete(taskid, userId, itemId, returnId int, Ysyid, Ys
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"ImgCheckUnPass_AttachDelete",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "ImgCheckUnPass_AttachDelete", Timelength)
 
 	if Data.Status == 100 {
 		return Data, true
@@ -1622,7 +1619,7 @@ func ForkOrder(taskid, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate
 	m["TaskID"] = strconv.Itoa(taskid)
 	m["userId"] = strconv.Itoa(userId)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1630,7 +1627,7 @@ func ForkOrder(taskid, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"ForkOrder",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "ForkOrder", Timelength)
 	if Data.Status == 100 {
 		return Data, true
 	} else {
@@ -1647,7 +1644,7 @@ func UploadPic_YsAttach(taskid, itemId int, Ysyid, Ysydid int64) (models.FJpic, 
 	m["itemId"] = strconv.Itoa(itemId)
 	pic := beego.AppConfig.String("pic.picczjl")
 
-	res, b,Timelength := httpdate.SendPostys(url, m, pic)
+	res, b, Timelength := httpdate.SendPostys(url, m, pic)
 
 	var Data models.FJpic
 	if b {
@@ -1656,7 +1653,7 @@ func UploadPic_YsAttach(taskid, itemId int, Ysyid, Ysydid int64) (models.FJpic, 
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"UploadPic_YsAttach",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "UploadPic_YsAttach", Timelength)
 	if Data.Status == 100 {
 		return Data, true
 	} else {
@@ -1664,15 +1661,16 @@ func UploadPic_YsAttach(taskid, itemId int, Ysyid, Ysydid int64) (models.FJpic, 
 	}
 
 }
+
 //删除附加
-func DeletePic(taskId,picId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
+func DeletePic(taskId, picId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
 	m["op"] = "DeletePic"
 	m["picId"] = strconv.Itoa(picId)
 	m["taskId"] = strconv.Itoa(taskId)
 
-	res, b,Timelength := httpdate.SendPostys(url, m, "")
+	res, b, Timelength := httpdate.SendPostys(url, m, "")
 
 	var Data models.ResultPublicDate
 	if b {
@@ -1681,7 +1679,7 @@ func DeletePic(taskId,picId int, Ysyid, Ysydid int64) (models.ResultPublicDate, 
 			return Data, false
 		}
 	}
-	go insetinterfice(Ysyid, Ysydid,Data.Status,Data.Msg,"UploadPic_YsAttach",Timelength)
+	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "UploadPic_YsAttach", Timelength)
 	if Data.Status == 100 {
 		return Data, true
 	} else {
@@ -1692,7 +1690,7 @@ func DeletePic(taskId,picId int, Ysyid, Ysydid int64) (models.ResultPublicDate, 
 
 func insetinterfice(Ysyid, Ysydid int64, Status int, Txt, Iname string, Timelen float64) {
 
-	if Ysyid==0  {
+	if Ysyid == 0 {
 		return
 	}
 
@@ -1705,4 +1703,3 @@ func insetinterfice(Ysyid, Ysydid int64, Status int, Txt, Iname string, Timelen 
 	m.Timelen = Timelen
 	m.Add()
 }
-
