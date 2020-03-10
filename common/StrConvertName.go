@@ -50,6 +50,7 @@ func StrConvertNameByprocduct(id int) string {
 		return "车抵贷(联合贷)"
 	case 8:
 		return "消费贷(联合贷)"
+
 	case 9:
 		return "常规产品（C）"
 	case 10:
