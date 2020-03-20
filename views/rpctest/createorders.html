@@ -113,14 +113,21 @@
                 if (out.code == 0) {
 
                     var str="线上产品类型：";
-                    for (var i = 0; i < out.data.length; i++) {
-                        str+=" <span class=\"fas1\">";
-                        str+=" <input type=\"radio\" name=\"procductlist\" value=\""+out.data[i].ProductId+"\">"+out.data[i].ProductName+" &nbsp;";
-                        str+=" </span>";
-                        if (out.data[i].ProductId==11 || out.data[i].ProductId==14) {
-                            $("#isPretrial").show();
+                    if(out.data.length>0){
+                        for (var i = 0; i < out.data.length; i++) {
+                            str+=" <span class=\"fas1\">";
+                            str+=" <input type=\"radio\" name=\"procductlist\" value=\""+out.data[i].ProductId+"\">"+out.data[i].ProductName+" &nbsp;";
+                            str+=" </span>";
+                            if (out.data[i].ProductId==11 || out.data[i].ProductId==14) {
+                                $("#isPretrial").show();
+                            }
                         }
+                    }else{
+                        str+=" <span class=\"fas1\">";
+                        str+=" <input type=\"radio\" name=\"procductlist\" value=\""+1+"\">"+"常规产品"+" &nbsp;";
+                        str+=" </span>";
                     }
+
                     $("#procductlist").html(str);
                 }
             }, "json");
