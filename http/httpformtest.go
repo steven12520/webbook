@@ -182,6 +182,7 @@ func GetBackDetail() {
 func GetPhoneCheckNum() {
 
 	url := "http://jiancetwo.sandbox.guchewang.com/app/GetPhoneCheckNum.ashx"
+	//url = "http://jiancetwo.sandbox.guchewang.com/app/GetPhoneCheckNum.ashx"
 
 	token := beego.AppConfig.String("app.userTokenet")
 
@@ -191,11 +192,11 @@ func GetPhoneCheckNum() {
 
 	resmap := make(map[string]string, 0)
 
-	resmap["tel"] = "15313256075"
-	resmap["UserId"] = "890"
-	resmap["EquipmentNo"] = "849367E75AD41C62FE6F9E6A28366666"
-	//resmap["username"] = "yxzskkc"
-	//resmap["type"] = "1"
+	resmap["tel"] = "13552077115"
+	resmap["UserId"] = ""
+	resmap["EquipmentNo"] = "849367E75AD41C62FE6F9E6A28366655"
+	resmap["username"] = "yxdev001"
+	resmap["type"] = "1"
 	resmap["tokenid"] = "6"
 
 	sigin := common.GetSign(resmap, token)
@@ -248,12 +249,12 @@ func UserHandler() {
 	resmap := make(map[string]string, 0)
 
 	resmap["op"] = "login2"
-	resmap["telphone"] = "15313256075"
-	resmap["equipmentNo"] = "849367E75AD41C62FE6F9E6A28366666"
-	resmap["lgcode"] = "yxzskkc" //登录名
+	resmap["telphone"] = "13552077115"
+	resmap["equipmentNo"] = "849367E75AD41C62FE6F9E6A28366655"
+	resmap["lgcode"] = "yxdev001" //登录名
 	resmap["tokenid"] = "6"
-	resmap["checkcode"] = "2970" //验证码
-	resmap["loginCode"] = ""     //登录秘钥
+	resmap["checkcode"] = ""                                 //验证码
+	resmap["loginCode"] = "FA407A5DDD70EB0D5F91A1189165336E" //登录秘钥
 
 	sigin := common.GetSign(resmap, token)
 	fmt.Println("sigin", sigin)
