@@ -27,6 +27,9 @@
             <span class="fas5 configID"  style="display: none">
                   <input type="radio" name="configID" value="5">便捷估值9张 &nbsp;&nbsp;
             </span>
+            <span class="fas5 configID"  style="display: none">
+                  <input type="radio" name="configID" value="6">商用车13 &nbsp;&nbsp;
+            </span>
         </p>
 
         <p style="margin-top: 10px" id="procductlist"> </p>
@@ -113,21 +116,14 @@
                 if (out.code == 0) {
 
                     var str="线上产品类型：";
-                    if(out.data.length>0){
-                        for (var i = 0; i < out.data.length; i++) {
-                            str+=" <span class=\"fas1\">";
-                            str+=" <input type=\"radio\" name=\"procductlist\" value=\""+out.data[i].ProductId+"\">"+out.data[i].ProductName+" &nbsp;";
-                            str+=" </span>";
-                            if (out.data[i].ProductId==11 || out.data[i].ProductId==14) {
-                                $("#isPretrial").show();
-                            }
-                        }
-                    }else{
+                    for (var i = 0; i < out.data.length; i++) {
                         str+=" <span class=\"fas1\">";
-                        str+=" <input type=\"radio\" name=\"procductlist\" value=\""+1+"\">"+"常规产品"+" &nbsp;";
+                        str+=" <input type=\"radio\" name=\"procductlist\" value=\""+out.data[i].ProductId+"\">"+out.data[i].ProductName+" &nbsp;";
                         str+=" </span>";
+                        if (out.data[i].ProductId==11 || out.data[i].ProductId==14) {
+                            $("#isPretrial").show();
+                        }
                     }
-
                     $("#procductlist").html(str);
                 }
             }, "json");

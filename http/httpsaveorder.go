@@ -100,8 +100,8 @@ func SendPostFormFile(userid int, configID int, procductlist int, vin string, id
 
 	if configID == 4 {
 		filename = beego.AppConfig.String("zip.pic18")
-	} else if configID == 5 {
-		filename = beego.AppConfig.String("zip.pic9")
+	} else if configID == 6 {
+		filename = beego.AppConfig.String("zip.pic13")
 	}
 
 	body_buf := bytes.NewBufferString("")

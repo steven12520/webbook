@@ -117,18 +117,17 @@ func subString(str string, start, end int) string {
 }
 
 func TestCompress() {
-
-	f1, err := os.Open("D:\\zippath\\dada6")
+	f1, err := os.Open("D:\\zippath\\dada6\\267.jpg")
 	if err != nil {
 
 	}
 	defer f1.Close()
-	f2, err := os.Open("D:\\zippath\\dada6\\247.jpg")
+	f2, err := os.Open("D:\\zippath\\dada6\\268.jpg")
 	if err != nil {
 
 	}
 	defer f2.Close()
-	f3, err := os.Open("D:\\zippath\\dada6\\291.jpg")
+	f3, err := os.Open("D:\\zippath\\dada6ss")
 	if err != nil {
 
 	}
