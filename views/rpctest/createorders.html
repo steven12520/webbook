@@ -13,23 +13,23 @@
 
     <div style="font-size: 18px">
 
-        <p style="margin-top: 10px">
-            线上检测方案：
-            <span class="fas1 configID"  style="display: none">
-                  <input type="radio" name="configID" value="1" >鉴定估值_易鑫20张 &nbsp;
-            </span>
-            <span class="fas2 configID"  style="display: none">
-                  <input type="radio" name="configID" value="2">便捷估值6张 &nbsp;&nbsp;
-            </span>
-            <span class="fas4 configID"  style="display: none">
-                  <input type="radio" name="configID" value="4">鉴定估值_金融18张&nbsp;&nbsp;
-            </span>
-            <span class="fas5 configID"  style="display: none">
-                  <input type="radio" name="configID" value="5">便捷估值9张 &nbsp;&nbsp;
-            </span>
-            <span class="fas5 configID"  style="display: none">
-                  <input type="radio" name="configID" value="6">商用车13 &nbsp;&nbsp;
-            </span>
+        <p style="margin-top: 10px" id="GetProgrammeConfiguration">
+            {{/*线上检测方案：*/}}
+            {{/*<span class="fas1 configID"  style="display: none">*/}}
+                  {{/*<input type="radio" name="configID" value="1" >鉴定估值_易鑫20张 &nbsp;*/}}
+            {{/*</span>*/}}
+            {{/*<span class="fas2 configID"  style="display: none">*/}}
+                  {{/*<input type="radio" name="configID" value="2">便捷估值6张 &nbsp;&nbsp;*/}}
+            {{/*</span>*/}}
+            {{/*<span class="fas4 configID"  style="display: none">*/}}
+                  {{/*<input type="radio" name="configID" value="4">鉴定估值_金融18张&nbsp;&nbsp;*/}}
+            {{/*</span>*/}}
+            {{/*<span class="fas5 configID"  style="display: none">*/}}
+                  {{/*<input type="radio" name="configID" value="5">便捷估值9张 &nbsp;&nbsp;*/}}
+            {{/*</span>*/}}
+            {{/*<span class="fas5 configID"  style="display: none">*/}}
+                  {{/*<input type="radio" name="configID" value="6">商用车13 &nbsp;&nbsp;*/}}
+            {{/*</span>*/}}
         </p>
 
         <p style="margin-top: 10px" id="procductlist"> </p>
@@ -90,10 +90,16 @@
             //方案获取
             $.post('/RpcTest/GetProgrammeConfiguration', jsData, function (out) {
                 if (out.code == 0) {
+                  var str="线上检测方案：";
 
                     for (var i = 0; i < out.data.length; i++) {
-                        $(".fas"+out.data[i].ProgrammeId).show();
+
+                        str+="<span class=\"fas1 configID\" >";
+                        str+="<input type=\"radio\" name=\"configID\" value=\""+out.data[i].ProgrammeId+"\" >"+out.data[0].ProgrammeName+" &nbsp;";
+                        str+="</span>";
+                        //$(".fas"+out.data[i].ProgrammeId).show();
                     }
+                    $("#GetProgrammeConfiguration").html(str);
 
                 }
             }, "json");
