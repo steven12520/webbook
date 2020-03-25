@@ -117,23 +117,41 @@ func subString(str string, start, end int) string {
 }
 
 func TestCompress() {
-	f1, err := os.Open("D:\\zippath\\dada6\\267.jpg")
+	f1, err := os.Open("E:/dada6/267.jpg")
 	if err != nil {
 
 	}
 	defer f1.Close()
-	f2, err := os.Open("D:\\zippath\\dada6\\268.jpg")
+	f2, err := os.Open("E:/dada6/268.jpg")
 	if err != nil {
 
 	}
 	defer f2.Close()
-	f3, err := os.Open("D:\\zippath\\dada6ss")
+	f3, err := os.Open("E:/dada6/269.jpg")
 	if err != nil {
 
 	}
 	defer f3.Close()
-	var files = []*os.File{f1, f2, f3}
-	dest := "D:\\zippath\\dada6\\test.zip"
+
+	f4, err := os.Open("E:/dada6/270.jpg")
+	if err != nil {
+
+	}
+	defer f4.Close()
+
+	f5, err := os.Open("E:/dada6/271.jpg")
+	if err != nil {
+
+	}
+	defer f5.Close()
+	f6, err := os.Open("E:/dada6/272.jpg")
+	if err != nil {
+
+	}
+	defer f6.Close()
+
+	var files = []*os.File{f1, f2, f3, f4, f5, f6}
+	dest := "E:/dada6/dada6.zip"
 	err = Compress(files, dest)
 	if err != nil {
 
