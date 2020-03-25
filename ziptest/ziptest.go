@@ -3,6 +3,7 @@ package ziptest
 import (
 	"archive/zip"
 	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -117,34 +118,35 @@ func subString(str string, start, end int) string {
 }
 
 func TestCompress() {
-	f1, err := os.Open("E:/dada6/267.jpg")
+
+	f1, err := os.Open(`E:\dada6\267.jpg`)
 	if err != nil {
 
 	}
 	defer f1.Close()
-	f2, err := os.Open("E:/dada6/268.jpg")
+	f2, err := os.Open(`E:\dada6\268.jpg`)
 	if err != nil {
 
 	}
 	defer f2.Close()
-	f3, err := os.Open("E:/dada6/269.jpg")
+	f3, err := os.Open(`E:\dada6\269.jpg`)
 	if err != nil {
 
 	}
 	defer f3.Close()
 
-	f4, err := os.Open("E:/dada6/270.jpg")
+	f4, err := os.Open(`E:\dada6\270.jpg`)
 	if err != nil {
 
 	}
 	defer f4.Close()
 
-	f5, err := os.Open("E:/dada6/271.jpg")
+	f5, err := os.Open(`E:\dada6\271.jpg`)
 	if err != nil {
 
 	}
 	defer f5.Close()
-	f6, err := os.Open("E:/dada6/272.jpg")
+	f6, err := os.Open(`E:\dada6\272.jpg`)
 	if err != nil {
 
 	}
@@ -158,8 +160,20 @@ func TestCompress() {
 	}
 }
 func TestDeCompress() {
-	err := DeCompress("D:\\zippath\\dada6\\test.zip", "D:\\zippath\\dada6\\test")
+	err := DeCompress("E:/dada6/dada6.zip", "E:/dada6/")
 	if err != nil {
 
+	}
+}
+
+func GetFile() {
+	// 读取当前目录中的所有文件和子目录
+	files, err := ioutil.ReadDir(`E:/dada6`)
+	if err != nil {
+		panic(err)
+	}
+	// 获取文件，并输出它们的名字
+	for _, file := range files {
+		println(file.Name())
 	}
 }
