@@ -102,6 +102,10 @@ func SendPostFormFile(userid int, configID int, procductlist int, vin string, id
 		filename = beego.AppConfig.String("zip.pic18")
 	} else if configID == 6 {
 		filename = beego.AppConfig.String("zip.pic13")
+	} else if configID == 7 {
+		filename = beego.AppConfig.String("zip.pic16")
+	} else if configID == 8 {
+		filename = beego.AppConfig.String("zip.pic26")
 	}
 
 	body_buf := bytes.NewBufferString("")
@@ -493,7 +497,7 @@ func GetFastValue18(userid int, configID int, procductlist int, vin string, NewE
 	res["RecordBrand"] = "Xjxjjxdj"
 	res["TaskOwnerName"] = "Zjzj"
 	res["tokenid"] = "6"
-	res["appVersion"] = "3.3.9"
+	res["appVersion"] = "399.399.999"
 	res["Address"] = "beijing"
 	res["OrderCityId"] = "901"
 	res["Latitude"] = "39.985395"

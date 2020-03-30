@@ -5,7 +5,7 @@
 
     <div style="display: flex">
 
-        <input type="text" style="width: 200px" name="bookName" id="Userid" lay-verify="required" autocomplete="off" placeholder="1726,890,5088" class="layui-input" value="1726">
+        <input type="text" style="width: 200px" name="bookName" id="Userid" lay-verify="required" autocomplete="off" placeholder="1726,890,5088,18557" class="layui-input" value="1726">
 
         <input id="seach" type="button" class="layui-btn" data-type="tabAdd" style="margin-left: 30px" value="查询">
 
@@ -95,7 +95,7 @@
                     for (var i = 0; i < out.data.length; i++) {
 
                         str+="<span class=\"fas1 configID\" >";
-                        str+="<input type=\"radio\" name=\"configID\" value=\""+out.data[i].ProgrammeId+"\" >"+out.data[0].ProgrammeName+" &nbsp;";
+                        str+="<input type=\"radio\" name=\"configID\" value=\""+out.data[i].ProgrammeId+"\" >"+out.data[i].ProgrammeName+" &nbsp;";
                         str+="</span>";
                         //$(".fas"+out.data[i].ProgrammeId).show();
                     }
