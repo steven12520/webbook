@@ -938,6 +938,78 @@ type TaskCarBasicEPModel struct {
 	/// 复议状态: 1 待复议,2 复议中,3 复议通过 4复议驳回
 	/// </summary>
 	Reconsideration int
+
+	VinG string
+	//车牌号码
+	CarlicenseG string
+	//车辆类型
+	CartypeG string
+	//品牌型号
+	RecordbrandG string
+	//登记日期
+	RecordDateG string
+	//驱动形式
+	Perf_DriveTypeG string
+	//车名称
+	CarfullnameG string
+	//厂商指导价
+	ManufacturerPriceG string
+	//新车优惠价
+	PreferentialPriceG string
+	//新车交易价
+	NewcartransactionG string
+	//购置价含税
+	PurchasepriceG string
+	//车辆类型吨位
+	CartypeTG string
+	//
+	MakGid int
+	//
+	ModelGid int
+	//
+	StyleGid int
+
+	//强制报废期止
+	ScrapEndtime string
+	//准牵引总质量
+	TowAllKG string
+	//使用性质
+	ServiceG int
+
+	//总质量
+	AllKG string
+	//整备质量
+	AllPrepareKG string
+	//核定载适量
+	ApprovedLoad string
+	//外廓尺寸
+	ExternalDimensions string
+	//货箱内部尺寸
+	SimensionsContainer string
+	//年检有效期
+	Yearchecktime string
+	//后轴铜板弹簧片数
+	Afternumber int
+	//轮胎规格
+	Tirespecification string
+	//轮胎数
+	Tyrenumber string
+	//轴数
+	Axlenumber string
+	//进口国产
+	IsImported string
+	//发动机类型
+	Enginetype string
+	/////发动机品牌
+	EngineName string
+	//发动机功率
+	Enginepower string
+	//发动机出厂日期
+	Engineproduction string
+	//变速器总成品牌
+	TransmissionName string
+	//变速器总成型号
+	Transmissiontype string
 }
 type CheckPassDescGroup struct {
 	Category string `json:"category"`

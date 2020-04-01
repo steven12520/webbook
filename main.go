@@ -12,7 +12,7 @@ func main() {
 	//ziptest.TestCompress()
 	//ziptest.TestDeCompress()
 	//httpdate.GetBackDetail()
-
+	//httpdate.GetTaskDetail()
 	logs.Debug("已启动。。。。。。。。。1")
 	beego.Run()
 

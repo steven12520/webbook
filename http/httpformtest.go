@@ -84,8 +84,10 @@ func GetTaskDetail() {
 
 	resmap := make(map[string]string, 0)
 
-	resmap["taskId"] = "1924614"
-	resmap["userId"] = "890"
+	resmap["taskId"] = "1924809"
+	resmap["userId"] = "18557"
+	resmap["tokenId"] = "6"
+
 	sigin := common.GetSign(resmap, token)
 	fmt.Println("sigin", sigin)
 	for k, v := range resmap {
