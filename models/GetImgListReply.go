@@ -939,9 +939,6 @@ type TaskCarBasicEPModel struct {
 	/// </summary>
 	Reconsideration int
 
-	VinG string
-	//车牌号码
-	CarlicenseG string
 	//车辆类型
 	CartypeG string
 	//品牌型号
@@ -960,8 +957,10 @@ type TaskCarBasicEPModel struct {
 	NewcartransactionG string
 	//购置价含税
 	PurchasepriceG string
-	//车辆类型吨位
+	//车辆类型 吨位
 	CartypeTG string
+	//吨位
+
 	//
 	MakGid int
 	//
@@ -1010,7 +1009,34 @@ type TaskCarBasicEPModel struct {
 	TransmissionName string
 	//变速器总成型号
 	Transmissiontype string
+	//总质量
+	AllGKG string
+
+	Gua Guacar
 }
+
+type Guacar struct {
+	VinG                string
+	CarlicenseG         string //车牌号码
+	CartypeTG           string //车辆类型
+	Service             string //使用性质
+	RecordbrandG        string //品牌型号
+	RecordDateG         string //登记日期
+	AllKG               string //总质量
+	AllPrepareKG        string //整备质量
+	ApprovedLoad        string //核定载适量
+	TowAllKG            string //准牵引总质量
+	ExternalDimensions  string //外廓尺寸
+	SimensionsContainer string //货箱内部尺寸
+	Yearchecktime       string //年检有效期
+	ScrapEndtime        string //强制报废期止
+	Afternumber         int    //后轴铜板弹簧片数
+	Tirespecification   string //轮胎规格
+	Tyrenumber          int    //轮胎数
+	Axlenumber          int    //轴数
+	IsImported          string //进口国产
+}
+
 type CheckPassDescGroup struct {
 	Category string `json:"category"`
 	Text     string `json:"text"`

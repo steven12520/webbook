@@ -28,7 +28,8 @@ func (self *YstestController) Ystest() {
 	//DeletePic(170389,5809377,0,0)
 	//GetOrderInfo(1917299,10269,0,0)
 	//CheckPassDescSearch(1880,9,204,"订单",0,0)
-	GetImgList(6856, 1924819, 0, 0)
+	YSPassO(5042, 1, 10, 0)
+	//GetImgList(6856, 1924819, 0, 0)
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
 }
@@ -1104,97 +1105,101 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Service = 2
 	} else if m.TaskType == 6 { //13张重卡 商用车评估方案（非重卡）
 
-		//vin码
-		//品牌型号
-		//发动机号
-		//使用性质
-		//车牌号码
+		m.RecordBrand = "pinpaixinghao" //品牌型号
+		m.EngineNum = "fadognjihao"     //发动机号
+		m.Service = 2                   //使用性质
+		m.CarLicense = "冀ACJXJX"        //车牌号码
 		//上牌地区
-		//车身颜色
-		//过户次数
-		//表显里程
-		//是否抵押
-		//出厂日期
-		//登记日期
-		//循环过户
-		//强制报废期止
-		//牵引总质量
+		m.ProName = "河北"
+		m.RegisterProvID = 9
+		m.CityName = "石家庄"
+		m.RegisterCityID = 901
+		m.Color = 1                     //车身颜色
+		m.TransferCount = 0             //过户次数
+		m.Mileage = 10000               //表显里程
+		m.IsMortgage = 1                //是否抵押
+		m.ProductionTime = "2015-06-06" //出厂日期
+		m.RecordDate = "2019-12-01"     //登记日期
+		m.IsForTransfer = 0             //循环过户
+		m.ScrapEndtime = "2020-12-01"   //强制报废期止
+		m.TowAllKG = "1.6"              //牵引总质量
 
 	} else if m.TaskType == 7 { //13张重卡 商用车评估方案（重卡无挂）
 
-		//vin码
-		//车牌号码
-		//车辆类型
-		//使用性质
-		//品牌型号
-		//登记日期
-		//总重量
-		//整备质量
-		//核定载适量
-		//准牵引总质量
-		//外廓尺寸
-		//货箱内部尺寸
-		//年检有效期
-		//强制报废止
-		//后轴片数
-		//轮胎规格
-		//轮胎数
-		//轴数
-		//进口国产
-		//车身颜色
-		//发动机类型
-		//发动机品牌
-		//发动机功率
-		//发动机出厂日期
-		//变速器总成品牌
-		//变速器总成型号
+		m.CarLicense = "冀ACJXJX"          //车牌号码
+		m.CarType = "三厢"                  //车辆类型
+		m.Service = 2                     //使用性质
+		m.RecordBrand = "pinpaixinghao"   //品牌型号
+		m.RecordDate = "2019-12-01"       //登记日期
+		m.AllKG = "23"                    //总重量
+		m.AllPrepareKG = "21"             //整备质量
+		m.ApprovedLoad = "2"              //核定载适量
+		m.TowAllKG = "1"                  //准牵引总质量
+		m.ExternalDimensions = "12"       //外廓尺寸
+		m.SimensionsContainer = "13"      //货箱内部尺寸
+		m.Yearchecktime = "2020-12-01"    //年检有效期
+		m.ScrapEndtime = "2020-12-01"     //强制报废期止
+		m.Afternumber = 2                 //后轴片数
+		m.Tirespecification = "3"         //轮胎规格
+		m.Tyrenumber = "4"                //轮胎数
+		m.Axlenumber = "2"                //轴数
+		m.IsImported = "进口"               //进口国产
+		m.Color = 1                       //车身颜色
+		m.Enginetype = "ee"               //发动机类型
+		m.EngineName = "333"              //发动机品牌
+		m.Enginepower = "dd"              //发动机功率
+		m.Engineproduction = "2019-12-01" //发动机出厂日期
+		m.TransmissionName = "dd"         //变速器总成品牌
+		m.Transmissiontype = "dd"         //变速器总成型号
 
 	} else if m.TaskType == 8 { //13张重卡 商用车评估方案（重卡有挂）
-		//vin码
-		//车牌号码
-		//车辆类型
-		//使用性质
-		//品牌型号
-		//登记日期
-		//总质量
-		//整备质量
-		//核定载适量
-		//准牵引总质量
-		//外廓尺寸
-		//货箱内部尺寸
-		//年检有效期
-		//强制报废期止
-		//后轴铜板弹簧片数
-		//轮胎规格
-		//轮胎数
-		//轴数
-		//进口国产
-		//发动机类型
-		//发动机品牌
-		//发动机功率
-		//发动机出厂日期
-		//变速器总成品牌
-		//变速器总成型号
+		m.Vin = ""
+		m.CarLicense = "冀ACJXJX"          //车牌号码
+		m.CarType = "三厢"                  //车辆类型
+		m.Service = 2                     //使用性质
+		m.RecordBrand = "pinpaixinghao"   //品牌型号
+		m.RecordDate = "2019-12-01"       //登记日期
+		m.AllKG = "23"                    //总重量
+		m.AllPrepareKG = "21"             //整备质量
+		m.ApprovedLoad = "2"              //核定载适量
+		m.TowAllKG = "3"                  //准牵引总质量
+		m.ExternalDimensions = "12"       //外廓尺寸
+		m.SimensionsContainer = "13"      //货箱内部尺寸
+		m.Yearchecktime = "2020-12-01"    //年检有效期
+		m.ScrapEndtime = "2020-12-01"     //强制报废期止
+		m.Afternumber = 2                 //后轴片数 //后轴铜板弹簧片数
+		m.Tirespecification = "3"         //轮胎规格
+		m.Tyrenumber = "4"                //轮胎数
+		m.Axlenumber = "2"                //轴数
+		m.IsImported = "进口"               //进口国产
+		m.Color = 1                       //车身颜色
+		m.Enginetype = "ee"               //发动机类型
+		m.EngineName = "333"              //发动机品牌
+		m.Enginepower = "dd"              //发动机功率
+		m.Engineproduction = "2019-12-01" //发动机出厂日期
+		m.TransmissionName = "dd"         //变速器总成品牌
+		m.Transmissiontype = "dd"         //变速器总成型号
 		//挂：
-		//vin
-		//车牌号码
-		//车辆类型
-		//使用性质
-		//品牌型号
-		//登记日期
-		//总质量
-		//整备质量
-		//核定载适量
-		//准牵引总质量
-		//外廓尺寸
-		//货箱内部尺寸
-		//年检有效期
-		//强制报废期止
-		//后轴铜板弹簧片数
-		//轮胎规格
-		//轮胎数
-		//轴数
-		//进口国产
+		m.Gua.VinG = "LJS0401T7SR3F4APV"
+		m.Gua.CarlicenseG = "冀ACJXJX"      //车牌号码
+		m.Gua.CartypeTG = "333"            //车辆类型
+		m.Gua.Service = "2"                //使用性质
+		m.Gua.RecordbrandG = "2333"        //品牌型号
+		m.Gua.RecordDateG = ""             //登记日期
+		m.Gua.AllKG = "22"                 //总质量
+		m.Gua.AllPrepareKG = "23"          //整备质量
+		m.Gua.ApprovedLoad = "23"          //核定载适量
+		m.Gua.TowAllKG = "23"              //准牵引总质量
+		m.Gua.ExternalDimensions = "23"    //外廓尺寸
+		m.Gua.SimensionsContainer = "23"   //货箱内部尺寸
+		m.Gua.Yearchecktime = "2020-12-01" //年检有效期
+		m.Gua.ScrapEndtime = "2020-12-01"  //强制报废期止
+		m.Gua.Afternumber = 4              //后轴铜板弹簧片数
+		m.Gua.Tirespecification = "32"     //轮胎规格
+		m.Gua.Tyrenumber = 4               //轮胎数
+		m.Gua.Axlenumber = 4               //轴数
+		m.Gua.IsImported = "进口"            //进口国产
+
 	}
 
 	return m
