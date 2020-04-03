@@ -26,6 +26,12 @@ func StrConvertNameByconfigID(id int) string {
 		return "鉴定估值_金融18张"
 	case 5:
 		return "便捷估值9张"
+	case 6:
+		return "商用车评估方案_非重卡"
+	case 7:
+		return "商用车评估方案_重卡无挂"
+	case 8:
+		return "商用车评估方案_重卡有挂"
 	default:
 		return "无"
 

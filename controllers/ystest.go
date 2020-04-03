@@ -26,9 +26,9 @@ func (self *YstestController) Ystest() {
 	//UploadPic(170389, 0, 0 , 0, 0 )
 	//UploadPic(170389, 0, 0 , 0, 0 )
 	//DeletePic(170389,5809377,0,0)
-	//GetOrderInfo(1917299,10269,0,0)
+	GetOrderInfo(1924872, 10269, 0, 0)
 	//CheckPassDescSearch(1880,9,204,"订单",0,0)
-	YSPassO(5042, 1, 10, 0)
+	//YSPassO(5042, 1, 10, 0)
 	//GetImgList(6856, 1924819, 0, 0)
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
@@ -239,13 +239,15 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 				panic(resultPublicDate.Msg)
 			}
 		}
-
+		var savedatainfo models.TaskCarBasicEPModel
 		imgDate, bol = GetImgList(Userid, temporder.TaskID, Ysyid, mo.Id)
 		if bol && len(imgDate.Data.CarPicList) > 0 {
 			for _, list := range imgDate.Data.CarPicList {
 				itemid := list.ItemId
 				p := int64(len(imgDate.Data.CarPicList))
 				r := common.RandInt64(1, p)
+				ImgDetail, _ := GetImgDetail(temporder.TaskID, list.ItemId, Userid, Ysyid, mo.Id)
+				savedatainfo = ImgDetail.Data.RedisPretrail.TaskCarBasic
 				if r%2 == 0 {
 					date, _ := UploadPic(temporder.TaskID, list.Id, itemid, Ysyid, mo.Id)
 					if date.Status != 100 {
@@ -284,10 +286,10 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 			}
 		}
 		//3，保存基本信息
-		date, bol := SaveFormData(imgDate.Data.Tc, Userid, Ysyid, mo.Id)
+		date, bol := SaveFormData(savedatainfo, Userid, Ysyid, mo.Id)
 		if !bol || date.Status != 100 {
-			logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, -1, 1)
-			panic("图片审核通过出现错误")
+			logs.Error("出现错误", temporder.TaskID, Userid, -1, 1)
+			panic("保存基本信息出现错误")
 		}
 		//添加备注
 		date, bol = Ys_AddRemark(temporder.TaskID, Userid, "预审自动测试添加备注", Ysyid, mo.Id)
@@ -1153,7 +1155,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Transmissiontype = "dd"         //变速器总成型号
 
 	} else if m.TaskType == 8 { //13张重卡 商用车评估方案（重卡有挂）
-		m.Vin = ""
+
 		m.CarLicense = "冀ACJXJX"          //车牌号码
 		m.CarType = "三厢"                  //车辆类型
 		m.Service = 2                     //使用性质
