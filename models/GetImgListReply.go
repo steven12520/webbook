@@ -939,102 +939,118 @@ type TaskCarBasicEPModel struct {
 	/// </summary>
 	Reconsideration int
 
-	//车辆类型
-	CartypeG string
-	//品牌型号
-	RecordbrandG string
-	//登记日期
-	RecordDateG string
-	//驱动形式
-	Perf_DriveTypeG string
-	//车名称
-	CarfullnameG string
-	//厂商指导价
-	ManufacturerPriceG string
-	//新车优惠价
-	PreferentialPriceG string
-	//新车交易价
-	NewcartransactionG string
-	//购置价含税
-	PurchasepriceG string
-	//车辆类型 吨位
-	CartypeTG string
-	//吨位
-
-	//
-	MakGid int
-	//
-	ModelGid int
-	//
-	StyleGid int
-
-	//强制报废期止
+	DrivingLicense  string
+	ShowOrderCount  int
+	IsOverTenTHSKm  int
+	IsShowMortgages int
+	/// 轴数
+	Axlenumber int
+	/// 商用车_强制报废期止
 	ScrapEndtime string
-	//准牵引总质量
+	/// 商用车_准牵引总质量
 	TowAllKG string
-	//使用性质
-	ServiceG int
-
-	//总质量
+	/// 商用车_总质量
 	AllKG string
-	//整备质量
+	/// 商用车_整备质量
 	AllPrepareKG string
-	//核定载适量
+	/// 商用车_核定载适量
 	ApprovedLoad string
-	//外廓尺寸
+	/// 商用车_外廓尺寸
 	ExternalDimensions string
-	//货箱内部尺寸
+	/// 商用车_货箱内部尺寸
 	SimensionsContainer string
-	//年检有效期
+	/// 商用车_年检有效期
 	Yearchecktime string
-	//后轴铜板弹簧片数
+	/// 商用车_后轴铜板弹簧片数
 	Afternumber int
-	//轮胎规格
+	/// 商用车_轮胎规格
 	Tirespecification string
-	//轮胎数
-	Tyrenumber string
-	//轴数
-	Axlenumber string
-	//进口国产
+	/// 商用车_轮胎数
+	Tyrenumber int
+	/// 商用车_进口国产
 	IsImported string
-	//发动机类型
+	/// 商用车_发动机类型
 	Enginetype string
-	/////发动机品牌
+	/// 商用车_发动机品牌
 	EngineName string
-	//发动机功率
+	/// 商用车_发动机功率
 	Enginepower string
-	//发动机出厂日期
+	/// 商用车_发动机出厂日期
 	Engineproduction string
-	//变速器总成品牌
+	/// 商用车_变速器总成品牌
 	TransmissionName string
-	//变速器总成型号
-	Transmissiontype string
-	//总质量
-	AllGKG string
-
+	/// 商用车_变速器总成型号
+	TransmissiontypeV string
+	//挂车
 	Gua Guacar
 }
 
 type Guacar struct {
-	VinG                string
-	CarlicenseG         string //车牌号码
-	CartypeTG           string //车辆类型
-	Service             string //使用性质
-	RecordbrandG        string //品牌型号
-	RecordDateG         string //登记日期
-	AllKG               string //总质量
-	AllPrepareKG        string //整备质量
-	ApprovedLoad        string //核定载适量
-	TowAllKG            string //准牵引总质量
-	ExternalDimensions  string //外廓尺寸
-	SimensionsContainer string //货箱内部尺寸
-	Yearchecktime       string //年检有效期
-	ScrapEndtime        string //强制报废期止
-	Afternumber         int    //后轴铜板弹簧片数
-	Tirespecification   string //轮胎规格
-	Tyrenumber          int    //轮胎数
-	Axlenumber          int    //轴数
-	IsImported          string //进口国产
+	Id     int
+	TaskId int
+	VinG   string
+	/// 车牌号码
+	CarlicenseG string
+	/// 车辆类型
+	CartypeG string
+	/// 品牌型号
+	RecordbrandG string
+	/// 登记日期
+	RecordDateG string
+	/// 驱动形式
+	Perf_DriveTypeG string
+	/// 车名称
+	CarfullnameG string
+	/// 厂商指导价
+	ManufacturerPriceG int
+	/// 新车优惠价
+	PreferentialPriceG int
+	/// 新车交易价
+	NewcartransactionG int
+	/// 购置价含税
+	PurchasepriceG string
+	/// 品牌ID
+	MakGid int
+	///  车系ID
+	ModelGid int
+	/// 车型Id
+	StyleGid int
+	/// 重卡代挂总质量
+	AllKG int
+	/// 整备质量
+	AllPrepareKG string
+	/// 核定载适量
+	ApprovedLoad string
+	/// 准牵引总质量
+	TowAllKG string
+	/// 外廓尺寸
+	ExternalDimensions string
+	/// 货箱内部尺寸
+	SimensionsContainer string
+	/// 年检有效期
+	Yearchecktime string
+	/// 强制报废期止
+	ScrapEndtime string
+	/// 后轴铜板弹簧片数
+	Afternumber int
+	/// 轮胎规格
+	Tirespecification string
+	/// 轮胎数
+	Tyrenumber int
+	/// 轴数
+	Axlenumber int
+	/// 进口国产
+	IsImported string
+	/// 吨位
+	Tonnage int
+	/// 铭牌信息
+	NamePlate string
+	/// 补充说明
+	Explain string
+	/// 使用性质
+	Service int
+	/// 挂车部分评估结果描述，同Taskcarbasic表AssessmentDes字段
+	AssessmentDesG string
 }
 
 type CheckPassDescGroup struct {

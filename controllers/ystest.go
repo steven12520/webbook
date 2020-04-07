@@ -26,10 +26,11 @@ func (self *YstestController) Ystest() {
 	//UploadPic(170389, 0, 0 , 0, 0 )
 	//UploadPic(170389, 0, 0 , 0, 0 )
 	//DeletePic(170389,5809377,0,0)
-	GetOrderInfo(1924872, 10269, 0, 0)
+	//GetOrderInfo(1924872, 10269, 0, 0)
 	//CheckPassDescSearch(1880,9,204,"订单",0,0)
 	//YSPassO(5042, 1, 10, 0)
-	//GetImgList(6856, 1924819, 0, 0)
+	//GetImgList(10269, 1924950, 0, 0)
+	//GetImgDetail(1924862, 320, 5042, 0, 0)
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
 }
@@ -291,6 +292,7 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 			logs.Error("出现错误", temporder.TaskID, Userid, -1, 1)
 			panic("保存基本信息出现错误")
 		}
+
 		//添加备注
 		date, bol = Ys_AddRemark(temporder.TaskID, Userid, "预审自动测试添加备注", Ysyid, mo.Id)
 		if !bol || date.Status != 100 {
@@ -412,6 +414,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 			panic("错误停止所有执行")
 		}
 		//3，审核图片
+		var savedatainfo models.TaskCarBasicEPModel
 		imgDate, bol := GetImgList(Userid, temporder.TaskID, Ysyid, mo.Id)
 		if bol && len(imgDate.Data.CarPicList) > 0 {
 			for _, list := range imgDate.Data.CarPicList {
@@ -421,6 +424,7 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 					logs.Error("获取图片详情错误", temporder.TaskID, list.ItemId, Userid)
 					panic("获取图片详情错误")
 				}
+				savedatainfo = ImgDetail.Data.RedisPretrail.TaskCarBasic
 				itemid := list.ItemId
 				p := int64(len(imgDate.Data.CarPicList))
 				r := common.RandInt64(1, p)
@@ -441,15 +445,15 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 					} else {
 						date, bol, _ := ImgCheckUnPass(temporder.TaskID, Userid, itemid, 0, ImgDetail, Ysyid, mo.Id)
 						if !bol || date.Status != 100 {
-							logs.Error("图片审不核通过出现错误", temporder.TaskID, Userid, itemid, 0)
-							panic("图片审不核通过出现错误")
+							logs.Error("图片审不核通过出现错误1", temporder.TaskID, Userid, itemid, 0)
+							panic("图片审不核通过出现错误1")
 						}
 					}
 				} else {
 					date, bol, returnId := ImgCheckUnPass(temporder.TaskID, Userid, itemid, 0, ImgDetail, Ysyid, mo.Id)
 					if !bol || date.Status != 100 {
-						logs.Error("图片审不核通过出现错误", temporder.TaskID, Userid, itemid, 0)
-						panic("图片审不核通过出现错误")
+						logs.Error("图片审不核通过出现错误2", temporder.TaskID, Userid, itemid, 0)
+						panic("图片审不核通过出现错误2")
 					}
 					if itemid%2 == 0 && common.RandInt64(1, 6) == 2 {
 						date, bol = ImgCheckUnPass_AttachDelete(temporder.TaskID, Userid, itemid, returnId, Ysyid, mo.Id)
@@ -467,15 +471,15 @@ func YSReturnUpdate(Userid, Usercount, timelen int, Ysyid int64) {
 		if imgDate.Data.VedioInfo.Path != "" {
 			date, bol := ImgCheckPass(temporder.TaskID, Userid, -1, 1, Ysyid, mo.Id)
 			if !bol || date.Status != 100 {
-				logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, -1, 1)
-				panic("图片审核通过出现错误")
+				logs.Error("审核视频通过出现错误", temporder.TaskID, Userid, -1, 1)
+				panic("审核视频通过出现错误")
 			}
 		}
 		//3，保存基本信息
-		date, bol := SaveFormData(imgDate.Data.Tc, Userid, Ysyid, mo.Id)
+		date, bol := SaveFormData(savedatainfo, Userid, Ysyid, mo.Id)
 		if !bol || date.Status != 100 {
-			logs.Error("图片审核通过出现错误", temporder.TaskID, Userid, -1, 1)
-			panic("图片审核通过出现错误")
+			logs.Error("保存基本信息出现错误", temporder.TaskID, Userid, -1, 1)
+			panic("保存基本信息出现错误")
 		}
 		//4，添加附加照片
 		date, bol = YsyReturnSummaryReason_Save(temporder.TaskID, Userid, Ysyid, mo.Id)
@@ -1143,8 +1147,8 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.ScrapEndtime = "2020-12-01"     //强制报废期止
 		m.Afternumber = 2                 //后轴片数
 		m.Tirespecification = "3"         //轮胎规格
-		m.Tyrenumber = "4"                //轮胎数
-		m.Axlenumber = "2"                //轴数
+		m.Tyrenumber = 4                  //轮胎数
+		m.Axlenumber = 2                  //轴数
 		m.IsImported = "进口"               //进口国产
 		m.Color = 1                       //车身颜色
 		m.Enginetype = "ee"               //发动机类型
@@ -1152,7 +1156,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Enginepower = "dd"              //发动机功率
 		m.Engineproduction = "2019-12-01" //发动机出厂日期
 		m.TransmissionName = "dd"         //变速器总成品牌
-		m.Transmissiontype = "dd"         //变速器总成型号
+		m.TransmissiontypeV = "d1"        //变速器总成型号
 
 	} else if m.TaskType == 8 { //13张重卡 商用车评估方案（重卡有挂）
 
@@ -1171,8 +1175,8 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.ScrapEndtime = "2020-12-01"     //强制报废期止
 		m.Afternumber = 2                 //后轴片数 //后轴铜板弹簧片数
 		m.Tirespecification = "3"         //轮胎规格
-		m.Tyrenumber = "4"                //轮胎数
-		m.Axlenumber = "2"                //轴数
+		m.Tyrenumber = 4                  //轮胎数
+		m.Axlenumber = 2                  //轴数
 		m.IsImported = "进口"               //进口国产
 		m.Color = 1                       //车身颜色
 		m.Enginetype = "ee"               //发动机类型
@@ -1180,15 +1184,14 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Enginepower = "dd"              //发动机功率
 		m.Engineproduction = "2019-12-01" //发动机出厂日期
 		m.TransmissionName = "dd"         //变速器总成品牌
-		m.Transmissiontype = "dd"         //变速器总成型号
+		m.TransmissiontypeV = "d2"        //变速器总成型号
 		//挂：
 		m.Gua.VinG = "LJS0401T7SR3F4APV"
 		m.Gua.CarlicenseG = "冀ACJXJX"      //车牌号码
-		m.Gua.CartypeTG = "333"            //车辆类型
-		m.Gua.Service = "2"                //使用性质
+		m.Gua.Service = 2                  //使用性质
 		m.Gua.RecordbrandG = "2333"        //品牌型号
-		m.Gua.RecordDateG = ""             //登记日期
-		m.Gua.AllKG = "22"                 //总质量
+		m.Gua.RecordDateG = "2020-12-01"   //登记日期
+		m.Gua.AllKG = 22                   //总质量
 		m.Gua.AllPrepareKG = "23"          //整备质量
 		m.Gua.ApprovedLoad = "23"          //核定载适量
 		m.Gua.TowAllKG = "23"              //准牵引总质量
