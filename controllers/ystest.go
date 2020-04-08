@@ -29,8 +29,9 @@ func (self *YstestController) Ystest() {
 	//GetOrderInfo(1924872, 10269, 0, 0)
 	//CheckPassDescSearch(1880,9,204,"订单",0,0)
 	//YSPassO(5042, 1, 10, 0)
-	//GetImgList(10269, 1924950, 0, 0)
+	GetImgList(10269, 1924990, 0, 0)
 	//GetImgDetail(1924862, 320, 5042, 0, 0)
+	//GetOrderInfo(1924985, 10269, 0, 0 )
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
 }
@@ -242,6 +243,7 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 		}
 		var savedatainfo models.TaskCarBasicEPModel
 		imgDate, bol = GetImgList(Userid, temporder.TaskID, Ysyid, mo.Id)
+		uppiccount := 0
 		if bol && len(imgDate.Data.CarPicList) > 0 {
 			for _, list := range imgDate.Data.CarPicList {
 				itemid := list.ItemId
@@ -249,12 +251,13 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 				r := common.RandInt64(1, p)
 				ImgDetail, _ := GetImgDetail(temporder.TaskID, list.ItemId, Userid, Ysyid, mo.Id)
 				savedatainfo = ImgDetail.Data.RedisPretrail.TaskCarBasic
-				if r%2 == 0 {
+				if r%2 == 0 && uppiccount == 0 {
 					date, _ := UploadPic(temporder.TaskID, list.Id, itemid, Ysyid, mo.Id)
 					if date.Status != 100 {
 						logs.Error("替换错误", temporder.TaskID, list.Id, itemid)
 						panic("替换错误")
 					}
+					uppiccount = 1
 					if itemid%2 == 0 {
 						datefj, _ := UploadPic_YsAttach(temporder.TaskID, itemid, Ysyid, mo.Id)
 						if datefj.Status != 100 {
@@ -1145,10 +1148,10 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.SimensionsContainer = "13"      //货箱内部尺寸
 		m.Yearchecktime = "2020-12-01"    //年检有效期
 		m.ScrapEndtime = "2020-12-01"     //强制报废期止
-		m.Afternumber = 2                 //后轴片数
+		m.Afternumber = "2"               //后轴片数
 		m.Tirespecification = "3"         //轮胎规格
-		m.Tyrenumber = 4                  //轮胎数
-		m.Axlenumber = 2                  //轴数
+		m.Tyrenumber = "2"                //轮胎数
+		m.Axlenumber = "2"                //轴数
 		m.IsImported = "进口"               //进口国产
 		m.Color = 1                       //车身颜色
 		m.Enginetype = "ee"               //发动机类型
@@ -1173,10 +1176,10 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.SimensionsContainer = "13"      //货箱内部尺寸
 		m.Yearchecktime = "2020-12-01"    //年检有效期
 		m.ScrapEndtime = "2020-12-01"     //强制报废期止
-		m.Afternumber = 2                 //后轴片数 //后轴铜板弹簧片数
+		m.Afternumber = "2"               //后轴片数 //后轴铜板弹簧片数
 		m.Tirespecification = "3"         //轮胎规格
-		m.Tyrenumber = 4                  //轮胎数
-		m.Axlenumber = 2                  //轴数
+		m.Tyrenumber = "2"                //轮胎数
+		m.Axlenumber = "2"                //轴数
 		m.IsImported = "进口"               //进口国产
 		m.Color = 1                       //车身颜色
 		m.Enginetype = "ee"               //发动机类型
@@ -1191,7 +1194,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Gua.Service = 2                  //使用性质
 		m.Gua.RecordbrandG = "2333"        //品牌型号
 		m.Gua.RecordDateG = "2020-12-01"   //登记日期
-		m.Gua.AllKG = 22                   //总质量
+		m.Gua.AllKG = "2"                  //总质量
 		m.Gua.AllPrepareKG = "23"          //整备质量
 		m.Gua.ApprovedLoad = "23"          //核定载适量
 		m.Gua.TowAllKG = "23"              //准牵引总质量
@@ -1199,10 +1202,10 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Gua.SimensionsContainer = "23"   //货箱内部尺寸
 		m.Gua.Yearchecktime = "2020-12-01" //年检有效期
 		m.Gua.ScrapEndtime = "2020-12-01"  //强制报废期止
-		m.Gua.Afternumber = 4              //后轴铜板弹簧片数
+		m.Gua.Afternumber = "2"            //后轴铜板弹簧片数
 		m.Gua.Tirespecification = "32"     //轮胎规格
-		m.Gua.Tyrenumber = 4               //轮胎数
-		m.Gua.Axlenumber = 4               //轴数
+		m.Gua.Tyrenumber = "2"             //轮胎数
+		m.Gua.Axlenumber = "2"             //轴数
 		m.Gua.IsImported = "进口"            //进口国产
 
 	}

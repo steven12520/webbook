@@ -944,7 +944,7 @@ type TaskCarBasicEPModel struct {
 	IsOverTenTHSKm  int
 	IsShowMortgages int
 	/// 轴数
-	Axlenumber int
+	Axlenumber string
 	/// 商用车_强制报废期止
 	ScrapEndtime string
 	/// 商用车_准牵引总质量
@@ -962,11 +962,11 @@ type TaskCarBasicEPModel struct {
 	/// 商用车_年检有效期
 	Yearchecktime string
 	/// 商用车_后轴铜板弹簧片数
-	Afternumber int
+	Afternumber string
 	/// 商用车_轮胎规格
 	Tirespecification string
 	/// 商用车_轮胎数
-	Tyrenumber int
+	Tyrenumber string
 	/// 商用车_进口国产
 	IsImported string
 	/// 商用车_发动机类型
@@ -1016,7 +1016,7 @@ type Guacar struct {
 	/// 车型Id
 	StyleGid int
 	/// 重卡代挂总质量
-	AllKG int
+	AllKG string
 	/// 整备质量
 	AllPrepareKG string
 	/// 核定载适量
@@ -1032,17 +1032,17 @@ type Guacar struct {
 	/// 强制报废期止
 	ScrapEndtime string
 	/// 后轴铜板弹簧片数
-	Afternumber int
+	Afternumber string
 	/// 轮胎规格
 	Tirespecification string
 	/// 轮胎数
-	Tyrenumber int
+	Tyrenumber string
 	/// 轴数
-	Axlenumber int
+	Axlenumber string
 	/// 进口国产
 	IsImported string
 	/// 吨位
-	Tonnage int
+	Tonnage string
 	/// 铭牌信息
 	NamePlate string
 	/// 补充说明
