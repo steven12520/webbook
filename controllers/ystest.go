@@ -29,7 +29,7 @@ func (self *YstestController) Ystest() {
 	//GetOrderInfo(1924872, 10269, 0, 0)
 	//CheckPassDescSearch(1880,9,204,"订单",0,0)
 	//YSPassO(5042, 1, 10, 0)
-	GetImgList(10269, 1924990, 0, 0)
+	//GetImgList(10269, 1924990, 0, 0)
 	//GetImgDetail(1924862, 320, 5042, 0, 0)
 	//GetOrderInfo(1924985, 10269, 0, 0 )
 	self.Data["pageTitle"] = "预审测试"
