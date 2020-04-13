@@ -1116,7 +1116,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 
 		m.RecordBrand = "pinpaixinghao" //品牌型号
 		m.EngineNum = "fadognjihao"     //发动机号
-		m.Service = 2                   //使用性质
+		m.Service = 9                   //使用性质
 		m.CarLicense = "冀ACJXJX"        //车牌号码
 		//上牌地区
 		m.ProName = "河北"
@@ -1137,7 +1137,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 
 		m.CarLicense = "冀ACJXJX"          //车牌号码
 		m.CarType = "三厢"                  //车辆类型
-		m.Service = 2                     //使用性质
+		m.Service = 9                     //使用性质
 		m.RecordBrand = "pinpaixinghao"   //品牌型号
 		m.RecordDate = "2019-12-01"       //登记日期
 		m.AllKG = "23"                    //总重量
@@ -1156,7 +1156,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Color = 1                       //车身颜色
 		m.Enginetype = "ee"               //发动机类型
 		m.EngineName = "333"              //发动机品牌
-		m.Enginepower = "dd"              //发动机功率
+		m.Enginepower = "22"              //发动机功率
 		m.Engineproduction = "2019-12-01" //发动机出厂日期
 		m.TransmissionName = "dd"         //变速器总成品牌
 		m.TransmissiontypeV = "d1"        //变速器总成型号
@@ -1165,7 +1165,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 
 		m.CarLicense = "冀ACJXJX"          //车牌号码
 		m.CarType = "三厢"                  //车辆类型
-		m.Service = 2                     //使用性质
+		m.Service = 9                     //使用性质
 		m.RecordBrand = "pinpaixinghao"   //品牌型号
 		m.RecordDate = "2019-12-01"       //登记日期
 		m.AllKG = "23"                    //总重量
@@ -1184,14 +1184,14 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Color = 1                       //车身颜色
 		m.Enginetype = "ee"               //发动机类型
 		m.EngineName = "333"              //发动机品牌
-		m.Enginepower = "dd"              //发动机功率
+		m.Enginepower = "22"              //发动机功率
 		m.Engineproduction = "2019-12-01" //发动机出厂日期
 		m.TransmissionName = "dd"         //变速器总成品牌
 		m.TransmissiontypeV = "d2"        //变速器总成型号
 		//挂：
 		m.Gua.VinG = "LJS0401T7SR3F4APV"
 		m.Gua.CarlicenseG = "冀ACJXJX"      //车牌号码
-		m.Gua.Service = 2                  //使用性质
+		m.Gua.Service = 11                 //使用性质
 		m.Gua.RecordbrandG = "2333"        //品牌型号
 		m.Gua.RecordDateG = "2020-12-01"   //登记日期
 		m.Gua.AllKG = "2"                  //总质量
@@ -1207,6 +1207,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Gua.Tyrenumber = "2"             //轮胎数
 		m.Gua.Axlenumber = "2"             //轴数
 		m.Gua.IsImported = "进口"            //进口国产
+		m.Gua.CartypeG = "steven"
 
 	}
 
