@@ -127,7 +127,7 @@ func GetTaskDetail() {
 
 func GetBackDetail() {
 
-	url := "http://jiancetwo.sandbox.guchewang.com/api/Task/GetBackDetail"
+	url := "http://jctwo.guchewang.com/api/Task/GetBackDetail"
 	token := beego.AppConfig.String("app.userTokenet")
 
 	body_buf := bytes.NewBufferString("")
@@ -140,9 +140,9 @@ func GetBackDetail() {
 	resmap["appVersion"] = "3.4.4"
 	resmap["equipmentNo"] = "849367E75AD41C62FE6F9E6A283DB093"
 	resmap["platType"] = "1"
-	resmap["taskId"] = "1925224"
+	resmap["taskId"] = "2014441"
 	resmap["tokenid"] = "6"
-	resmap["userId"] = "18556"
+	resmap["userId"] = "18928"
 	resmap["deviceInfo"] = "{\"brand\":\"honor\",\"model\":\"FRD-AL00\",\"osVersion\":\"8.0.0\",\"platform\":\"android\",\"resolution\":\"1080*1920\"}"
 
 	sigin := common.GetSign(resmap, token)
