@@ -349,11 +349,11 @@ func GetFastValue(userid int, procductlist int, vin string, isPretrial int) map[
 	if procductlist == 13 { //2张
 		var m1 models.ImageList
 		m1.PartCode = 242
-		m1.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+		m1.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 		list = append(list, m1)
 		var m2 models.ImageList
 		m2.PartCode = 253
-		m2.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+		m2.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 		list = append(list, m2)
 		j, e := json.Marshal(list)
 		if e == nil {
@@ -365,40 +365,40 @@ func GetFastValue(userid int, procductlist int, vin string, isPretrial int) map[
 		if isPretrial == 0 {
 			var m1 models.ImageList
 			m1.PartCode = 242
-			m1.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			m1.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m1)
 
 			var m2 models.ImageList
 			m2.PartCode = 247
-			m2.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			m2.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m2)
 			var m3 models.ImageList
 			m3.PartCode = 291
-			m3.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			m3.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m3)
 			var m4 models.ImageList
 			m4.PartCode = 292
-			m4.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			m4.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m4)
 			var m5 models.ImageList
 			m5.PartCode = 296
-			m5.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			m5.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m5)
 			var m6 models.ImageList
 			m6.PartCode = 298
-			m6.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			m6.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m6)
 			var m7 models.ImageList
 			m7.PartCode = 308
-			m7.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			m7.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m7)
 			var m8 models.ImageList
 			m8.PartCode = 293
-			m8.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			m8.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m8)
 			var m9 models.ImageList
 			m9.PartCode = 309
-			m9.ImageUrl = "group1/M01/0E/C3/wKgAll2plVeAVfyRAAjQzRs7W7w895.jpg"
+			m9.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m9)
 
 			j, e := json.Marshal(list)
