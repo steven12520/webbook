@@ -1093,7 +1093,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.RecordBrand = "LIJIANSONG"
 		m.RecordDate = "2019-12-01"
 		m.ProductionTime = "2015-06-06"
-		m.Service = 2
+		m.Service = 6
 		m.TaskOwnerName = "LIJIANSONG"
 		m.TransferCount = 0
 	} else if m.TaskType == 2 { ///6张
@@ -1111,7 +1111,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.ProductionTime = "2015-06-06"
 		m.RegisterCityID = 901
 		m.RegisterProvID = 9
-		m.Service = 2
+		m.Service = 6
 	} else if m.TaskType == 6 { //13张重卡 商用车评估方案（非重卡）
 
 		m.RecordBrand = "pinpaixinghao" //品牌型号
