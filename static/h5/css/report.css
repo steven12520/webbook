@@ -1,0 +1,214 @@
+.report-cont {
+    height: 100%;
+    background-color: #FFFAF5;
+    font-family: PingFangSC-Regular, serif;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+}
+
+.brand-height {
+    height: auto;
+    margin-top: 30px;
+}
+
+.report-item-content {
+    margin-top: 20px;
+    min-height: 60px;
+    display: flex;
+    flex-direction: row;
+}
+
+.left-item-cont {
+    height: 60px;
+    background: #DED9CE;
+    width: 210px;
+    padding-left: 10px;
+}
+
+.left-item-content {
+    height: 100%;
+    background: #9B6D48;
+    width: 200px;
+    font-family: PingFangSC-Semibold, serif;
+    font-size: 34px;
+    color: #FFFFFF;
+    letter-spacing: 1px;
+    text-align: center;
+    line-height: 60px;
+}
+
+.right-item-cont {
+    font-family: PingFangSC-Regular, serif;
+    font-size: 34px;
+    color: #666666;
+    letter-spacing: 0;
+    padding-left: 30px;
+    flex: 1;
+}
+
+.right-item-contain {
+
+    width: 100%;
+    /*height: 480px;*/
+    display: flex;
+    flex-direction: column;
+
+}
+
+.right-item-content {
+    font-family: PingFangSC-Regular, serif;
+    font-size: 34px;
+    color: rgb(172,141,114);
+    letter-spacing: 0;
+    line-height: 50px;
+}
+.right-item-description {
+    font-family: PingFangSC-Regular, serif;
+    font-size: 34px;
+    color: rgb(121,121,119);
+    letter-spacing: 0;
+    line-height: 48px;
+}
+
+.detail-height {
+    margin-top: 50px;
+    min-height: 956px;
+    border: 4px solid #E8E3D9;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 40px;
+}
+
+.report-plugin-des {
+    font-family: PingFangSC-Semibold, serif;
+    font-size: 50px;
+    color: #9B6D48;
+    letter-spacing: -0.41px;
+    text-align: center;
+    margin-top: 40px;
+}
+
+.report-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.report-grid > li:nth-child(even) {
+    margin-left: 20px;
+}
+
+
+.plugin-height {
+    margin: 30px;
+    height: auto;
+}
+.report-grid-item {
+    display: flex;
+    flex-direction: column;
+    font-family: PingFangSC-Regular, serif;
+    font-size: 30px;
+    color: #666666;
+    letter-spacing: 0;
+    line-height: 17px;
+    text-align: center;
+
+}
+.report-item-des {
+    margin: 30px;
+
+}
+
+.report-cont-gua-che {
+    display: flex;
+    flex-direction: column;
+}
+
+.report-title-part {
+    width: 100%;
+    height: 100px;
+    text-align: center;
+    background: rgb(239,232,219);
+    color: rgb(157,108,77);
+    font-size: 38px;
+    line-height: 100px;
+    font-family: PingFangSC-Semibold, serif;
+}
+
+.margin-top-25 {
+    margin-top: 25px;
+}
+
+.margin-top-30 {
+    margin-top: 30px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
