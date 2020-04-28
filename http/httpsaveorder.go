@@ -311,7 +311,7 @@ func GetFastValue(userid int, procductlist int, vin string, isPretrial int) map[
 	res["userId"] = strconv.Itoa(userid)
 	res["provinceId"] = "5"
 	res["transferCount"] = "0"
-	res["service"] = "2"
+	res["service"] = "6"
 	res["engineNum"] = "SDFASDF"
 	res["tokenid"] = "6"
 	res["seating"] = "2"
@@ -477,7 +477,7 @@ func GetFastValue9(userid int, configID int, procductlist int, vin string) map[s
 	res["op"] = "save"
 	res["productType"] = "9"
 	res["RecordDate"] = "2019-12-01"
-	res["Service"] = "2"
+	res["Service"] = "6"
 	res["telephone"] = ""
 	res["equipmentNo"] = "B3B51F6D80E09F24FD6652BE50E51D80"
 	res["ProgramId"] = ""
@@ -515,7 +515,7 @@ func GetFastValue18(userid int, configID int, procductlist int, vin string, NewE
 	res["productType"] = "9"
 	res["NewEdition"] = strconv.Itoa(NewEdition)
 	res["RecordDate"] = "2019-12-01"
-	res["Service"] = "2"
+	res["Service"] = "6"
 	res["telephone"] = ""
 	res["equipmentNo"] = "B3B51F6D80E09F24FD6652BE50E51D80"
 	res["ProgramId"] = ""
