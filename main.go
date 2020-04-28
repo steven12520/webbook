@@ -12,7 +12,7 @@ func main() {
 	//ziptest.TestCompress()
 	//ziptest.TestCompress()
 	//ziptest.TestDeCompress()
-	///httpdate.GetBackDetail()
+	httpdate.GetBackDetail()
 	//httpdate.GetTaskDetail()
 	//httpdate.GetPhoneCheckNum()
 	//httpdate.FastOnLineList()

@@ -75,7 +75,7 @@ func FastOnLineList() {
 func GetTaskDetail() {
 
 	url := "http://jiancetwo.sandbox.guchewang.com/app/GetTaskDetail.ashx"
-	//url = "http://localhost:45678/app/GetTaskDetail.ashx"
+	url = "http://localhost:45678/app/GetTaskDetail.ashx"
 
 	token := beego.AppConfig.String("app.userTokenet")
 
@@ -85,8 +85,8 @@ func GetTaskDetail() {
 
 	resmap := make(map[string]string, 0)
 
-	resmap["taskId"] = "1925366"
-	resmap["userId"] = "18568"
+	resmap["taskId"] = "1925539"
+	resmap["userId"] = "890"
 	resmap["tokenId"] = "6"
 
 	sigin := common.GetSign(resmap, token)
@@ -140,9 +140,9 @@ func GetBackDetail() {
 	resmap["appVersion"] = "3.4.4"
 	resmap["equipmentNo"] = "849367E75AD41C62FE6F9E6A283DB093"
 	resmap["platType"] = "1"
-	resmap["taskId"] = "1925224"
+	resmap["taskId"] = "1925543"
 	resmap["tokenid"] = "6"
-	resmap["userId"] = "18556"
+	resmap["userId"] = "890"
 	resmap["deviceInfo"] = "{\"brand\":\"honor\",\"model\":\"FRD-AL00\",\"osVersion\":\"8.0.0\",\"platform\":\"android\",\"resolution\":\"1080*1920\"}"
 
 	sigin := common.GetSign(resmap, token)

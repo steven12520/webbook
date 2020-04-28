@@ -367,7 +367,6 @@ func GetFastValue(userid int, procductlist int, vin string, isPretrial int) map[
 			m1.PartCode = 242
 			m1.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m1)
-
 			var m2 models.ImageList
 			m2.PartCode = 247
 			m2.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
@@ -388,10 +387,12 @@ func GetFastValue(userid int, procductlist int, vin string, isPretrial int) map[
 			m6.PartCode = 298
 			m6.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m6)
+
 			var m7 models.ImageList
-			m7.PartCode = 308
+			m7.PartCode = 295
 			m7.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m7)
+
 			var m8 models.ImageList
 			m8.PartCode = 293
 			m8.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
@@ -400,6 +401,11 @@ func GetFastValue(userid int, procductlist int, vin string, isPretrial int) map[
 			m9.PartCode = 309
 			m9.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
 			list = append(list, m9)
+
+			var m10 models.ImageList
+			m10.PartCode = 297
+			m10.ImageUrl = "group4/M01/91/9C/wKgUk16fo1SASPZhAABPqjB__is104.jpg"
+			list = append(list, m10)
 
 			j, e := json.Marshal(list)
 			if e == nil {
@@ -419,7 +425,7 @@ func GetFastValue(userid int, procductlist int, vin string, isPretrial int) map[
 }
 
 //6张获取参数
-func GetFastValue6(userid int, configID int, procductlist int, vin string) map[string]string {
+func GetFastalue6(userid int, configID int, procductlist int, vin string) map[string]string {
 
 	res := make(map[string]string, 0)
 
