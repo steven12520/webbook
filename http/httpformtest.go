@@ -294,3 +294,59 @@ func UserHandler() {
 
 	return
 }
+
+func Getmfe() {
+	url := "https://yunfudao.mofangge.xin/Home/Login"
+
+	body_buf := bytes.NewBufferString("")
+	body_writer := multipart.NewWriter(body_buf)
+	// 1. 要上传的数据
+
+	resmap := make(map[string]string, 0)
+
+	resmap["useracount"] = "49698965368"
+	resmap["password"] = "son22372"
+	resmap["valicode"] = ""
+
+	for k, v := range resmap {
+		body_writer.WriteField(k, v)
+	}
+
+	// 结束整个消息body
+	body_writer.Close()
+
+	//
+	req_reader := io.MultiReader(body_buf)
+	req, err := http.NewRequest("POST", url, req_reader)
+	if err != nil {
+		logs.Error("站点相机上传图片，创建上次请求异常！异常信息:", err)
+		return
+	}
+	// 添加Post头
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9")
+	req.Header.Set("Connection", "keep-alive")
+	req.Header.Set("Content-Length", "50")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+	req.Header.Set("Host", "yunfudao.mofangge.xin")
+	req.Header.Set("Origin", "https://www.mofangge.xin")
+	req.Header.Set("Referer", "https://www.mofangge.xin/home/index/word-detail.html")
+	req.Header.Set("Sec-Fetch-Mode", "cors")
+	req.Header.Set("Sec-Fetch-Site", "same-site")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36")
+
+	req.ContentLength = int64(body_buf.Len())
+
+	// 发送消息
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("读取回应消息异常:", err)
+	}
+	fmt.Println("发送回应数据:", string(body))
+
+	return
+}

@@ -32,6 +32,10 @@ func (self *YstestController) Ystest() {
 	//GetImgList(10269, 1924990, 0, 0)
 	//GetImgDetail(1924862, 320, 5042, 0, 0)
 	//GetOrderInfo(1924985, 10269, 0, 0 )
+
+	loginip := strings.Split(self.Ctx.Request.RemoteAddr, ":")[0]
+	fmt.Println(loginip)
+
 	self.Data["pageTitle"] = "预审测试"
 	self.display()
 }
