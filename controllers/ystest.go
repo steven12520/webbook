@@ -309,7 +309,7 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 		date, _ = PretrailSubmitPass(temporder.TaskID, Userid, Ysyid, mo.Id)
 
 		if date.Status != 100 {
-			logs.Error("预审通过提交", temporder.TaskID, Userid, -1, 1)
+			logs.Error("预审通过提交", temporder.TaskID, Userid, -1, 1, date.Msg)
 			goto thisstart
 		}
 		mo.Satus = 1
@@ -1228,9 +1228,6 @@ func PretrailSubmitPass(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	m["taskId"] = strconv.Itoa(taskId)
 	m["userId"] = strconv.Itoa(userId)
 
-	go func() {
-		httpdate.SendPostys(url, m, "")
-	}()
 	res, b, Timelength := httpdate.SendPostys(url, m, "")
 
 	var Data models.ResultPublicDate
@@ -1238,6 +1235,7 @@ func PretrailSubmitPass(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 		json.Unmarshal(res, &Data)
 		if Data.Status != 100 {
 			return Data, false
+			fmt.Println("报错", string(res))
 		}
 	}
 	go insetinterfice(Ysyid, Ysydid, Data.Status, Data.Msg, "PretrailSubmitPass", Timelength)

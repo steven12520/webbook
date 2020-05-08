@@ -488,7 +488,7 @@ type RedisPretrailModelV2 struct {
 	/// <summary>
 	/// 预审上传的附件列表
 	/// </summary>
-	YsyOrderAttachFiles []TaskReconsiderationModel
+	YsyOrderAttachFiles []Model
 	/// <summary>
 	/// 驳回信息-退回给用户的备注（app可见）
 	/// </summary>
@@ -547,7 +547,7 @@ type CarPicModelSimple struct {
 	/// </summary>
 	IsAnnex bool
 }
-type TaskReconsiderationModel struct {
+type Model struct {
 	Id        int    `json:"id"`
 	Opid      int    `json:"opid"`
 	Types     int    `json:"types"`

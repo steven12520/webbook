@@ -340,9 +340,9 @@ func GetFastValue(userid int, procductlist int, vin string, isPretrial int) map[
 	res["platType"] = "1"
 	res["appendImageList"] = ""
 	res["orderTelPhone"] = ""
-	res["imageList"] = ""   //图片集合
-	res["videoPath"] = ""   //视频地址
-	res["isPretrial"] = "1" //0全量照片 1无照片
+	res["imageList"] = ""                        //图片集合
+	res["videoPath"] = ""                        //视频地址
+	res["isPretrial"] = strconv.Itoa(isPretrial) //0全量照片 1无照片
 
 	list := make([]models.ImageList, 0)
 
@@ -678,7 +678,7 @@ func SendPostys(url string, resmap map[string]string, filename string) ([]byte, 
 
 func SendPostKG(taskid, userid int) int {
 
-	url := beego.AppConfig.String("app.url") + "/App/TaskReconsideration.ashx"
+	url := beego.AppConfig.String("app.url") + "/App/.ashx"
 	filename := beego.AppConfig.String("zip.kg")
 	token := beego.AppConfig.String("app.userTokenet")
 	body_buf := bytes.NewBufferString("")
