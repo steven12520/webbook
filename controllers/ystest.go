@@ -1168,7 +1168,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 	} else if m.TaskType == 8 { //13张重卡 商用车评估方案（重卡有挂）
 
 		m.CarLicense = "冀ACJXJX"             //车牌号码
-		m.CarType = "三厢"                     //车辆类型
+		m.CarType = "房车"                     //车辆类型
 		m.Service = 9                        //使用性质
 		m.RecordBrand = "pinpaixinghao"      //品牌型号
 		m.RecordDate = "2019-12-01"          //登记日期
@@ -1211,7 +1211,7 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 		m.Gua.Tyrenumber = "2"             //轮胎数
 		m.Gua.Axlenumber = "2"             //轴数
 		m.Gua.IsImported = "进口"            //进口国产
-		m.Gua.CartypeG = "steven"
+		m.Gua.CartypeG = "房车"
 
 	}
 
