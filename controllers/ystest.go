@@ -307,6 +307,7 @@ func YSPassO(Userid, Usercount, timelen int, Ysyid int64) {
 			panic("图片审添加备注")
 		}
 		date, _ = PretrailSubmitPass(temporder.TaskID, Userid, Ysyid, mo.Id)
+
 		if date.Status != 100 {
 			logs.Error("预审通过提交", temporder.TaskID, Userid, -1, 1)
 			goto thisstart
@@ -1220,13 +1221,18 @@ func GetSaveFormData(m models.TaskCarBasicEPModel) models.TaskCarBasicEPModel {
 
 //预审通过提交 ok
 func PretrailSubmitPass(taskId, userId int, Ysyid, Ysydid int64) (models.ResultPublicDate, bool) {
+
 	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
 	m := make(map[string]string, 0)
 	m["op"] = "PretrailSubmitPass"
 	m["taskId"] = strconv.Itoa(taskId)
 	m["userId"] = strconv.Itoa(userId)
 
+	go func() {
+		httpdate.SendPostys(url, m, "")
+	}()
 	res, b, Timelength := httpdate.SendPostys(url, m, "")
+
 	var Data models.ResultPublicDate
 	if b {
 		json.Unmarshal(res, &Data)
@@ -1239,7 +1245,12 @@ func PretrailSubmitPass(taskId, userId int, Ysyid, Ysydid int64) (models.ResultP
 	if Data.Status == 100 {
 		return Data, true
 	} else {
-		return Data, false
+		if Data.Msg == "请勿重复操作！" {
+			return Data, true
+		} else {
+			return Data, false
+		}
+
 	}
 }
 
