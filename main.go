@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "./routers"
+	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
@@ -11,18 +12,24 @@ func main() {
 	//sor()
 	//reques()
 	//return
+	//reques()
+	//fmt.Println(runtime.NumCPU())
+	//fmt.Println(runtime.NumCPU())
 	logs.Debug("已启动。。。。。。。。。1")
 	beego.Run()
 }
 
-func reques() {
+func reques() error {
 	//ziptest.TestCompress()
 	////ziptest.TestCompress()
 	////ziptest.TestDeCompress()
 	////httpdate.GetBackDetail()
-	////httpdate.GetTaskDetail()
+	//httpdate.GetTaskDetail()
 	////httpdate.GetPhoneCheckNum()
 	////httpdate.FastOnLineList()
+
+	//httpdate.PretrailSubmitPass(1926621, 10269)
+	return errors.New("ddddddddd")
 }
 func sor() {
 

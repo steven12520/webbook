@@ -13,7 +13,6 @@ type BookClassificationController struct {
 func (self *BookClassificationController) BookClassificationList() {
 
 	self.Data["pageTitle"] = "类型管理"
-
 	self.display()
 }
 func (self *BookClassificationController) Add() {

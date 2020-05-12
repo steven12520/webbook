@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 )
 
 func FastOnLineList() {
@@ -75,7 +76,7 @@ func FastOnLineList() {
 func GetTaskDetail() {
 
 	url := "http://jiancetwo.sandbox.guchewang.com/app/GetTaskDetail.ashx"
-	url = "http://localhost:45678/app/GetTaskDetail.ashx"
+	//url = "http://localhost:45678/app/GetTaskDetail.ashx"
 
 	token := beego.AppConfig.String("app.userTokenet")
 
@@ -85,8 +86,8 @@ func GetTaskDetail() {
 
 	resmap := make(map[string]string, 0)
 
-	resmap["taskId"] = "1925539"
-	resmap["userId"] = "890"
+	resmap["taskId"] = "1926929"
+	resmap["userId"] = "14692"
 	resmap["tokenId"] = "6"
 
 	sigin := common.GetSign(resmap, token)
@@ -349,4 +350,15 @@ func Getmfe() {
 	fmt.Println("发送回应数据:", string(body))
 
 	return
+}
+
+func PretrailSubmitPass(taskId, userId int) {
+	url := beego.AppConfig.String("pgs.url") + "/APP/Pretrial/PretrialV2.ashx"
+	url = "http://localhost:45678/APP/Pretrial/PretrialV2.ashx"
+	m := make(map[string]string, 0)
+	m["op"] = "PretrailSubmitPass"
+	m["taskId"] = strconv.Itoa(taskId)
+	m["userId"] = strconv.Itoa(userId)
+
+	SendPostys(url, m, "")
 }
