@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./http"
 	_ "./routers"
 	"fmt"
 	"github.com/astaxie/beego"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	//sor()
-	//reques()
+	reques()
 	//return
 	logs.Debug("已启动。。。。。。。。。1")
 	beego.Run()
@@ -22,7 +23,8 @@ func reques() {
 	////httpdate.GetBackDetail()
 	////httpdate.GetTaskDetail()
 	////httpdate.GetPhoneCheckNum()
-	////httpdate.FastOnLineList()
+	//httpdate.IniteData(1726)
+	httpdate.GetServiceProgram(1726)
 }
 func sor() {
 

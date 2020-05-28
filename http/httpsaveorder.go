@@ -678,7 +678,7 @@ func SendPostys(url string, resmap map[string]string, filename string) ([]byte, 
 
 func SendPostKG(taskid, userid int) int {
 
-	url := beego.AppConfig.String("app.url") + "/App/.ashx"
+	url := beego.AppConfig.String("app.url") + "/App/TaskReconsideration.ashx"
 	filename := beego.AppConfig.String("zip.kg")
 	token := beego.AppConfig.String("app.userTokenet")
 	body_buf := bytes.NewBufferString("")
@@ -757,4 +757,107 @@ func GetFastValueKG(taskid, userId int) map[string]string {
 	res["deviceInfo"] = "{\"brand\":\"OPPO\",\"model\":\"\",\"osVersion\":\"5.1.1\",\"platform\":\"android\",\"resolution\":\"1080*1920\"}"
 
 	return res
+}
+
+func IniteData(userid int) {
+
+	url := beego.AppConfig.String("app.url") + "/api/Banner/IniteData"
+	token := beego.AppConfig.String("app.userTokenet")
+	body_buf := bytes.NewBufferString("")
+	body_writer := multipart.NewWriter(body_buf)
+
+	// 1. 要上传的数据
+
+	resmap := make(map[string]string, 0)
+	resmap["userId"] = strconv.Itoa(userid)
+	sigin := common.GetSign(resmap, token)
+
+	for k, v := range resmap {
+		body_writer.WriteField(k, v)
+	}
+	body_writer.WriteField("sign", sigin)
+
+	// 结束整个消息body
+	body_writer.Close()
+
+	req_reader := io.MultiReader(body_buf)
+	req, err := http.NewRequest("POST", url, req_reader)
+	if err != nil {
+		logs.Error("SendPostKG error:", err)
+		//return 0
+	}
+	// 添加Post头
+	req.Header.Set("Connection", "close")
+	req.Header.Set("Pragma", "no-cache")
+	req.Header.Set("Content-Type", body_writer.FormDataContentType())
+	req.ContentLength = int64(body_buf.Len())
+
+	// 发送消息
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logs.Error("读取回应消息异常SendPostKG:", err)
+	}
+	logs.Debug("接收返回数据SendPostKG:", string(body))
+	//var res models.AppResultModel
+	//json.Unmarshal(body, &res)
+
+}
+func GetServiceProgram(userid int) {
+
+	url := beego.AppConfig.String("app.url") + "/api/PicSpecial/GetServiceProgram"
+	//url ="http://localhost:45678/api/PicSpecial/GetServiceProgram"
+	token := beego.AppConfig.String("app.userTokenet")
+	body_buf := bytes.NewBufferString("")
+	body_writer := multipart.NewWriter(body_buf)
+
+	// 1. 要上传的数据
+
+	resmap := make(map[string]string, 0)
+	resmap["appVersion"] = "3.5.0"
+	resmap["Telephone"] = ""
+	resmap["tokenid"] = "6"
+	resmap["equipmentNo"] = "DCBFC057FC223134DEE10BDE04843A70"
+	resmap["platType"] = "1"
+	resmap["userId"] = strconv.Itoa(userid)
+	resmap["deviceInfo"] = `{"brand":"HUAWEI","model":"EVA-AL00","osVersion":"8.0.0","platform":"android","resolution":"1080*1792"}`
+
+	sigin := common.GetSign(resmap, token)
+
+	for k, v := range resmap {
+		body_writer.WriteField(k, v)
+	}
+	body_writer.WriteField("sign", sigin)
+
+	// 结束整个消息body
+	body_writer.Close()
+
+	req_reader := io.MultiReader(body_buf)
+	req, err := http.NewRequest("POST", url, req_reader)
+	if err != nil {
+		logs.Error("SendPostKG error:", err)
+		//return 0
+	}
+	// 添加Post头
+	req.Header.Set("Connection", "close")
+	req.Header.Set("Pragma", "no-cache")
+	req.Header.Set("Content-Type", body_writer.FormDataContentType())
+	req.ContentLength = int64(body_buf.Len())
+
+	// 发送消息
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logs.Error("读取回应消息异常SendPostKG:", err)
+	}
+	logs.Debug("接收返回数据SendPostKG:", string(body))
+	//var res models.AppResultModel
+	//json.Unmarshal(body, &res)
+
 }
