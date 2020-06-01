@@ -243,7 +243,7 @@ func GetPhoneCheckNum() {
 func UserHandler() {
 
 	url := "http://jiancetwo.sandbox.guchewang.com/app/UserHandler.ashx"
-
+	url = "http://localhost:45678/app/UserHandler.ashx"
 	token := beego.AppConfig.String("app.userTokenet")
 
 	body_buf := bytes.NewBufferString("")
@@ -252,13 +252,15 @@ func UserHandler() {
 
 	resmap := make(map[string]string, 0)
 
-	resmap["op"] = "login2"
-	resmap["telphone"] = "13552077115"
+	resmap["op"] = "login"
+	resmap["telphone"] = "15313256075"
 	resmap["equipmentNo"] = "849367E75AD41C62FE6F9E6A28366655"
 	resmap["lgcode"] = "yxdev001" //登录名
 	resmap["tokenid"] = "6"
-	resmap["checkcode"] = ""                                 //验证码
-	resmap["loginCode"] = "FA407A5DDD70EB0D5F91A1189165336E" //登录秘钥
+	resmap["checkcode"] = ""
+	resmap["pwd"] = "111111"
+	//验证码
+	resmap["loginCode"] = "7E428B97259A2E1A7858458B7D4ECB25" //登录秘钥
 
 	sigin := common.GetSign(resmap, token)
 	fmt.Println("sigin", sigin)

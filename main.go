@@ -11,7 +11,7 @@ import (
 func main() {
 	//sor()
 	reques()
-	//return
+	return
 	logs.Debug("已启动。。。。。。。。。1")
 	beego.Run()
 }
@@ -24,8 +24,8 @@ func reques() {
 	////httpdate.GetTaskDetail()
 	////httpdate.GetPhoneCheckNum()
 	//httpdate.IniteData(1726)
-	httpdate.GetServiceProgram(1726)
-
+	//httpdate.GetServiceProgram(1726)
+	httpdate.UserHandler()
 }
 func sor() {
 
